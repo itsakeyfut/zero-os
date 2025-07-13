@@ -1,0 +1,58 @@
+[workspace]
+members = [
+    "kernel"
+]
+
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+authors = ["Zero OS Dev"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/itsakeyfut/zero-os"
+# documentation = "https://docs.rs/zero-os"
+description = "A tactical support real-time operating system"
+readme = "README.md"
+keywords = ["os", "rtos", "tactical", "embedded", "no-std"]
+categories = ["embedded", "no-std", "os"]
+
+[workspace.dependencies]
+# Core dependencies for no_std environment
+nb = "1.1.0"
+cortex-m = "0.7.7"
+cortex-m-rt = "0.7.5"
+embedded-hal = "1.0.0"
+
+# Serialization (no_std compatible
+postcard = { version = "1.1.2", features = ["use-std"] }
+serde = { version = "1.0.219", default-features = false, features = ["derive"] }
+heapless = { version = "0.8.0", features = ["serde"] }
+
+# Collections and utilities for no_std
+bitflags = "2.9.1"
+static_assertions = "1.1.0"
+
+# Error handling
+thiserror-no-std = "2.0.2"
+
+# Math and algorithm for AI
+libm = "0.2.15"
+micromath = "2.1.0"
+
+# Random number generation (for AI algorithm)
+rand_core = "0.9.3"
+rand_chacha = { version = "0.9.0", default-features = false }
+
+# Async/await support for embedded
+embassy-sync = "0.7.0"
+embassy-time = "0.4.0"
+
+# Memory management
+buddy_system_allocator = "0.11.0"
+linked_list_allocator = "0.10.5"
+
+# Development and testing dependencies
+[workspace.dev-dependencies]
+criterion = "0.6.0"
+proptest = "1.7.0"
