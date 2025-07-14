@@ -177,4 +177,12 @@ impl PhysicalAddress {
     pub const fn as_usize(self) -> usize {
         self.0
     }
+
+    /// Check if address is page-aligned
+    pub fn is_page_aligned(self) -> bool {
+        self.0 % PAGE_SIZE == 0
+    }
 }
+
+/// Constants for memory management
+pub const PAGE_SIZE: usize = 4096;
