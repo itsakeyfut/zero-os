@@ -284,3 +284,28 @@ pub const PAGE_SIZE: usize = 4096;
 pub const PAGE_SHIFT: usize = 12;
 pub const KERNEL_HEAP_SIZE: usize = 64 * 1024 * 1024; // 64MB
 pub const MAX_PHYSICAL_MEMORY: usize = 512 * 1024 * 1024; // 512MB
+
+/// Memory layout constants
+pub mod layout {
+    use super::VirtualAddress;
+
+    /// User space start (0GB)
+    pub const USER_START: VirtualAddress = VirtualAddress::new(0x0000_0000);
+    /// User space end (16GB)
+    pub const USER_END: VirtualAddress = VirtualAddress::new(0x4000_0000);
+
+    /// Kernel heap start (1GB)
+    pub const KERNEL_HEAP_START: VirtualAddress = VirtualAddress::new(0x4000_0000);
+    /// Kernel heap end (2GB)
+    pub const KERNEL_HEAP_END: VirtualAddress = VirtualAddress::new(0x8000_0000);
+
+    /// Device memory start (2GB)
+    pub const DEVICE_START: VirtualAddress = VirtualAddress::new(0x8000_0000);
+    /// Device memory end (3GB)
+    pub const DEVICE_END: VirtualAddress = VirtualAddress::new(0xC000_0000);
+
+    /// Kernel code start (3GB)
+    pub const KERNEL_START: VirtualAddress = VirtualAddress::new(0xC000_0000);
+    /// Kernel code end (4GB)
+    pub const KERNEL_END: VirtualAddress = VirtualAddress::new(0xFFFF_FFFF);
+}
