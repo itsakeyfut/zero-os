@@ -281,3 +281,6 @@ impl MemoryRegion {
 
 /// Constants for memory management
 pub const PAGE_SIZE: usize = 4096;
+pub const PAGE_SHIFT: usize = 12;
+pub const KERNEL_HEAP_SIZE: usize = 64 * 1024 * 1024; // 64MB
+pub const MAX_PHYSICAL_MEMORY: usize = 512 * 1024 * 1024; // 512MB
