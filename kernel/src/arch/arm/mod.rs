@@ -137,3 +137,32 @@ pub unsafe fn emergency_debug_print(message: &str) {
         }
     }
 }
+
+/// Memory barrier implementations
+pub mod barriers {
+    use core::arch::asm;
+
+    /// Data memory barrier
+    pub fn dmb() {
+        // SAFETY: Memory barrier instructions are safe
+        unsafe {
+            asm!("dmb", options(nomem, nostack));
+        }
+    }
+
+    /// Data synchronization barrier
+    pub fn dsb() {
+        // SAFETY: Memory barrier instructions are safe
+        unsafe {
+            asm!("dsb", options(nomem, nostack));
+        }
+    }
+
+    /// Instruction synchronization barrier
+    pub fn isb() {
+        // SAFETY: Memory barrier instructions are safe
+        unsafe {
+            asm!("isb", options(nomem, nostack));
+        }
+    }
+}
