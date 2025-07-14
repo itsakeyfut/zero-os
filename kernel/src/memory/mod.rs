@@ -213,6 +213,11 @@ impl VirtualAddress {
     pub fn is_page_aligned(self) -> bool {
         self.0 % PAGE_SIZE == 0
     }
+
+    /// Align address down to page boundary
+    pub fn align_down(self) -> Self {
+        Self(self.0 & !(PAGE_SIZE - 1))
+    }
 }
 
 /// Constants for memory management
