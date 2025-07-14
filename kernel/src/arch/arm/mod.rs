@@ -113,3 +113,27 @@ pub fn early_debug_init() {
         debug_writer.init_uart();
     }
 }
+
+/// Emergency debug print for panic situations
+/// 
+/// # Safety
+/// 
+/// This function performs direct hardware access and should only be used
+/// in emergency situations when normal debug output has failed.
+pub unsafe fn emergency_debug_print(message: &str) {
+    let uart_base = 0x101F1000usize as *mut u32;
+    
+    for byte in message.bytes() {
+        // Wait for UART ready
+        let flag_register = unsafe { uart_base.add(0x18 / 4) };
+        while unsafe { flag_register.read_volatile() & (1 << 5) } != 0 {
+            // TX FIFO full, wait
+        }
+        
+        // Write character
+        let data_register = unsafe { uart_base.add(0x00 / 4) };
+        unsafe {
+            data_register.write_volatile(byte as u32);
+        }
+    }
+}
