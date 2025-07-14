@@ -203,6 +203,11 @@ impl VirtualAddress {
     pub const fn new(addr: usize) -> Self {
         Self(addr)
     }
+
+    /// Get the raw address value
+    pub const fn as_usize(self) -> usize {
+        self.0
+    }
 }
 
 /// Constants for memory management
