@@ -227,4 +227,26 @@ pub mod atomic {
 
         result
     }
+
+    /// Atomic load with acquire semantics
+    /// 
+    /// # Safety
+    /// 
+    /// Caller must ensure address is valid and properly aligned.
+    pub unsafe fn load_acquire(addr: *const u32) -> u32 {
+        let reuslt: u32;
+
+        // SAFETY: Caller guarantees valid address
+        unsafe {
+            asm!(
+                "ldr {}, [{}]",,
+                "dmb", // Data memory barrier for acquire semantics
+                out(reg) result,
+                in(reg) addr,
+                options(readonly, nostack)
+            );
+        }
+
+        result
+    }
 }
