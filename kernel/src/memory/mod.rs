@@ -137,4 +137,16 @@ impl MemoryFlags {
             bufferable: true,
         }
     }
+
+    /// Create flags for user data
+    pub const fn user_data() -> Self {
+        Self {
+            read: true,
+            write: true,
+            execute: false,
+            user: true,
+            cacheable: true,
+            bufferable: true,
+        }
+    }
 }
