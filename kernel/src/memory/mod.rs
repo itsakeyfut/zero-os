@@ -223,6 +223,12 @@ impl VirtualAddress {
     pub fn align_up(self) -> Self {
         Self((self.0 + PAGE_SIZE - 1) & !(PAGE_SIZE - 1))
     }
+
+    /// Get page table index for this address at given level
+    pub fn page_table_index(self, level: usize) -> usize {
+        const BITS_PER_LEVEL: usize = 9; // 512 entries per page table
+        (self.0 >> (12 + level * BITS_PER_LEVEL)) & 0x1FF
+    }
 }
 
 /// Constants for memory management
