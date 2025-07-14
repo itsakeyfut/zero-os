@@ -25,7 +25,7 @@ cortex-m-rt = "0.7.5"
 embedded-hal = "1.0.0"
 
 # Serialization (no_std compatible
-postcard = { version = "1.1.2", features = ["use-std"] }
+postcard = { version = "1.1.2", default-features = false, features = ["use-std"] }
 serde = { version = "1.0.219", default-features = false, features = ["derive"] }
 heapless = { version = "0.8.0", features = ["serde"] }
 
@@ -56,3 +56,75 @@ linked_list_allocator = "0.10.5"
 [workspace.dev-dependencies]
 criterion = "0.6.0"
 proptest = "1.7.0"
+
+# Linting and formatting configuration
+[workspace.lints.rust]
+unsafe_code = "warn"
+missing_docs = "warn"
+unused_imports = "warn"
+dead_code = "warn"
+
+# kernel/
+unsafe_op_in_unsafe_fn = "forbid"  # All unsafe operations must be in unsafe blocks
+
+[workspace.lints.clippy]
+all = "warn"
+pedantic = "warn"
+nursery = "warn"
+cargo = "warn"
+# Allow some pedantic lints that are too strict for embedded development
+cast_precision_loss = "allow"
+cast_possible_truncation = "allow"
+cast_sign_loss = "allow"
+module_name_repetitions = "allow"
+
+# kernel/
+undocumented_unsafe_blocks = "forbid"  # All unsafe blocks must be documented
+indexing_slicing = "deny"              # Prevent potential panics
+unwrap_used = "deny"                   # Force proper error handling
+expect_used = "warn"                   # Discourage expect usage
+panic = "deny"                         # No panic allowed in kernel
+todo = "deny"                          # No TODO allowed in production kernel
+unimplemented = "deny"                 # No unimplemented allowed
+
+# Profile configurations for different build scenarios
+[profile.dev]
+opt-level = 1
+debug = true
+lto = true
+panic = "abort"
+overflow-checks = true
+
+[profile.release]
+opt-level = "z" # Optimize for size
+debug = false
+lto = true # Link time optimization
+panic = "abort" # Smaller binary size
+overflow-checks = false
+codegen-units = 1 # Better optimization
+
+# Profile for real-time critical code
+[profile.realtime]
+inherits = "release"
+opt-level = 3 # Optimize for speed over size
+lto = "fat" # Maximum LTO
+
+# Profile for debugging on hardware
+[profile.debug-hw]
+inherits = "dev"
+opt-level = 2 # Some optimization for better performance on hardware
+debug = true
+
+# Custom cargo aliases for common tasks
+[workspace.metadata.cargo-aliases]
+check-all = "check --workspace --all-targets --all-features"
+test-all = "test --workspace --all-targets --all-features"
+clippy-all = "clippy --workspace --all-targets --all-features -- -D warnings"
+fmt-all = "fmt --all"
+build-kernel = "build --bin kernel --release --target armv7a-none-eabi"
+build-userspace = "build --workspace --exclude kernel --target armv7a-none-eabi"
+
+# Documentation configuration
+[workspace.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
