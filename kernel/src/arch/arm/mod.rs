@@ -102,3 +102,14 @@ impl fmt::Write for DebugWriterImpl {
         Ok(())
     }
 }
+
+/// Initialize early debugging support
+pub fn early_debug_init() {
+    // SAFETY: Early debug initialization for UART
+    unsafe {
+        let debug_writer = DebugWriterImpl {
+            uart_base: 0x101F1000, // QEMU versatilepb UART0
+        };
+        debug_writer.init_uart();
+    }
+}
