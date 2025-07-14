@@ -113,4 +113,16 @@ impl MemoryFlags {
             bufferable: true,
         }
     }
+
+    /// Create flags for kernel data
+    pub const fn kernel_data() -> Self {
+        Self {
+            read: true,
+            write: true,
+            execute: false,
+            user: false,
+            cacheable: true,
+            bufferable: true,
+        }
+    }
 }
