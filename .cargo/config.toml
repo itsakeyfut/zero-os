@@ -1,0 +1,138 @@
+# Cargo build configuration for Zero OS
+
+[build]
+# Default target for embedded ARM development
+target = "armv7a-none-eabi"
+
+[target.armv7a-none-eabi]
+# Linker configuration for ARM Cortex-A
+linker = "arm-none-eabi-gcc"
+runner = [
+    "qemu-system-arm",
+    "-machine", "versatilepb",
+    "-cpu", "arm1176", 
+    "-m", "128M",
+    "-nographic",
+    "-serial", "stdio",
+    "-kernel"
+]
+
+# Compiler flags for ARM target
+rustflags = [
+    "-C", "link-arg=-nostartfiles",
+    "-C", "link-arg=-Tkernel/layout.ld",
+    "-C", "target-cpu=arm1176jzf-s",
+    "-C", "target-feature=+strict-align",
+]
+
+[target.armv7a-none-eabihf]
+# Alternative ARM target with hardware floating point
+linker = "arm-none-eabi-gcc"
+runner = [
+    "qemu-system-arm",
+    "-machine", "versatilepb", 
+    "-cpu", "arm1176",
+    "-m", "128M",
+    "-nographic", 
+    "-serial", "stdio",
+    "-kernel"
+]
+
+rustflags = [
+    "-C", "link-arg=-nostartfiles",
+    "-C", "link-arg=-Tkernel/layout.ld",
+    "-C", "target-cpu=arm1176jzf-s",
+    "-C", "target-feature=+vfp2,+strict-align",
+]
+
+[target.thumbv7em-none-eabihf]
+# Cortex-M4/M7 with FPU (for STM32F4/F7 targets)
+linker = "arm-none-eabi-gcc"
+runner = [
+    "qemu-system-arm",
+    "-machine", "netduinoplus2",
+    "-nographic",
+    "-serial", "stdio", 
+    "-kernel"
+]
+
+rustflags = [
+    "-C", "link-arg=-nostartfiles",
+    "-C", "link-arg=-Tkernel/layout-cortex-m.ld",
+    "-C", "target-cpu=cortex-m4",
+    "-C", "target-feature=+thumb2,+vfp4",
+]
+
+[target.x86_64-unknown-none]
+# x86_64 target for development and testing
+runner = [
+    "qemu-system-x86_64",
+    "-drive", "format=raw,file=target/x86_64-unknown-none/release/bootimage-kernel.bin",
+    "-serial", "stdio",
+    "-display", "none",
+    "-no-reboot"
+]
+
+rustflags = [
+    "-C", "link-arg=-nostartfiles",
+    "-C", "link-arg=-Tkernel/layout-x86_64.ld",
+]
+
+# Environment variables
+[env]
+# Disable standard library
+RUST_TARGET_PATH = { value = "", relative = true }
+
+# Custom aliases for development workflow
+[alias]
+# Kernel-specific commands
+kbuild = "build --package zero-system-kernel --release"
+kcheck = "check --package zero-system-kernel"
+kclippy = "clippy --package zero-system-kernel -- -D warnings"
+ktest = "test --package zero-system-kernel"
+
+# QEMU testing commands  
+qemu-arm = "run --package zero-system-kernel --release --target armv7a-none-eabi"
+qemu-x64 = "run --package zero-system-kernel --release --target x86_64-unknown-none"
+
+# Userspace commands
+ubuild = "build --workspace --exclude zero-system-kernel"
+ucheck = "check --workspace --exclude zero-system-kernel" 
+utest = "test --workspace --exclude zero-system-kernel"
+
+# Full system commands
+build-all = "build --workspace --release"
+check-all = "check --workspace"
+test-all = "test --workspace"
+clippy-all = "clippy --workspace -- -D warnings"
+
+# Documentation
+doc-kernel = "doc --package zero-system-kernel --open"
+doc-all = "doc --workspace --open"
+
+# Clean commands
+clean-target = "clean --release"
+clean-all = "clean"
+
+# Utility commands for debugging
+objdump = "objdump --package zero-system-kernel --release"
+size = "size --package zero-system-kernel --release"
+nm = "nm --package zero-system-kernel --release"
+
+# Memory layout analysis
+memory-layout = ["sh", "-c", "arm-none-eabi-size -A target/armv7a-none-eabi/release/kernel"]
+stack-usage = ["sh", "-c", "arm-none-eabi-objdump -h target/armv7a-none-eabi/release/kernel"]
+
+# Source code analysis
+loc = ["sh", "-c", "find . -name '*.rs' | xargs wc -l | tail -1"]
+complexity = ["sh", "-c", "find . -name '*.rs' -exec wc -l {} + | sort -n"]
+
+# Security and safety checks
+audit = "audit --ignore RUSTSEC-0000-0000"  # Add known safe advisories to ignore
+deny = "deny check"
+fmt-check = "fmt --all -- --check"
+clippy-strict = "clippy --workspace -- -D warnings -D clippy::all -D clippy::pedantic"
+
+# Release preparation
+pre-commit = ["sh", "-c", "cargo fmt-check && cargo clippy-strict && cargo test-all"]
+release-build = "build --workspace --release"

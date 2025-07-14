@@ -1,0 +1,109 @@
+# Rust code formatting configuration for Zero OS
+# Ensures consistent code style across the entire project
+
+# Basic formatting options
+edition = "2024"
+max_width = 100
+hard_tabs = false
+tab_spaces = 4
+
+# Import formatting
+imports_granularity = "Crate"
+group_imports = "StdExternalCrate"
+reorder_imports = true
+reorder_modules = true
+
+# Function and control flow formatting
+fn_args_layout = "Tall"
+brace_style = "SameLineWhere"
+control_brace_style = "AlwaysSameLine"
+indent_style = "Block"
+
+# Where clause formatting
+where_single_line = true
+force_explicit_abi = true
+
+# Comment formatting
+comment_width = 80
+wrap_comments = true
+format_code_in_doc_comments = true
+normalize_comments = true
+normalize_doc_attributes = true
+
+# String and array formatting
+format_strings = true
+format_macro_matchers = true
+hex_literal_case = "Lower"
+
+# Type and trait formatting
+use_small_heuristics = "Default"
+type_punctuation_density = "Wide"
+space_before_colon = false
+space_after_colon = true
+
+# Struct and enum formatting
+struct_field_align_threshold = 0
+enum_discrim_align_threshold = 0
+match_arm_blocks = true
+match_block_trailing_comma = false
+
+# Error handling formatting
+overflow_delimited_expr = true
+combine_control_expr = true
+short_array_element_width_threshold = 10
+
+# Advanced formatting options
+blank_lines_upper_bound = 1
+blank_lines_lower_bound = 0
+empty_item_single_line = true
+struct_lit_single_line = true
+fn_single_line = false
+
+merge_derives = true
+
+# Specific to embedded/kernel development
+# Ensure consistent formatting for unsafe blocks
+format_generated_files = false
+
+# Chain formatting for method calls (common in embedded)
+chain_width = 60
+chains_overflow_last = false
+
+# Closure formatting
+closure_block_indent_threshold = 7
+
+# Macro formatting
+macro_width = 100
+
+# Module and item ordering
+reorder_impl_items = true
+
+# Edition-specific formatting
+format_skip_children = false
+ignore = []
+
+# Conditional compilation formatting
+spaces_around_ranges = false
+use_field_init_shorthand = false
+use_try_shorthand = false
+
+# Custom settings for kernel development
+# These ensure safety-critical code is clearly formatted
+version = "Two"
+unstable_features = false
+
+# Ensure consistent formatting in match expressions (important for state machines)
+match_arm_leading_pipes = "Never"
+
+# Consistent spacing for embedded register access patterns
+spaces_within_parens_and_brackets = false
+
+# Documentation formatting
+doc_comment_code_block_width = 80
+
+# Import organization for embedded projects
+imports_layout = "Vertical"
+
+# Specific rules for unsafe code blocks (require clear formatting)
+# This helps with code review and safety analysis
+format_macro_bodies = true

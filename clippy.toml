@@ -1,0 +1,120 @@
+# Clippy configuration for Zero OS
+# Enforces safety and quality standards for kernel development
+
+# Arithmetic and numeric safety
+avoid-breaking-exported-api = true
+
+# Documentation requirements
+missing-docs-in-private-items = false  # Only require public docs initially
+doc-valid-idents = ["RTOS", "QEMU", "GPIO", "UART", "SPI", "I2C", "CAN", "ARM", "Cortex"]
+
+# Cognitive complexity limits (important for safety-critical code)
+cognitive-complexity-threshold = 30
+type-complexity-threshold = 250
+
+# Performance thresholds
+too-many-arguments-threshold = 7
+too-many-lines-threshold = 150
+large-type-threshold = 200
+
+# Safety-critical naming conventions
+enum-variant-name-threshold = 3
+struct-excessive-bools = 3
+fn-params-excessive-bools = 3
+
+# Memory safety configurations
+trivial-copy-size-limit = 128  # Bytes - larger types should be passed by reference
+pass-by-value-size-limit = 256  # Bytes - for embedded systems
+large-stack-arrays-threshold = 512000  # Bytes - prevent stack overflow
+
+# String and text handling
+max-suggested-slice-pattern-length = 3
+literal-representation-threshold = 10
+
+# Verbose bit flag names for hardware registers
+verbose-bit-flag-names = false  # Allow concise register bit names
+
+# Allow certain patterns common in embedded development
+single-char-lifetime-names = true  # Allow 'a, 'b for simple lifetimes
+blacklisted-names = ["foo", "bar", "baz", "TODO", "FIXME"]  # Prevent placeholder names
+
+# Mathematical and algorithmic code
+excessive-precision-threshold = 2
+unreadable-literal-lint-fractions = true
+
+# Standard library usage (should be minimal in no_std)
+disallowed-methods = [
+    # Prevent accidental std usage
+    "std::thread::sleep",
+    "std::process::exit",
+    "std::env::var",
+    "std::fs::*",
+    
+    # Memory allocations that should be explicit
+    "std::vec::Vec::new",
+    "std::collections::HashMap::new",
+    
+    # Floating point operations that might not be available
+    "f32::sin",
+    "f32::cos", 
+    "f32::sqrt",
+    "f64::sin",
+    "f64::cos",
+    "f64::sqrt",
+]
+
+disallowed-types = [
+    # Standard library types not available in no_std
+    "std::vec::Vec",
+    "std::collections::HashMap", 
+    "std::collections::BTreeMap",
+    "std::thread::Thread",
+    "std::sync::Mutex",
+    
+    # Types that might cause issues in embedded
+    "std::time::Instant",
+    "std::time::SystemTime",
+]
+
+# Allow certain patterns for embedded systems
+allowed-scripts = ["Latin", "Hiragana", "Katakana"]  # For documentation
+
+# Nursery lints (experimental but useful for kernel development)
+# These are enabled in Cargo.toml but configured here
+
+# Additional safety checks for kernel code
+msrv = "1.88.0"  # Minimum supported Rust version
+
+# Kernel-specific identifier conventions
+upper-case-acronyms-aggressive = true
+
+# Allow certain abbreviations common in embedded systems
+allowed-prefixes = [
+    "GPIO", "UART", "SPI", "I2C", "CAN", "PWM", "ADC", "DAC",
+    "IRQ", "DMA", "MMU", "MPU", "FPU", "CPU", "MCU", "SoC",
+    "RTOS", "OS", "API", "IPC", "RPC", "TCP", "UDP", "IP",
+    "USB", "PCIe", "SATA", "HDMI", "VGA", "RAM", "ROM",
+    "EEPROM", "FLASH", "SRAM", "DRAM", "MHz", "GHz", "Hz"
+]
+
+# Performance and optimization hints
+manual-slice-size-calculation = true
+manual-string-new = true
+manual-map = true
+
+# Error handling patterns
+result-large-err = 128  # Bytes - encourage smaller error types
+
+# Iterator and functional programming
+iter-over-hash-type = true
+iter-nth-zero = true
+
+# Concurrency and threading (limited in embedded)
+await-holding-invalid-type = true
+
+# Memory layout and alignment
+cast-ptr-alignment = true
+
+# Embedded-specific patterns
+infinite-loop = true  # Allow infinite loops (common in embedded main loops)
+empty-loop = false    # Allow empty loops for delays
