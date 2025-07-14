@@ -71,3 +71,20 @@ impl Default for CpuContext {
         }
     }
 }
+
+/// Memory protection attributes
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MemoryProtection {
+    /// No access allowed
+    None,
+    /// Read-only access
+    ReadOnly,
+    /// Read-writer access
+    ReadWrite,
+    /// Execute-only access
+    ExecuteOnly,
+    /// Read-execute access
+    ReadExecute,
+    /// Full access (read-write-execute)
+    Full,
+}
