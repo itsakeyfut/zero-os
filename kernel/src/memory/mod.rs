@@ -60,3 +60,26 @@ pub enum MemoryError {
 
 /// Result type for memory operations
 pub type MemoryResult<T> = Result<T, MemoryError>;
+
+/// Memory region types
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MemoryType {
+    /// Kernel code (read-execute)
+    KernelCode,
+    /// Kernel data (read-write)
+    KernelData,
+    /// Kernel heap (read-write)
+    KernelHeap,
+    /// User code (read-execute, user accessible)
+    UserCode,
+    /// User data (read-write, user accessible)
+    UserData,
+    /// User heap (read-write, user accessible)
+    UserHeap,
+    /// User stack (read-write, user accessible)
+    UserStack,
+    /// Device memory (uncached, read-write)
+    Device,
+    /// Shared memory (various permissions)
+    Shared,
+}
