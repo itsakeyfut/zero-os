@@ -45,3 +45,13 @@ pub struct DebugWriterImpl {
     /// UART base address for debug output
     uart_base: usize,
 }
+
+impl DebugWriterImpl {
+    /// Create a new ARM debug writer
+    pub fn new() -> ArchResult<Self> {
+        Ok(Self {
+            // Default to QEMU versatilepb UART0 address
+            uart_base: 0x101F1000,
+        })
+    }
+}
