@@ -120,3 +120,6 @@ pub enum ArchError {
     /// Privilege violation
     PrivilegeViolation,
 }
+
+/// Result type for architecture operations
+pub type ArchResult<T> = Result<T, ArchError>;
