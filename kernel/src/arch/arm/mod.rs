@@ -320,3 +320,21 @@ pub fn validate_target() -> bool {
     // Simple validation - could be enhanced with CPUID checks
     cfg!(target_arch = "arm")
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_platform_info() {
+        assert_eq!(platform_name(), "ARM Cortex-A");
+        assert_eq!(page_size(), 4096);
+        assert_eq!(cache_line_size(), 32);
+    }
+
+    #[test]
+    fn test_debug_writer_creation() {
+        let writer = DebugWriterImpl::new();
+        assert!(writer.is_ok());
+    }
+}
