@@ -57,3 +57,6 @@ pub enum MemoryError {
     /// Hardware memory management fault
     HardwareFault,
 }
+
+/// Result type for memory operations
+pub type MemoryResult<T> = Result<T, MemoryError>;
