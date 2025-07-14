@@ -22,6 +22,14 @@
 
 use core::fmt;
 
+// Architecture-specific module imports
+#[cfg(target_arch = "arm")]
+pub mod arm;
+
+#[cfg(any(target_arch = "argm", target_arch = "aarch64"))]
+pub use arm as target;
+
+
 /// Interrupt types that can occur in the system
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum InterruptType {
