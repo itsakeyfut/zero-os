@@ -166,3 +166,28 @@ pub mod barriers {
         }
     }
 }
+
+/// Power management operations
+pub mod power {
+    use core::arch::asm;
+
+    /// Enter low power mode
+    pub fn enter_low_power() {
+        // SAFETY: WFI instruction for low power mode
+        unsafe {
+            asm!("wfi", options(nomem, nostack));
+        }
+    }
+
+    /// Exit low power mode (happens automatically on interrupt)
+    pub fn exit_low_power() {
+        // No explicit action needed - CPU wakes up on interrupt
+    }
+
+    /// Check if system should wake up
+    pub fn should_wake_up() -> bool {
+        // Simple implementation - always wake up for now
+        // In real implementation, this would check specific wake-up conditions
+        true
+    }
+}
