@@ -60,3 +60,14 @@ pub struct CpuContext {
     /// Program counter
     pub program_counter: u32,
 }
+
+impl Default for CpuContext {
+    fn default() -> Self {
+        Self {
+            registers: [0; 16],
+            cpsr: 0,
+            stack_pointer: 0,
+            program_counter: 0,
+        }
+    }
+}
