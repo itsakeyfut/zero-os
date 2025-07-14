@@ -83,3 +83,20 @@ pub enum MemoryType {
     /// Shared memory (various permissions)
     Shared,
 }
+
+/// Memory protection flags
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct MemoryFlags {
+    /// Read permission
+    pub read: bool,
+    /// Write permission
+    pub write: bool,
+    /// Execute permission
+    pub execute: bool,
+    /// User accessible
+    pub user: bool,
+    /// Cacheable
+    pub cacheable: bool,
+    /// Bufferable
+    pub bufferable: bool,
+}
