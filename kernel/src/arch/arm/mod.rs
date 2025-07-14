@@ -249,4 +249,22 @@ pub mod atomic {
 
         result
     }
+
+    /// Atomic store with release semantics
+    /// 
+    /// # Safety
+    /// 
+    /// Caller must ensure address is valid and properly aligned.
+    pub unsafe fn store_release(addr: *mut u32, value: u32) {
+        // SAFETY: Caller guarantees valid address
+        unsafe {
+            asm!(
+                "dmb", // Data memory barrier for release semantics
+                "str {}, [{}]",
+                in(reg) value,
+                in(reg) addr,
+                options(nostack)
+            );
+        }
+    }
 }
