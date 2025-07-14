@@ -149,4 +149,16 @@ impl MemoryFlags {
             bufferable: true,
         }
     }
+
+    /// Create flags for device memory
+    pub const fn device() -> Self {
+        Self {
+            read: true,
+            write: true,
+            execute: false,
+            user: false,
+            cacheable: false,
+            bufferable: false,
+        }
+    }
 }
