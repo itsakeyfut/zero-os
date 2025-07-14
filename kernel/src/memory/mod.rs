@@ -267,6 +267,11 @@ impl MemoryRegion {
     pub fn end(&self) -> VirtualAddress {
         VirtualAddress::new(self.start.as_usize() + self.size)
     }
+
+    /// Check if the region contains the given address
+    pub fn contains(&self, addr: VirtualAddress) -> bool {
+        addr >= self.start && addr < self.end()
+    }
 }
 
 /// Constants for memory management
