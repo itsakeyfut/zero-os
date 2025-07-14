@@ -70,4 +70,22 @@ impl DebugWriterImpl {
             uart_base.add(0x30 / 4).write_volatile(0x301);
         }
     }
+
+    /// Write a single character to UART
+    fn write_char(&self, c: u8) {
+        // SAFETY: I'm writing to UART data register
+        unsafe {
+            let uart_base = self.uart_base as *mut u32;
+            let data_register = uart_base.add(0x00 / 4);
+            let flag_register = uart_base.add(0x18 / 4);
+
+            // Wait for UART to be ready (TX FIFO not full)
+            while (flag_register.read_volatile() & (1 << 5)) != 0 {
+                // UART TX FIFO is full, wait
+            }
+
+            // Write character to data register
+            data_register.write_volatile(c as u32);
+        }
+    }
 }
