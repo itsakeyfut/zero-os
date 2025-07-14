@@ -268,3 +268,28 @@ pub mod atomic {
         }
     }
 }
+
+/// Enable branch prediction
+/// 
+/// # Safety
+/// 
+/// This function modifies the SCTLR (System Control Register) which requires
+/// privileged access.
+unsafe fn enable_branch_prediction() {
+    let mut sctlr: u32;
+
+    // SAFETY: Reading and writing SCTLR for performance optimization
+    unsafe {
+        // Read current SCTLR
+        asm!("mrc p15, 0, {}, c1, c0, 0", out(reg) sctlr, options(nomem, nostack));
+
+        // Set Z bit (bit 11) to enable branch prediction
+        sctlr |= 1 << 11;
+
+        // Write back SCTLR
+        asm!("mcr p15, 0, {}, c1, c0, 0", in(reg) sctlr, options(nomem, nostack));
+
+        // Ensure changes take effect
+        barriers::isb();
+    }
+}
