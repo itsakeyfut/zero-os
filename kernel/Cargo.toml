@@ -1,6 +1,107 @@
 [package]
 name = "kernel"
-version = "0.1.0"
-edition = "2024"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Zero OS Kernel - Real-time microkernel for tactical support systems"
+readme = "README.md"
+
+# Kernel binary configuration
+[[bin]]
+name = "kernel"
+path = "src/main.rs"
 
 [dependencies]
+# Core embedded dependencies
+cortex-m = { workspace = true, features = ["critical-section-single-core"] }
+cortex-m-rt = { workspace = true, features = ["device"] }
+embedded-hal = { workspace = true }
+nb = { workspace = true }
+
+# Collections and utilities
+
+heapless = { workspace = true, features = ["ufmt"] }
+bitflags = { workspace = true }
+static_assertions = { workspace = true }
+
+# Memory management
+linked_list_allocator = { workspace = true }
+buddy_system_allocator = { workspace = true }
+
+# Error handling
+thiserror-no-std = { workspace = true }
+
+# Math operations
+libm = { workspace = true }
+
+# Serialization for IPC
+serde = { workspace = true, features = ["derive"] }
+postcard = { workspace = true, default-features = false, features = ["heapless"] }
+
+# Random number generation for process scheduling
+rand_core = { workspace = true }
+rand_chacha = { workspace = true }
+
+# Async support for non-blocking operations
+embassy-time = { workspace = true }
+embassy-sync = { workspace = true }
+
+# Optional: RTIC for interrupt-driven programming
+rtic = { version = "2.2", optional = true }
+
+[dev-dependencies]
+# Testing framework for kernel unit tests
+qemu-exit = "3.0"
+
+[features]
+default = ["std-panic"]
+
+# Panic handler configurations
+std-panic = []      # Use standard panic handler
+halt-panic = []     # Halt on panic (for production)
+reset-panic = []    # Reset on panic
+
+# Target platform features
+qemu = []          # QEMU emulation support
+raspberry-pi = []  # Raspberry Pi support
+stm32 = []         # STM32 support
+
+# Debug features
+debug-uart = []    # UART debug output
+debug-led = []     # LED debug indicators
+debug-timer = []   # Timer debug information
+
+# Real-time features
+rtic-support = ["rtic"]
+high-precision-timer = []
+
+# Safety features
+stack-overflow-protection = []
+memory-protection = []
+
+# Build configuration
+[build-dependencies]
+cc = "1.2.29"
+
+# Target-specific configurations
+[target.'cfg(target_arch = "arm")'.dependencies]
+cortex-m = { workspace = true }
+cortex-m-rt = { workspace = true }
+
+[target.'cfg(target_arch = "x86_64")'.dependencies]
+# x86_64 specific dependencies for development/testing
+
+# Memory layout configuration
+[package.metadata.memory-layout]
+# Flash memory layout (adjust based on target hardware)
+flash-origin = "0x08000000"
+flash-size = "512K"
+ram-origin = "0x20000000" 
+ram-size = "128K"
+
+# Stack configuration
+main-stack-size = "8K"
+process-stack-size = "4K"
+interrupt-stack-size = "2K"
