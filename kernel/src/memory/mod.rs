@@ -231,5 +231,20 @@ impl VirtualAddress {
     }
 }
 
+/// Memory region descriptor
+#[derive(Debug, Clone, Copy)]
+pub struct MemoryRegion {
+    /// Start virtual address
+    pub start: VirtualAddress,
+    /// Size in bytes
+    pub size: usize,
+    /// Memory type
+    pub memory_type: MemoryType,
+    /// Protection flags
+    pub flags: MemoryFlags,
+    /// Physical address (if mapped)
+    pub physical: Option<PhysicalAddress>,
+}
+
 /// Constants for memory management
 pub const PAGE_SIZE: usize = 4096;
