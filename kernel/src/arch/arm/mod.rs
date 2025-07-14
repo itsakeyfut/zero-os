@@ -191,3 +191,40 @@ pub mod power {
         true
     }
 }
+
+/// Atomic operations
+pub mod atomic {
+    use core::arch::asm;
+
+    /// Compare and swap operation using LDREX/STREX
+    /// 
+    /// # Safety
+    /// 
+    /// Caller must ensure address is valid and properly aligned.
+    pub unsafe fn compare_and_swap(addr: *mut u32, expected: u32, new: u32) -> u32 {
+        let mut result: u32;
+        let mut success: u32;
+
+        // SAFETY: Caller guarantees valid address
+        unsafe {
+            asm!(
+                "1:",
+                "ldrex {result}, [{}]",         // Load exclusive
+                "cmp {result}, {expected}",     // Compare with expected
+                "bne 2f",                       // Branch if not equal
+                "strex {success}, {new}, [{}]", // Store exclusive
+                "cmp {success}, #0",            // Check if store succeeded
+                "bne 1b",                       // Retry if failed
+                "2:",
+                result = out(reg) result,
+                success = out(reg) success,
+                in(reg) addr,
+                expected = in(reg) expected,
+                new = in(reg) new,
+                options(nostack)
+            );
+        }
+
+        result
+    }
+}
