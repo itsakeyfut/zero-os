@@ -262,6 +262,11 @@ impl MemoryRegion {
             physical: None,
         }
     }
+
+    /// Get the end address of the region
+    pub fn end(&self) -> VirtualAddress {
+        VirtualAddress::new(self.start.as_usize() + self.size)
+    }
 }
 
 /// Constants for memory management
