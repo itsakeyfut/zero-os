@@ -46,3 +46,17 @@ pub enum InterruptType {
     /// FIQ interrupt (fast interrupt)
     Fiq,
 }
+
+/// CPU execution context for process switching
+#[derive(Debug, Clone, Copy)]
+#[repr(C)]
+pub struct CpuContext {
+    /// General purpose registers
+    pub registers: [u32; 16],
+    /// Program status register
+    pub cpsr: u32,
+    /// Stack pointer
+    pub stack_pointer: u32,
+    /// Program counter
+    pub program_counter: u32,
+}
