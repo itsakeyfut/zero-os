@@ -162,3 +162,14 @@ impl MemoryFlags {
         }
     }
 }
+
+/// Physical address wrapper
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub struct PhysicalAddress(pub usize);
+
+impl PhysicalAddress {
+    /// Create a new physical address
+    pub const fn new(addr: usize) -> Self {
+        Self(addr)
+    }
+}
