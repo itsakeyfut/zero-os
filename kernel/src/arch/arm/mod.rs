@@ -54,4 +54,20 @@ impl DebugWriterImpl {
             uart_base: 0x101F1000,
         })
     }
+
+    /// Initialize UART for debug output
+    fn init_uart(&self) {
+        // SAFETY: I'm accessing UART registers for debug output
+        unsafe {
+            // Basic UART initialization for QEMU versatilepb
+            // Set baud rate and enable UART
+            let uart_base = self.uart_base as *mut u32;
+
+            // UART Line Control Register - 8 bits, no parity, 1 stop bit
+            uart_base.add(0x2C / 4).write_volatile(0x70);
+
+            // UART Control Register - enable UART, TX, RX
+            uart_base.add(0x30 / 4).write_volatile(0x301);
+        }
+    }
 }
