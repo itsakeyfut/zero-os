@@ -103,3 +103,20 @@ pub struct MemoryRegion {
     /// Whether this region is bufferable
     pub bufferable: bool,
 }
+
+/// Architecture-specific error types
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ArchError {
+    /// Invalid memory address
+    InvalidAddress,
+    /// Memory alignment error
+    AlignmentError,
+    /// Unsupported operation
+    UnsupportedOperation,
+    /// Hardware fault
+    HardwareFault,
+    /// Invalid register access
+    InvalidRegister,
+    /// Privilege violation
+    PrivilegeViolation,
+}
