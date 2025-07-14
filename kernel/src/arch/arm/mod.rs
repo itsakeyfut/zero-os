@@ -89,3 +89,16 @@ impl DebugWriterImpl {
         }
     }
 }
+
+impl fmt::Write for DebugWriterImpl {
+    fn write_str(&mut self, s: &str) -> std::fmt::Result {
+        for byte in s.bytes() {
+            self.write_char(byte);
+            // Convert LF to CRLF for proper terminal output
+            if byte == b'\n' {
+                self.write_char(b'\r');
+            }
+        }
+        Ok(())
+    }
+}
