@@ -88,3 +88,18 @@ pub enum MemoryProtection {
     /// Full access (read-write-execute)
     Full,
 }
+
+/// Memory region descriptor
+#[derive(Debug, Clone, Copy)]
+pub struct MemoryRegion {
+    /// Start address of the region
+    pub start: usize,
+    /// Size of the region in bytes
+    pub size: usize,
+    /// Protection attributes
+    pub protection: MemoryProtection,
+    /// Whether this region is cacheable
+    pub cacheable: bool,
+    /// Whether this region is bufferable
+    pub bufferable: bool,
+}
