@@ -194,5 +194,16 @@ impl PhysicalAddress {
     }
 }
 
+/// Virtual address wrapper
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub struct VirtualAddress(pub usize);
+
+impl VirtualAddress {
+    /// Create a new virtual address
+    pub const fn new(addr: usize) -> Self {
+        Self(addr)
+    }
+}
+
 /// Constants for memory management
 pub const PAGE_SIZE: usize = 4096;
