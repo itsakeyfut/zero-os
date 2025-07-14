@@ -26,7 +26,7 @@ use core::fmt;
 #[cfg(target_arch = "arm")]
 pub mod arm;
 
-#[cfg(any(target_arch = "argm", target_arch = "aarch64"))]
+#[cfg(any(target_arch = "arm", target_arch = "aarch64"))]
 pub use arm as target;
 
 
@@ -42,7 +42,7 @@ pub enum InterruptType {
     /// System call interrupt
     SystemCall,
     /// Memory management fault
-    MemroyFault,
+    MemoryFault,
     /// Undefined instruction
     UndefinedInstruction,
     /// Data abort
