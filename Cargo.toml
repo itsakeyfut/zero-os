@@ -25,8 +25,8 @@ cortex-m-rt = "0.7.5"
 embedded-hal = "1.0.0"
 
 # Serialization (no_std compatible
-postcard = { version = "1.1.2", default-features = false, features = ["use-std"] }
-serde = { version = "1.0.219", default-features = false, features = ["derive"] }
+postcard = { version = "1.1.2", default-features = false, features = ["alloc", "heapless"] }
+serde = { version = "1.0.219", default-features = false, features = ["derive", "alloc"] }
 heapless = { version = "0.8.0", features = ["serde"] }
 
 # Collections and utilities for no_std
