@@ -187,6 +187,11 @@ impl PhysicalAddress {
     pub fn align_down(self) -> Self {
         Self(self.0 & !(PAGE_SIZE - 1))
     }
+
+    /// Align address up to page boundary
+    pub fn align_up(self) -> Self {
+        Self((self.0 + PAGE_SIZE - 1) & !(PAGE_SIZE - 1))
+    }
 }
 
 /// Constants for memory management
