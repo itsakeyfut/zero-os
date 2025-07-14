@@ -293,3 +293,30 @@ unsafe fn enable_branch_prediction() {
         barriers::isb();
     }
 }
+
+/// Platform identification
+pub fn platform_name() -> &'static str {
+    "ARM Cortex-A"
+}
+
+/// CPU identification
+pub fn cpu_name() -> &'static str {
+    // Could be enhanced to read actual CPU ID from CP15 registers
+    "ARM Cortex-A (Generic)"
+}
+
+/// Get page size (4KB for ARM)
+pub fn page_size() -> usize {
+    4096
+}
+
+/// Get cache line size (typically 32 bytes for ARM Cortex-A)
+pub fn cache_line_size() -> usize {
+    32
+}
+
+/// Validate that we're running on expected ARM target
+pub fn validate_target() -> bool {
+    // Simple validation - could be enhanced with CPUID checks
+    cfg!(target_arch = "arm")
+}
