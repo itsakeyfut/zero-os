@@ -246,5 +246,23 @@ pub struct MemoryRegion {
     pub physical: Option<PhysicalAddress>,
 }
 
+impl MemoryRegion {
+    /// Create a new memory region
+    pub const fn new(
+        start: VirtualAddress,
+        size: usize,
+        memory_type: MemoryType,
+        flags: MemoryFlags,
+    ) -> Self {
+        Self {
+            start,
+            size,
+            memory_type,
+            flags,
+            physical: None,
+        }
+    }
+}
+
 /// Constants for memory management
 pub const PAGE_SIZE: usize = 4096;
