@@ -100,3 +100,17 @@ pub struct MemoryFlags {
     /// Bufferable
     pub bufferable: bool,
 }
+
+impl MemoryFlags {
+    /// Create flags for kernel code
+    pub const fn kernel_code() -> Self {
+        Self {
+            read: true,
+            write: false,
+            execute: true,
+            user: false,
+            cacheable: true,
+            bufferable: true,
+        }
+    }
+}
