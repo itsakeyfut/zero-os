@@ -30,6 +30,7 @@
 #![warn(clippy::unwrap_used)]
 
 pub mod arch;
+pub mod memory;
 
 /// Core kernel error types
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
