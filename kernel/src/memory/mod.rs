@@ -272,6 +272,11 @@ impl MemoryRegion {
     pub fn contains(&self, addr: VirtualAddress) -> bool {
         addr >= self.start && addr < self.end()
     }
+
+    /// Check if this region overlaps with another
+    pub fn overlaps(&self, other: &MemoryRegion) -> bool {
+        self.start < other.end() && other.start < self.end()
+    }
 }
 
 /// Constants for memory management
