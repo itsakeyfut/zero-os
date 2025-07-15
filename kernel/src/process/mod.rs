@@ -192,3 +192,20 @@ pub struct Process {
     /// Total CPU time used
     pub cpu_time: u64,
 }
+
+/// Process statistics
+#[derive(Debug, Default, Clone, Copy)]
+pub struct ProcessStats {
+    /// Number of times scheduled
+    pub schedule_count: u64,
+    /// Number of state changes
+    pub state_changes: u64,
+    /// Number of page faults
+    pub page_faults: u64,
+    /// Number of system calls
+    pub syscall_count: u64,
+    /// Number of IPC messages sent
+    pub ipc_messages_sent: u64,
+    /// Number of IPC messages received
+    pub ipc_messages_received: u64,
+}
