@@ -157,3 +157,38 @@ impl Default for ProcessConfig {
         }
     }
 }
+
+/// Process control block (PCB)
+#[derive(Debug)]
+pub struct Process {
+    /// Process identifier
+    pub id: ProcessId,
+    /// Process name
+    pub name: heapless::String<32>,
+    /// Current state
+    pub state: ProcessState,
+    /// Process type
+    pub process_type: ProcessType,
+    /// Priority level
+    pub priority: Priority,
+    /// CPU context for context switching
+    pub context: CpuContext,
+    /// Memory regions owned by this process
+    pub memory_regions: Vec<MemoryRegion, MAX_MEMORY_REGIONS>,
+    /// Capabilities granted to this process
+    pub capabilities: Vec<Capability, MAX_CAPABILITIES>,
+    /// IPC channels
+    pub ipc_channels: Vec<IpcChannelId, 8>,
+    /// Parent process ID (if any)
+    pub parent: Option<ProcessId>,
+    /// Child processes
+    pub children: Vec<ProcessId, 8>,
+    /// Exit code (if terminated)
+    pub exit_code: Option<i32>,
+    /// Resource usage statistics
+    pub stats: ProcessStats,
+    /// Last scheduled time
+    pub last_scheduled: u64,
+    /// Total CPU time used
+    pub cpu_time: u64,
+}
