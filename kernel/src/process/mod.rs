@@ -114,3 +114,16 @@ impl Default for Priority {
         Priority::Normal
     }
 }
+
+/// Process type classification
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ProcessType {
+    /// Kernel process (runs in kernel space)
+    Kernel,
+    /// System service (trusted user process)
+    System,
+    /// User application (untrusted user process)
+    User,
+    /// Real-time process (time-critical)
+    RealTime,
+}
