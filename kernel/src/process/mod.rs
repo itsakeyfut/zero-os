@@ -144,3 +144,16 @@ pub struct ProcessConfig {
     /// Initial capabilities
     pub capabilities: Vec<Capability, MAX_CAPABILITIES>,
 }
+
+impl Default for ProcessConfig {
+    fn default() -> Self {
+        Self {
+            name: heapless::String::new(),
+            process_type: ProcessType::User,
+            priority: Priority::Normal,
+            stack_size: DEFAULT_USER_STACK_SIZE,
+            heap_size: DEFAULT_USER_HEAP_SIZE,
+            capabilities: Vec::new(),
+        }
+    }
+}
