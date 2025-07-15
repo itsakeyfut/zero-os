@@ -74,3 +74,20 @@ impl ProcessId {
     /// Special process ID for the init process
     pub const INIT: ProcessId = ProcessId(1);
 }
+
+/// Process states
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ProcessState {
+    /// Process has been created but not yet scheduled
+    Created,
+    /// Process is ready to run
+    Ready,
+    /// Process is currently running
+    Running,
+    /// Process is blocked waiting for something
+    Blocked,
+    /// Process has terminated
+    Terminated,
+    /// Process encountered a fault
+    Faulted,
+}
