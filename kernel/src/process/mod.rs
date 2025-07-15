@@ -91,3 +91,20 @@ pub enum ProcessState {
     /// Process encountered a fault
     Faulted,
 }
+
+/// Process priority levels
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum Priority {
+    /// Real-time critical priority
+    RealTimeCritical = 0,
+    /// Real-time high priority
+    RealTimeHigh = 1,
+    /// Real-time normal priority
+    RealTimeNormal = 2,
+    /// Normal priority
+    Normal = 3,
+    /// Low priority
+    Low = 4,
+    /// Background priority
+    Background = 5,
+}
