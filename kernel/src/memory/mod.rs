@@ -309,3 +309,23 @@ pub mod layout {
     /// Kernel code end (4GB)
     pub const KERNEL_END: VirtualAddress = VirtualAddress::new(0xFFFF_FFFF);
 }
+
+/// Main memory manager
+pub struct MemoryManager {
+    /// Physical memory allocator
+    physical_allocator: FrameAllocator,
+    /// Virtual memory manager
+    virtual_manager: VirtualMemoryManager,
+    /// Kernel heap allocator
+    heap_allocator: LockedHeap,
+    /// Grant allocator
+    grant_allocator: GrantAllocator,
+    /// Memory protection manager
+    protection_manager: ProtectionManager,
+    /// Total physical memory available
+    total_memory: usize,
+    /// Currently allocated memory
+    allocated_memory: usize,
+    /// Initialization state
+    initialized: bool,
+}
