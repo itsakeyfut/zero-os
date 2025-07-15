@@ -52,3 +52,7 @@ pub const DEFAULT_USER_STACK_SIZE: usize = 64 * 1024;
 
 /// Default user heap size (1MB)
 pub const DEFAULT_USER_HEAP_SIZE: usize = 1024 * 1024;
+
+/// Process identifier
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct ProcessId(u32);
