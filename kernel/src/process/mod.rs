@@ -67,4 +67,10 @@ impl ProcessId {
     pub const fn as_u32(self) -> u32 {
         self.0
     }
+
+    /// Special process ID for the kernel
+    pub const KERNEL: ProcessId = ProcessId(0);
+
+    /// Special process ID for the init process
+    pub const INIT: ProcessId = ProcessId(1);
 }
