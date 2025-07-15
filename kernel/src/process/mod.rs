@@ -127,3 +127,20 @@ pub enum ProcessType {
     /// Real-time process (time-critical)
     RealTime,
 }
+
+/// Process creation parameters
+#[derive(Debug, Clone)]
+pub struct ProcessConfig {
+    /// Process name
+    pub name: heapless::String<32>,
+    /// Process type
+    pub process_type: ProcessType,
+    /// Initial priority
+    pub priority: Priority,
+    /// Stack size
+    pub stack_size: usize,
+    /// Heap size
+    pub heap_size: usize,
+    /// Initial capabilities
+    pub capabilities: Vec<Capability, MAX_CAPABILITIES>,
+}
