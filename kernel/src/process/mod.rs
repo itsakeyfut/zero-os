@@ -209,3 +209,33 @@ pub struct ProcessStats {
     /// Number of IPC messages received
     pub ipc_messages_received: u64,
 }
+
+/// Process management errors
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ProcessError {
+    /// Process not found
+    NotFound,
+    /// Process already exists
+    AlreadyExists,
+    /// Invalid process state
+    InvalidState,
+    /// Permission denied
+    PermissionDenied,
+    /// Too many processes
+    TooManyProcesses,
+    /// Too many memory regions
+    TooManyRegions,
+    /// Memory regions overlap
+    MemoryOverlap,
+    /// Invalid capability
+    InvalidCapability,
+    /// Resource limit exceeded
+    ResourceLimitExceeded,
+    /// Invalid binary format
+    InvalidBinary,
+    /// Memory allocation failed
+    OutOfMemory,
+}
+
+/// Result type for process operations
+pub type ProcessResult<T> = Result<T, ProcessError>;
