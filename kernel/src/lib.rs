@@ -31,6 +31,7 @@
 
 pub mod arch;
 pub mod memory;
+pub mod process;
 
 /// Core kernel error types
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

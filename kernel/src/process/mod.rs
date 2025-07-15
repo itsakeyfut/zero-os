@@ -1,0 +1,54 @@
+//! Process Management Subsystem
+//! 
+//! This module provides comprehensive process management for the Zero OS.
+//! It implements a capability-based process system with the following features:
+//! 
+//! - Process creation and lifecycle management
+//! - Memory isolation through virtual address spaces
+//! - Inter-process communication (IPC) channels.
+//! - Real-time scheduling support
+//! - Security through capability-based access control
+//! - Resource management and limits
+//! 
+//! # Design Principles
+//! 
+//! - Process isolation for security and reliability
+//! - Capability-based security model (inspired by Tock OS)
+//! - Real-time deterministic process switching
+//! - Minimal kernel overhead
+//! - Support for both kernel and user processes
+//! 
+//! # Process States
+//! 
+//! ```text
+//! Created -> Ready -> Running -> Blocked -> Ready
+//!     |         |        |         |
+//!     |         |        v         |
+//!     |         |    Terminated <--+
+//!     |         |        ^
+//!     |         +--------+
+//!     +------------------+
+//! ```
+
+#![deny(missing_docs)]
+#![warn(clippy::undocumented_unsafe_blocks)]
+
+use core::sync::atomic::{AtomicU32, Ordering};
+use heapless::{Vec, FnvIndexMap};
+use crate::memory::{MemoryManager, MemoryRegion, VirtualAddress, MemoryType, MemoryFlags};
+use crate::arch::{CpuContext, ArchResult};
+
+/// Maximum number of processes in the system
+pub const MAX_PROCESSES: usize = 64;
+
+/// Maximum number of memory regions per process
+pub const MAX_MEMORY_REGIONS: usize = 16;
+
+/// Maximum number of capabilities per process
+pub const MAX_CAPABILITIES: usize = 32;
+
+/// Default user stack size (64KB)
+pub const DEFAULT_USER_STACK_SIZE: usize = 64 * 1024;
+
+/// Default user heap size (1MB)
+pub const DEFAULT_USER_HEAP_SIZE: usize = 1024 * 1024;
