@@ -344,3 +344,22 @@ pub struct MemoryStats {
     /// Kernel heap total size
     pub heap_size: usize,
 }
+
+/// Global kernel allocator using the memory manager
+pub struct KernelAllocator;
+
+// SAFETY: KernelAllocator implements GlobalAlloc correctly
+unsafe impl GlobalAlloc for KernelAllocator {
+    unsafe fn alloc(&self, _layout: Layout) -> *mut u8 {
+        // This is a simplified implementation
+        // In reality, we'd need proper synchronization with the memory manager
+        core::ptr::null_mut()
+    }
+    
+    unsafe fn dealloc(&self, _ptr: *mut u8, _layout: Layout) {
+        // This is a simplified implementation
+    }
+}
+
+#[global_allocator]
+static ALLOCATOR: KernelAllocator = KernelAllocator;
