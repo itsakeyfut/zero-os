@@ -239,3 +239,21 @@ pub enum ProcessError {
 
 /// Result type for process operations
 pub type ProcessResult<T> = Result<T, ProcessError>;
+
+/// Process manager
+pub struct ProcessManager {
+    /// Table of all processes
+    processes: FnvIndexMap<ProcessId, Process, MAX_PROCESSES>,
+    /// Next available process ID
+    next_pid: AtomicU32,
+    /// Currently running process
+    current_process: Option<ProcessId>,
+    /// Process scheduler
+    scheduler: ProcessScheduler,
+    /// Process loader
+    loader: ProcessLoader,
+    /// IPC manager
+    ipc_manager: IpcManager,
+    /// Initialization state
+    initialized: bool,
+}
