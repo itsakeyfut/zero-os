@@ -108,3 +108,9 @@ pub enum Priority {
     /// Background priority
     Background = 5,
 }
+
+impl Default for Priority {
+    fn default() -> Self {
+        Priority::Normal
+    }
+}
