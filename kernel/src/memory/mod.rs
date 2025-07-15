@@ -329,3 +329,18 @@ pub struct MemoryManager {
     /// Initialization state
     initialized: bool,
 }
+
+/// Memory usage statistics
+#[derive(Debug, Clone, Copy)]
+pub struct MemoryStats {
+    /// Total physical memory
+    pub total_memory: usize,
+    /// Currently allocated memory
+    pub allocated_memory: usize,
+    /// Free memory
+    pub free_memory: usize,
+    /// Kernel heap usage
+    pub heap_usage: usize,
+    /// Kernel heap total size
+    pub heap_size: usize,
+}
