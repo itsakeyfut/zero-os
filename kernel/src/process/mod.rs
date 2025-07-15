@@ -56,3 +56,10 @@ pub const DEFAULT_USER_HEAP_SIZE: usize = 1024 * 1024;
 /// Process identifier
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct ProcessId(u32);
+
+impl ProcessId {
+    /// Create a new process ID
+    pub const fn new(id: u32) -> Self {
+        Self(id)
+    }
+}
