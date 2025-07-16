@@ -172,3 +172,22 @@ pub struct GpiConfig {
     /// Output speed (0=low, 1=medium, 2=high, 3=very-high)
     pub speed: u8,
 }
+
+/// Platform error types
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum PlatformError {
+    /// Hardware not found or not responding
+    HardwareNotFound,
+    /// Unsupported operation on this platform
+    UnsupportedOperation,
+    /// Hardware configuration error
+    ConfigurationError,
+    /// Timeout waiting for hardware
+    Timeout,
+    /// Hardware fault detected
+    HardwareFault,
+    /// Invalid parameters
+    InvalidParameter,
+    /// Resource busy
+    ResourceBusy,
+}
