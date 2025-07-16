@@ -468,4 +468,9 @@ pub mod memory_layout {
     pub fn ram_start() -> PhysicalAddress {
         super::target_platform::memory_layout::RAM_START
     }
+
+    /// Get Ram size
+    pub fn ram_size() -> usize {
+        super::target_platform::memory_layout::RAM_SIZE
+    }
 }
