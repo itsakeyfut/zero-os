@@ -264,6 +264,17 @@ impl SystemCallArgs {
     }
 }
 
+/// System call structure
+#[derive(Debug, Clone, Copy)]
+pub struct SystemCall {
+    /// System call number
+    pub number: SystemCallNumber,
+    /// Arguments
+    pub args: SystemCallArgs,
+    /// Calling process ID
+    pub caller: ProcessId,
+}
+
 /// System call errors
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u32)]
