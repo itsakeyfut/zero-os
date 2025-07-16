@@ -350,4 +350,8 @@ impl PlatformInterface for Platform {
     fn uart_write(&mut self, data: &[u8]) -> PlatformResult<usize> {
         self.inner.uart_write(data)
     }
+
+    fn uart_read(&mut self, buffer: &mut [u8]) -> PlatformResult<usize> {
+        self.inner.uart_read(buffer)
+    }
 }
