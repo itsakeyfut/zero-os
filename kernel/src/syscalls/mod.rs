@@ -74,7 +74,7 @@ pub enum SystemCallNumber {
     /// Unmap memory region
     Munmap = 21,
     /// Change memory protection
-    Mrpotect = 22,
+    Mprotect = 22,
     /// Change data segment size
     Brk = 23,
     /// Allocate memory
@@ -92,6 +92,7 @@ pub enum SystemCallNumber {
     /// Close file descriptor
     Close = 43,
     /// Control I/O device
+    Ioctl = 44,
 
     // IPC operations (60-79)
     /// Send PIC message
@@ -153,4 +154,128 @@ pub enum SystemCallNumber {
     GetProcessInfo = 201,
     /// Get memory information
     GetMemoryInfo = 202,
+}
+
+impl TryFrom<u32> for SystemCallNumber {
+    type Error = SystemCallError;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        match value {
+            0 => Ok(SystemCallNumber::Exit),
+            1 => Ok(SystemCallNumber::Fork),
+            2 => Ok(SystemCallNumber::Exec),
+            3 => Ok(SystemCallNumber::Wait),
+            4 => Ok(SystemCallNumber::GetPid),
+            5 => Ok(SystemCallNumber::GetPPid),
+            6 => Ok(SystemCallNumber::Kill),
+            7 => Ok(SystemCallNumber::SetPriority),
+            8 => Ok(SystemCallNumber::GetPriority),
+
+            20 => Ok(SystemCallNumber::Mmap),
+            21 => Ok(SystemCallNumber::Munmap),
+            22 => Ok(SystemCallNumber::Mprotect),
+            23 => Ok(SystemCallNumber::Brk),
+            24 => Ok(SystemCallNumber::Malloc),
+            25 => Ok(SystemCallNumber::Free),
+
+            40 => Ok(SystemCallNumber::Read),
+            41 => Ok(SystemCallNumber::Write),
+            42 => Ok(SystemCallNumber::Open),
+            43 => Ok(SystemCallNumber::Close),
+            44 => Ok(SystemCallNumber::Ioctl),
+
+            60 => Ok(SystemCallNumber::Send),
+            61 => Ok(SystemCallNumber::Receive),
+            62 => Ok(SystemCallNumber::CreateChannel),
+            63 => Ok(SystemCallNumber::CloseChannel),
+            64 => Ok(SystemCallNumber::Connect),
+            65 => Ok(SystemCallNumber::Accept),
+
+            80 => Ok(SystemCallNumber::Sleep),
+            81 => Ok(SystemCallNumber::GetTime),
+            82 => Ok(SystemCallNumber::TimerCreate),
+            83 => Ok(SystemCallNumber::TimerSet),
+            84 => Ok(SystemCallNumber::TimerDelete),
+
+            100 => Ok(SystemCallNumber::AnalyzePosition),
+            101 => Ok(SystemCallNumber::PredictMove),
+            102 => Ok(SystemCallNumber::EvaluateThreat),
+            103 => Ok(SystemCallNumber::GenerateMoves),
+            104 => Ok(SystemCallNumber::CalculateScore),
+
+            120 => Ok(SystemCallNumber::ReadSensor),
+            121 => Ok(SystemCallNumber::ConfigureSensor),
+            122 => Ok(SystemCallNumber::CalibrateSensor),
+
+            140 => Ok(SystemCallNumber::ControlMotor),
+            141 => Ok(SystemCallNumber::SetServo),
+            142 => Ok(SystemCallNumber::EmergencyStop),
+
+            200 => Ok(SystemCallNumber::GetSystemInfo),
+            201 => Ok(SystemCallNumber::GetProcessInfo),
+            202 => Ok(SystemCallNumber::GetMemoryInfo),
+
+            _ => Err(SystemCallError::InvalidSystemCall),
+        }
+    }
+}
+
+/// System call errors
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u32)]
+pub enum SystemCallError {
+    /// Invalid system call number
+    InvalidSystemCall = 1,
+    /// Invalid argument
+    InvalidArgument = 2,
+    /// Permission denied
+    PermissionDenied = 3,
+    /// Process not found
+    ProcessNotFound = 4,
+    /// Out of memory
+    OutOfMemory = 5,
+    /// Resource busy
+    ResourceBusy = 6,
+    /// Resource not found
+    NotFound = 7,
+    /// Operation not supported
+    NotSupported = 8,
+    /// Invalid state
+    InvalidState = 9,
+    /// Timeout occurred
+    Timeout = 10,
+    /// Operation interrupted
+    Interrupted = 11,
+    /// Invalid file descriptor
+    InvalidDescriptor = 12,
+    /// End of file
+    EndOfFile = 13,
+    /// I/O error
+    IoError = 14,
+    /// Network error
+    NetworkErorr = 15,
+    /// Invalid address
+    InvalidAddress = 16,
+    /// Operation would block
+    WouldBlock = 17,
+    /// Resource limit exceeded
+    ResourceLimitExceeded = 18,
+    /// Invalid data format
+    InvalidFormat = 19,
+    /// Hardware error
+    HardwareError = 20,
+}
+
+impl From<ProcessError> for SystemCallError {
+    fn from(error: ProcessError) -> Self {
+        match error {
+            ProcessError::NotFound => SystemCallError::ProcessNotFound,
+            ProcessError::PermissionDenied => SystemCallError::PermissionDenied,
+            ProcessError::OutOfMemory => SystemCallError::OutOfMemory,
+            ProcessError::InvalidState => SystemCallError::InvalidState,
+            ProcessError::TooManyProcesses => SystemCallError::ResourceLimitExceeded,
+            ProcessError::ResourceLimitExceeded  => SystemCallError::ResourceLimitExceeded,
+            _ => SystemCallError::InvalidArgument,
+        }
+    }
 }
