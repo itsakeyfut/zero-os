@@ -378,4 +378,8 @@ impl PlatformInterface for Platform {
     fn configure_gpio(&mut self, config: GpioConfig) -> PlatformResult<()> {
         self.inner.configure_gpio(config)
     }
+
+    fn gpio_set(&mut self, pin: u32, state: bool) -> PlatformResult<()> {
+        self.inner.gpio_set(pin, state)
+    }
 }
