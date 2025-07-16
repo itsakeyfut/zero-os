@@ -160,7 +160,7 @@ impl Default for UartConfig {
 
 /// GPIO pin configuration
 #[derive(Debug, Clone, Copy)]
-pub struct GpiConfig {
+pub struct GpioConfig {
     /// Pin number
     pub pin: u32,
     /// Pin mode (0=input, 1=output, 2=alternate)
@@ -194,3 +194,84 @@ pub enum PlatformError {
 
 /// Result type for platform operations
 pub type PlatformResult<T> = Result<T, PlatformError>;
+
+/// Platform abstraction trait
+pub trait PlatformInterface {
+    /// Initialize platform early (before memory management)
+    fn early_init(&mut self) -> PlatformResult<()>;
+
+    /// Initialize platform late (after memory management)
+    fn late_init(&mut self) -> PlatformResult<()>;
+
+    /// get platform type
+    fn platform_type(&self) -> PlatformType;
+    
+    /// Get hardware capabilities
+    fn hardware_capabilities(&self) -> HardwareCapabilities;
+
+    /// Initialize UART
+    fn init_uart(&mut self) -> PlatformResult<()>;
+
+    /// Configure UART
+    fn configure_uart(&mut self, config: UartConfig) -> PlatformResult<()>;
+
+    /// Write data to UART
+    fn uart_write(&mut self, data: &[u8]) -> PlatformResult<usize>;
+    
+    /// Read data from UART
+    fn uart_read(&mut self, buffer: &mut [u8]) -> PlatformResult<usize>;
+
+    /// Initialize timer
+    fn init_timer(&mut self) -> PlatformResult<()>;
+
+    /// Configure timer
+    fn configure_timer(&mut self, config: TimerConfig) -> PlatformResult<()>;
+
+    /// Get current timer value
+    fn timer_value(&self) -> u64;
+
+    /// Set timer interrupt
+    fn set_timer_interrupt(&mut self, us: u64) -> PlatformResult<()>;
+
+    /// Initialize GPIO
+    fn init_gpio(&mut self) -> PlatformResult<()>;
+    
+    /// Configure GPIO pin
+    fn configure_gpio(&mut self, config: GpioConfig) -> PlatformResult<()>;
+
+    /// Set GPIO pin state
+    fn gpio_set(&mut self, pin: u32, state: bool) -> PlatformResult<()>;
+
+    /// Get GPIO pin state
+    fn gpio_get(&self, pin: u32) -> PlatformResult<bool>;
+
+    /// Get pending interrupt
+    fn get_pending_interrupt(&mut self) -> Option<InterruptType>;
+
+    /// Handle UART interrupt
+    fn handle_uart_interrupt(&mut self);
+
+    /// Handle GPIO interrupt
+    fn handle_gpio_interrupt(&mut self);
+
+    /// Enter low power mode
+    fn enter_low_power_mode(&mut self);
+
+    /// Check if should wake up from low power
+    fn should_wake_up(&self) -> bool;
+
+    /// Load init binary
+    fn load_init_binary(&self) -> PlatformResult<&'static [u8]>;
+
+    /// Flush I/O operations
+    fn flush_io(&mut self);
+
+    /// Shutdown platform
+    fn shutdown(&mut self);
+
+    /// Emergency shutdown
+    fn emergency_shutdown(&mut self);
+
+    /// System halt
+    fn halt(&mut self) -> !;
+}
