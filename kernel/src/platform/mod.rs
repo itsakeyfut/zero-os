@@ -502,3 +502,11 @@ pub mod interrupts {
         super::target_platform::interrupts::NUM_INTERRUPTS
     }
 }
+
+/// Platform-specific register addresses
+pub mod registers {
+    /// Get UART base address
+    pub fn uart_base() -> usize {
+        super::target_platform::registers::UART_BASE
+    }
+}
