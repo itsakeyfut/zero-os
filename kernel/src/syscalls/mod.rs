@@ -286,6 +286,15 @@ impl SystemCall {
     }
 }
 
+/// System call result
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct SystemCallResult {
+    /// Return value (0 for success, error code for failure)
+    pub value: isize,
+    /// Optional secondary return value
+    pub value2: usize,
+}
+
 /// System call errors
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u32)]
