@@ -60,3 +60,18 @@ pub use stm32 as target_platform;
 
 #[cfg(not(any(feature = "qemu", feature = "raspberry-pi", feature = "stm32")))]
 pub use generic_arm as target_platform;
+
+/// Platform identification
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum PlatformType {
+    /// QEMU VersatilePB emulation
+    QemuVersatilePB,
+    /// Respberry Pi (any model)
+    RaspberryPi,
+    /// STM32 microcontroller
+    STM32,
+    /// Generic ARM platform
+    GenericArm,
+    /// Unknown platform
+    Unknown,
+}
