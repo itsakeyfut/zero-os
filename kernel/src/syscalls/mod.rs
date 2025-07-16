@@ -311,6 +311,14 @@ impl SystemCallResult {
             value2,
         }
     }
+
+    /// Create an error result
+    pub const fn err(error: SystemCallError) -> Self {
+        Self {
+            value: -(error as isize),
+            value2: 0,
+        }
+    }
 }
 
 /// System call errors
