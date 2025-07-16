@@ -298,4 +298,9 @@ impl Platform {
             initialized: false,
         }
     }
+
+    /// Detect platform at runtime
+    pub fn detect() -> PlatformType {
+        target_platform::detect_platform()
+    }
 }
