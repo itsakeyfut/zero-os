@@ -473,4 +473,9 @@ pub mod memory_layout {
     pub fn ram_size() -> usize {
         super::target_platform::memory_layout::RAM_SIZE
     }
+
+    /// Get device memory start
+    pub fn device_start() -> PhysicalAddress {
+        super::target_platform::memory_layout::DEVICE_SIZE
+    }
 }
