@@ -382,4 +382,8 @@ impl PlatformInterface for Platform {
     fn gpio_set(&mut self, pin: u32, state: bool) -> PlatformResult<()> {
         self.inner.gpio_set(pin, state)
     }
+
+    fn gpio_get(&self, pin: u32) -> PlatformResult<bool> {
+        self.inner.gpio_get(pin)
+    }
 }
