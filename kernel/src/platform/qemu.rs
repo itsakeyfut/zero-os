@@ -152,3 +152,17 @@ mod vic_regs {
     /// Interrupt enable clear register
     pub const VIC_INTENCLEAR: usize = 0x14;
 }
+
+/// QEMU VersatilePB platform implementation
+pub struct PlatformImpl {
+    /// UART configuration
+    uart_config: UartConfig,
+    /// Timer configuration
+    timer_config: TimerConfig,
+    /// Hardware capabilities
+    capabilities: HardwareCapabilities,
+    /// Current timer value
+    timer_value: u64,
+    /// Initialization state
+    initialized: bool,
+}
