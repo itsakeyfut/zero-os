@@ -354,4 +354,8 @@ impl PlatformInterface for Platform {
     fn uart_read(&mut self, buffer: &mut [u8]) -> PlatformResult<usize> {
         self.inner.uart_read(buffer)
     }
+
+    fn init_timer(&mut self) -> PlatformResult<()> {
+        self.inner.init_timer()
+    }
 }
