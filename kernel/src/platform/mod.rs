@@ -519,4 +519,9 @@ pub mod registers {
     pub fn gpio_base() -> usize {
         super::target_platform::registers::GPIO_BASE
     }
+
+    /// Get interrupt controller base address
+    pub fn interrupt_controller_base() -> usize {
+        super::target_platform::registers::INTERRUPT_CONTROLLER_BASE
+    }
 }
