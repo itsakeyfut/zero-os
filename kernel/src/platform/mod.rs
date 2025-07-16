@@ -406,4 +406,8 @@ impl PlatformInterface for Platform {
     fn should_wake_up(&self) -> bool {
         self.inner.should_wake_up()
     }
+
+    fn load_init_binary(&self) -> PlatformResult<&'static [u8]> {
+        self.inner.load_init_binary()
+    }
 }
