@@ -479,3 +479,11 @@ pub mod memory_layout {
         super::target_platform::memory_layout::DEVICE_SIZE
     }
 }
+
+/// Platform-specific interrupt information
+pub mod interrupts {
+    /// Get timer interrupt number
+    pub fn timer_irq() -> u32 {
+        super::target_platform::interrupts::TIMER_IRQ
+    }
+}
