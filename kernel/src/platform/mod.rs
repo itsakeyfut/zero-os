@@ -199,79 +199,79 @@ pub type PlatformResult<T> = Result<T, PlatformError>;
 pub trait PlatformInterface {
     /// Initialize platform early (before memory management)
     fn early_init(&mut self) -> PlatformResult<()>;
-
+    
     /// Initialize platform late (after memory management)
     fn late_init(&mut self) -> PlatformResult<()>;
-
-    /// get platform type
+    
+    /// Get platform type
     fn platform_type(&self) -> PlatformType;
     
     /// Get hardware capabilities
     fn hardware_capabilities(&self) -> HardwareCapabilities;
-
+    
     /// Initialize UART
     fn init_uart(&mut self) -> PlatformResult<()>;
-
+    
     /// Configure UART
     fn configure_uart(&mut self, config: UartConfig) -> PlatformResult<()>;
-
+    
     /// Write data to UART
     fn uart_write(&mut self, data: &[u8]) -> PlatformResult<usize>;
     
     /// Read data from UART
     fn uart_read(&mut self, buffer: &mut [u8]) -> PlatformResult<usize>;
-
+    
     /// Initialize timer
     fn init_timer(&mut self) -> PlatformResult<()>;
-
+    
     /// Configure timer
     fn configure_timer(&mut self, config: TimerConfig) -> PlatformResult<()>;
-
+    
     /// Get current timer value
     fn timer_value(&self) -> u64;
-
+    
     /// Set timer interrupt
     fn set_timer_interrupt(&mut self, us: u64) -> PlatformResult<()>;
-
+    
     /// Initialize GPIO
     fn init_gpio(&mut self) -> PlatformResult<()>;
     
     /// Configure GPIO pin
     fn configure_gpio(&mut self, config: GpioConfig) -> PlatformResult<()>;
-
+    
     /// Set GPIO pin state
     fn gpio_set(&mut self, pin: u32, state: bool) -> PlatformResult<()>;
-
+    
     /// Get GPIO pin state
     fn gpio_get(&self, pin: u32) -> PlatformResult<bool>;
-
+    
     /// Get pending interrupt
     fn get_pending_interrupt(&mut self) -> Option<InterruptType>;
-
+    
     /// Handle UART interrupt
     fn handle_uart_interrupt(&mut self);
-
+    
     /// Handle GPIO interrupt
     fn handle_gpio_interrupt(&mut self);
-
+    
     /// Enter low power mode
     fn enter_low_power_mode(&mut self);
-
+    
     /// Check if should wake up from low power
     fn should_wake_up(&self) -> bool;
-
+    
     /// Load init binary
     fn load_init_binary(&self) -> PlatformResult<&'static [u8]>;
-
+    
     /// Flush I/O operations
     fn flush_io(&mut self);
-
+    
     /// Shutdown platform
     fn shutdown(&mut self);
-
+    
     /// Emergency shutdown
     fn emergency_shutdown(&mut self);
-
+    
     /// System halt
     fn halt(&mut self) -> !;
 }
@@ -310,121 +310,125 @@ impl PlatformInterface for Platform {
         if self.initialized {
             return Ok(());
         }
-
+        
         // Platform-specific early initialization
         self.inner.early_init()?;
-
+        
         // Detect hardware capabilities
         self.capabilities = self.inner.hardware_capabilities();
-
+        
         crate::debug_print!("Platform early init: {:?}", self.platform_type);
-        crate::debug_print!("Hardware capabilities: CPU cores={}, RAM={}MB",
-                            self.capabilities.cpu_cores,
-                            self.capabilities.ram_size / (1024 * 1024));
-
+        crate::debug_print!("Hardware capabilities: CPU cores={}, RAM={}MB", 
+                           self.capabilities.cpu_cores,
+                           self.capabilities.ram_size / (1024 * 1024));
+        
         Ok(())
     }
-
+    
     fn late_init(&mut self) -> PlatformResult<()> {
         // Platform-specific late initialization
         self.inner.late_init()?;
-
+        
         self.initialized = true;
-
+        
         crate::debug_print!("Platform late init completed");
         Ok(())
     }
-
+    
     fn platform_type(&self) -> PlatformType {
         self.platform_type
     }
-
+    
+    fn hardware_capabilities(&self) -> HardwareCapabilities {
+        self.capabilities
+    }
+    
     fn init_uart(&mut self) -> PlatformResult<()> {
         self.inner.init_uart()
     }
-
+    
     fn configure_uart(&mut self, config: UartConfig) -> PlatformResult<()> {
         self.inner.configure_uart(config)
     }
-
+    
     fn uart_write(&mut self, data: &[u8]) -> PlatformResult<usize> {
         self.inner.uart_write(data)
     }
-
+    
     fn uart_read(&mut self, buffer: &mut [u8]) -> PlatformResult<usize> {
         self.inner.uart_read(buffer)
     }
-
+    
     fn init_timer(&mut self) -> PlatformResult<()> {
         self.inner.init_timer()
     }
-
+    
     fn configure_timer(&mut self, config: TimerConfig) -> PlatformResult<()> {
         self.inner.configure_timer(config)
     }
-
+    
     fn timer_value(&self) -> u64 {
         self.inner.timer_value()
     }
-
+    
     fn set_timer_interrupt(&mut self, us: u64) -> PlatformResult<()> {
         self.inner.set_timer_interrupt(us)
     }
-
+    
     fn init_gpio(&mut self) -> PlatformResult<()> {
         self.inner.init_gpio()
     }
-
+    
     fn configure_gpio(&mut self, config: GpioConfig) -> PlatformResult<()> {
         self.inner.configure_gpio(config)
     }
-
+    
     fn gpio_set(&mut self, pin: u32, state: bool) -> PlatformResult<()> {
         self.inner.gpio_set(pin, state)
     }
-
+    
     fn gpio_get(&self, pin: u32) -> PlatformResult<bool> {
         self.inner.gpio_get(pin)
     }
-
+    
     fn get_pending_interrupt(&mut self) -> Option<InterruptType> {
         self.inner.get_pending_interrupt()
     }
-
+    
     fn handle_uart_interrupt(&mut self) {
         self.inner.handle_uart_interrupt()
     }
-
+    
     fn handle_gpio_interrupt(&mut self) {
         self.inner.handle_gpio_interrupt()
     }
-
+    
     fn enter_low_power_mode(&mut self) {
         self.inner.enter_low_power_mode()
     }
-
+    
     fn should_wake_up(&self) -> bool {
         self.inner.should_wake_up()
     }
-
+    
     fn load_init_binary(&self) -> PlatformResult<&'static [u8]> {
         self.inner.load_init_binary()
     }
-
+    
     fn flush_io(&mut self) {
         self.inner.flush_io()
     }
-
+    
     fn shutdown(&mut self) {
         crate::debug_print!("Platform shutdown requested");
         self.inner.shutdown()
     }
-
+    
     fn emergency_shutdown(&mut self) {
         // Emergency shutdown bypasses normal procedures
         self.inner.emergency_shutdown()
     }
-
+    
     fn halt(&mut self) -> ! {
         crate::debug_print!("Platform halt");
         self.inner.halt()
