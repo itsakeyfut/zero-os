@@ -227,6 +227,15 @@ pub struct SystemCallArgs {
     pub args: [usize; MAX_SYSCALL_ARGS],
 }
 
+impl SystemCallArgs {
+    /// Create new system call arguments
+    pub const fn new() -> Self {
+        Self {
+            args: [0; MAX_SYSCALL_ARGS],
+        }
+    }
+}
+
 /// System call errors
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u32)]
