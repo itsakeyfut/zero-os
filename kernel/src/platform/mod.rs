@@ -342,4 +342,8 @@ impl PlatformInterface for Platform {
     fn init_uart(&mut self) -> PlatformResult<()> {
         self.inner.init_uart()
     }
+
+    fn configure_uart(&mut self, config: UartConfig) -> PlatformResult<()> {
+        self.inner.configure_uart(config)
+    }
 }
