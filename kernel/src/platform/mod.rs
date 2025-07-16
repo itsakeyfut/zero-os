@@ -358,4 +358,8 @@ impl PlatformInterface for Platform {
     fn init_timer(&mut self) -> PlatformResult<()> {
         self.inner.init_timer()
     }
+
+    fn configure_timer(&mut self, config: TimerConfig) -> PlatformResult<()> {
+        self.inner.configure_timer(config)
+    }
 }
