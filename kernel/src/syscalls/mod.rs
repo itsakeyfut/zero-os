@@ -329,6 +329,15 @@ impl SystemCallResult {
     pub fn is_err(&self) -> bool {
         self.value < 0
     }
+
+    /// Get error code if this is an error
+    pub fn error(&self) -> Option<SystemCallError> {
+        if self.is_err() {
+            SystemCallError::try_from(-self.value as u32).ok()
+        } else {
+            None
+        }
+    }
 }
 
 /// System call errors
@@ -358,13 +367,13 @@ pub enum SystemCallError {
     /// Operation interrupted
     Interrupted = 11,
     /// Invalid file descriptor
-    InvalidDescriptor = 12,
+    InvalidFileDescriptor = 12,
     /// End of file
     EndOfFile = 13,
     /// I/O error
     IoError = 14,
     /// Network error
-    NetworkErorr = 15,
+    NetworkError = 15,
     /// Invalid address
     InvalidAddress = 16,
     /// Operation would block
@@ -375,6 +384,36 @@ pub enum SystemCallError {
     InvalidFormat = 19,
     /// Hardware error
     HardwareError = 20,
+}
+
+impl TryFrom<u32> for SystemCallError {
+    type Error = ();
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        match value {
+            1 => Ok(SystemCallError::InvalidSystemCall),
+            2 => Ok(SystemCallError::InvalidArgument),
+            3 => Ok(SystemCallError::PermissionDenied),
+            4 => Ok(SystemCallError::ProcessNotFound),
+            5 => Ok(SystemCallError::OutOfMemory),
+            6 => Ok(SystemCallError::ResourceBusy),
+            7 => Ok(SystemCallError::NotFound),
+            8 => Ok(SystemCallError::NotSupported),
+            9 => Ok(SystemCallError::InvalidState),
+            10 => Ok(SystemCallError::Timeout),
+            11 => Ok(SystemCallError::Interrupted),
+            12 => Ok(SystemCallError::InvalidFileDescriptor),
+            13 => Ok(SystemCallError::EndOfFile),
+            14 => Ok(SystemCallError::IoError),
+            15 => Ok(SystemCallError::NetworkError),
+            16 => Ok(SystemCallError::InvalidAddress),
+            17 => Ok(SystemCallError::WouldBlock),
+            18 => Ok(SystemCallError::ResourceLimitExceeded),
+            19 => Ok(SystemCallError::InvalidFormat),
+            20 => Ok(SystemCallError::HardwareError),
+            _ => Err(()),
+        }
+    }
 }
 
 impl From<ProcessError> for SystemCallError {
