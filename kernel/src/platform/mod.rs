@@ -514,4 +514,9 @@ pub mod registers {
     pub fn timer_base() -> usize {
         super::target_platform::registers::TIMER_BASE
     }
+
+    /// Get GPIO base address
+    pub fn gpio_base() -> usize {
+        super::target_platform::registers::GPIO_BASE
+    }
 }
