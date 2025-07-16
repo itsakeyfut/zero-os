@@ -338,4 +338,8 @@ impl PlatformInterface for Platform {
     fn platform_type(&self) -> PlatformType {
         self.platform_type
     }
+
+    fn init_uart(&mut self) -> PlatformResult<()> {
+        self.inner.init_uart()
+    }
 }
