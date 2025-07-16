@@ -295,6 +295,16 @@ pub struct SystemCallResult {
     pub value2: usize,
 }
 
+impl SystemCallResult {
+    /// Create a successful result
+    pub const fn ok(value: usize) -> Self {
+        Self {
+            value: value as isize,
+            value2: 0,
+        }
+    }
+}
+
 /// System call errors
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u32)]
