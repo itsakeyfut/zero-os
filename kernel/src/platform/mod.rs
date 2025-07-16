@@ -496,4 +496,9 @@ pub mod interrupts {
     pub fn gpio_irq() -> u32 {
         super::target_platform::interrupts::GPIO_IRQ
     }
+
+    /// Get total number of interrupts
+    pub fn num_interrupts() -> u32 {
+        super::target_platform::interrupts::NUM_INTERRUPTS
+    }
 }
