@@ -324,6 +324,11 @@ impl SystemCallResult {
     pub fn is_ok(&self) -> bool {
         self.value >= 0
     }
+
+    /// Check if result is an error
+    pub fn is_err(&self) -> bool {
+        self.value < 0
+    }
 }
 
 /// System call errors
