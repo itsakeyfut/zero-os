@@ -275,3 +275,27 @@ pub trait PlatformInterface {
     /// System halt
     fn halt(&mut self) -> !;
 }
+
+/// Main platform structure
+pub struct Platform {
+    /// Platform implementation
+    inner: target_platform::PlatformImpl,
+    /// Platform type
+    platform_type: PlatformType,
+    /// Hardware capabilities
+    capabilities: HardwareCapabilities,
+    /// Initialization state
+    initialized: bool,
+}
+
+impl Platform {
+    /// Create a new platofmr instance
+    pub const fn new() -> Self {
+        Self {
+            inner: target_platform::PlatformImpl::new(),
+            platform_type: target_platform::PLATFORM_TYPE,
+            capabilities: HardwareCapabilities::default(),
+            initialized: false,
+        }
+    }
+}
