@@ -304,3 +304,24 @@ impl Platform {
         target_platform::detect_platform()
     }
 }
+
+impl PlatformInterface for Platform {
+    fn early_init(&mut self) -> PlatformResult<()> {
+        if self.initialized {
+            return Ok(());
+        }
+
+        // Platform-specific early initialization
+        self.inner.early_init()?;
+
+        // Detect hardware capabilities
+        self.capabilities = self.inner.hardware_capabilities();
+
+        crate::debug_print!("Platform early init: {:?}", self.platform_type);
+        crate::debug_print!("Hardware capabilities: CPU cores={}, RAM={}MB",
+                            self.capabilities.cpu_cores,
+                            self.capabilities.ram_size / (1024 * 1024));
+
+        Ok(())
+    }
+}
