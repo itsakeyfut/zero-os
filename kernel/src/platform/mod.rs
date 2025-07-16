@@ -324,4 +324,14 @@ impl PlatformInterface for Platform {
 
         Ok(())
     }
+
+    fn late_init(&mut self) -> PlatformResult<()> {
+        // Platform-specific late initialization
+        self.inner.late_init()?;
+
+        self.initialized = true;
+
+        crate::debug_print!("Platform late init completed");
+        Ok(())
+    }
 }
