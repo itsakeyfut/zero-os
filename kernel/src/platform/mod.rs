@@ -439,3 +439,8 @@ impl PlatformInterface for Platform {
 pub fn platform_name() -> &'static str {
     target_platform::PLATFORM_NAME
 }
+
+/// Get platform version
+pub fn platform_version() -> &'static str {
+    target_platform::PLATFORM_VERSION
+}
