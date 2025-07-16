@@ -346,4 +346,8 @@ impl PlatformInterface for Platform {
     fn configure_uart(&mut self, config: UartConfig) -> PlatformResult<()> {
         self.inner.configure_uart(config)
     }
+
+    fn uart_write(&mut self, data: &[u8]) -> PlatformResult<usize> {
+        self.inner.uart_write(data)
+    }
 }
