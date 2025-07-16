@@ -509,4 +509,9 @@ pub mod registers {
     pub fn uart_base() -> usize {
         super::target_platform::registers::UART_BASE
     }
+
+    /// Get timer base address
+    pub fn timer_base() -> usize {
+        super::target_platform::registers::TIMER_BASE
+    }
 }
