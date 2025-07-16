@@ -386,4 +386,8 @@ impl PlatformInterface for Platform {
     fn gpio_get(&self, pin: u32) -> PlatformResult<bool> {
         self.inner.gpio_get(pin)
     }
+
+    fn get_pending_interrupt(&mut self) -> Option<InterruptType> {
+        self.inner.get_pending_interrupt()
+    }
 }
