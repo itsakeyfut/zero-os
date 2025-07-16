@@ -458,3 +458,13 @@ fn handle_get_process_info(
         SystemCallResult::err(SystemCallError::ProcessNotFound)
     }
 }
+
+/// Handle get memory information system call
+fn handle_get_memory_info(
+    syscall: SystemCall,
+    _process_manager: &mut ProcessManager,
+    memory_manager: &mut MemoryManager,
+) -> SystemCallResult {
+    let stats = memory_manager.usage_stats();
+    SystemCallResult::ok2(stats.total_memory, stats.free_memory)
+}
