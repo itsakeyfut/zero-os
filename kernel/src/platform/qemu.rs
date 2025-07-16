@@ -100,3 +100,21 @@ pub mod registers {
     /// System controller base address
     pub const SYSCON_BASE: usize = 0x10000000;
 }
+
+/// UART register offsets(PL011)
+mod uart_regs {
+    /// Data register
+    pub const UARTDR: usize = 0x00;
+    /// Flag register
+    pub const UARTFR: usize = 0x18;
+    /// Integer baud rate register
+    pub const UARTIBRD: usize = 0x24;
+    /// Fractional baud rate register
+    pub const UARTFBRD: usize = 0x28;
+    /// Line control register
+    pub const UARTLCR_H: usize = 0x2C;
+    /// Control register
+    pub const UARTCR: usize = 0x30;
+    /// Interrupt mask set/clear register
+    pub const UARTIMSC: usize = 0x38;
+}
