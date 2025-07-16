@@ -398,4 +398,8 @@ impl PlatformInterface for Platform {
     fn handle_gpio_interrupt(&mut self) {
         self.inner.handle_gpio_interrupt()
     }
+
+    fn enter_low_power_mode(&mut self) {
+        self.inner.enter_low_power_mode()
+    }
 }
