@@ -430,6 +430,88 @@ impl From<ProcessError> for SystemCallError {
     }
 }
 
+/// Main system call handler
+/// 
+/// This function dispatches system calls to appropriate handlers based on
+/// the system call number.
+pub fn handle_syscall(
+    syscall: SystemCall,
+    process_manager: &mut ProcessManager,
+    memory_manager: &mut MemoryManager,
+    ipc_manager: &mut IpcManager,
+    platform: &mut Platform,
+) -> SystemCallResult {
+    // Verify calling process exists and is in valid state
+    let caller = match process_manager.get_process(syscall.caller) {
+        Some(process) => process,
+        None => return SystemCallResult::err(SystemCallError::ProcessNotFound),
+    };
+    
+    // Dispatch to appropriate handler
+    match syscall.number {
+        // Process management
+        SystemCallNumber::Exit => process::handle_exit(syscall, process_manager),
+        SystemCallNumber::Fork => process::handle_fork(syscall, process_manager, memory_manager),
+        SystemCallNumber::Exec => process::handle_exec(syscall, process_manager, memory_manager),
+        SystemCallNumber::Wait => process::handle_wait(syscall, process_manager),
+        SystemCallNumber::GetPid => process::handle_getpid(syscall, process_manager),
+        SystemCallNumber::GetPPid => process::handle_getppid(syscall, process_manager),
+        SystemCallNumber::Kill => process::handle_kill(syscall, process_manager),
+        SystemCallNumber::SetPriority => process::handle_set_priority(syscall, process_manager),
+        SystemCallNumber::GetPriority => process::handle_get_priority(syscall, process_manager),
+        
+        // Memory management
+        SystemCallNumber::Mmap => memory::handle_mmap(syscall, process_manager, memory_manager),
+        SystemCallNumber::Munmap => memory::handle_munmap(syscall, process_manager, memory_manager),
+        SystemCallNumber::Mprotect => memory::handle_mprotect(syscall, process_manager, memory_manager),
+        SystemCallNumber::Brk => memory::handle_brk(syscall, process_manager, memory_manager),
+        SystemCallNumber::Malloc => memory::handle_malloc(syscall, process_manager, memory_manager),
+        SystemCallNumber::Free => memory::handle_free(syscall, process_manager, memory_manager),
+        
+        // I/O operations
+        SystemCallNumber::Read => fs::handle_read(syscall, process_manager, platform),
+        SystemCallNumber::Write => fs::handle_write(syscall, process_manager, platform),
+        SystemCallNumber::Open => fs::handle_open(syscall, process_manager, platform),
+        SystemCallNumber::Close => fs::handle_close(syscall, process_manager, platform),
+        SystemCallNumber::Ioctl => fs::handle_ioctl(syscall, process_manager, platform),
+        
+        // IPC operations
+        SystemCallNumber::Send => ipc::handle_send(syscall, process_manager, ipc_manager),
+        SystemCallNumber::Receive => ipc::handle_receive(syscall, process_manager, ipc_manager),
+        SystemCallNumber::CreateChannel => ipc::handle_create_channel(syscall, process_manager, ipc_manager),
+        SystemCallNumber::CloseChannel => ipc::handle_close_channel(syscall, process_manager, ipc_manager),
+        SystemCallNumber::Connect => ipc::handle_connect(syscall, process_manager, ipc_manager),
+        SystemCallNumber::Accept => ipc::handle_accept(syscall, process_manager, ipc_manager),
+        
+        // Time operations
+        SystemCallNumber::Sleep => time::handle_sleep(syscall, process_manager, platform),
+        SystemCallNumber::GetTime => time::handle_get_time(syscall, process_manager, platform),
+        SystemCallNumber::TimerCreate => time::handle_timer_create(syscall, process_manager, platform),
+        SystemCallNumber::TimerSet => time::handle_timer_set(syscall, process_manager, platform),
+        SystemCallNumber::TimerDelete => time::handle_timer_delete(syscall, process_manager, platform),
+        
+        // Tactical support operations
+        SystemCallNumber::AnalyzePosition => tactical::handle_analyze_position(syscall, process_manager),
+        SystemCallNumber::PredictMove => tactical::handle_predict_move(syscall, process_manager),
+        SystemCallNumber::EvaluateThreat => tactical::handle_evaluate_threat(syscall, process_manager),
+        SystemCallNumber::GenerateMoves => tactical::handle_generate_moves(syscall, process_manager),
+        SystemCallNumber::CalculateScore => tactical::handle_calculate_score(syscall, process_manager),
+        
+        // Future robotics operations (not implemented yet)
+        SystemCallNumber::ReadSensor => SystemCallResult::err(SystemCallError::NotSupported),
+        SystemCallNumber::ConfigureSensor => SystemCallResult::err(SystemCallError::NotSupported),
+        SystemCallNumber::CalibrateSensor => SystemCallResult::err(SystemCallError::NotSupported),
+        SystemCallNumber::ControlMotor => SystemCallResult::err(SystemCallError::NotSupported),
+        SystemCallNumber::SetServo => SystemCallResult::err(SystemCallError::NotSupported),
+        SystemCallNumber::EmergencyStop => SystemCallResult::err(SystemCallError::NotSupported),
+        
+        // System information
+        SystemCallNumber::GetSystemInfo => handle_get_system_info(syscall, process_manager),
+        SystemCallNumber::GetProcessInfo => handle_get_process_info(syscall, process_manager),
+        SystemCallNumber::GetMemoryInfo => handle_get_memory_info(syscall, process_manager, memory_manager),
+    }
+}
+
 /// Handle get system information system call
 fn handle_get_system_info(
     syscall: SystemCall,
@@ -467,4 +549,46 @@ fn handle_get_memory_info(
 ) -> SystemCallResult {
     let stats = memory_manager.usage_stats();
     SystemCallResult::ok2(stats.total_memory, stats.free_memory)
+}
+
+/// System call point from assembly
+/// 
+/// This function is called from the ARM SWI/SVC exception handler.
+/// 
+/// # Arguments
+/// 
+/// * `system_number` - System call number from r7
+/// * `args` - Arguments from r0-r5
+/// * `caller` - Calling process ID
+/// 
+/// # Safety
+/// 
+/// This function is called from exception context and must be careful
+/// with memory access and system state.
+#[no_mangle]
+pub extern "C" fn syscall_entry(
+    syscall_number: u32,
+    args: [usize; MAX_SYSCALL_ARGS],
+    caller: u32,
+) -> SystemCallResult {
+    // Convert arguments to system call structure
+    let number = match SystemCallNumber::try_from(syscall_number) {
+        Ok(num) => num,
+        Err(_) => return SystemCallResult::err(SystemCallError::InvalidSystemCall),
+    };
+
+    let syscall_args = SystemCallArgs::from_array(args);
+    let caller_pid = ProcessId::new(caller);
+
+    let syscall = SystemCall::new(number, syscall_args, caller_pid);
+
+    // Get kernel instance and handle system call
+    let kernel = crate::get_kernel();
+    handle_syscall(
+        syscall,
+        &mut kernel.process_manager,
+        &mut kernel.memory_manager,
+        &mut kernel.ipc_router,
+        &mut kernel.platform,
+    )
 }
