@@ -67,3 +67,18 @@ pub mod memory_layout {
     /// Device memory size
     pub const DEVICE_SIZE: usize = 0x10000000;
 }
+
+/// Interrupt numbers for VersatilePB
+pub mod interrups {
+    /// Timer 0 interrupt
+    pub const TIMER_IRQ: u32 = 4;
+
+    /// UART0 interrupt
+    pub const UART_IRQ: u32 = 12;
+
+    /// GPIO interrupt (not used on VersatilePB)
+    pub const GPIO_IRQ: u32 = 0;
+
+    /// Total number of interrupts
+    pub const NUM_INTERRUPTS: u32 = 32;
+}
