@@ -303,6 +303,14 @@ impl SystemCallResult {
             value2: 0,
         }
     }
+
+    /// Create a successful result with two values
+    pub const fn ok2(value1: usize, value2: usize) -> Self {
+        Self {
+            value: value1 as isize,
+            value2,
+        }
+    }
 }
 
 /// System call errors
