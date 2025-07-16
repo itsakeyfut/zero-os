@@ -82,3 +82,21 @@ pub mod interrups {
     /// Total number of interrupts
     pub const NUM_INTERRUPTS: u32 = 32;
 }
+
+/// Hardware register addresses
+pub mod registers {
+    /// UART0 base address
+    pub const UART_BASE: usize = 0x101F1000;
+
+    /// Timer 0/1 base address
+    pub const TIMER_BASE: usize = 0x10120000;
+
+    /// GPIO base address (not applicable for VersatilePB)
+    pub const GPIO_BASE: usize = 0x00000000;
+
+    /// VIC (Vectored Interrupt Controller) base address
+    pub const INTERRUPT_CONTROLLER_BASE: usize = 0x10140000;
+
+    /// System controller base address
+    pub const SYSCON_BASE: usize = 0x10000000;
+}
