@@ -33,6 +33,8 @@
 #![deny(missing_docs)]
 #![warn(clippy::undocumented_unsafe_blocks)]
 
+use core::default;
+
 use crate::arch::{InterruptType, ArchResult, ArchError};
 use crate::memory::{PhysicalAddress, MemoryError};
 
@@ -142,4 +144,16 @@ pub struct UartConfig {
     pub parity: u8,
     /// Flow control enabled
     pub flow_control: bool,
+}
+
+impl Default for UartConfig {
+    fn default() -> Self {
+        Self {
+            baud_rate: 115200,
+            data_bits: 8,
+            stop_bits: 1,
+            parity: 0, // No parity
+            flow_control: false,
+        }
+    }
 }
