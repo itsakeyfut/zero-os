@@ -319,6 +319,11 @@ impl SystemCallResult {
             value2: 0,
         }
     }
+
+    /// Check if result is successful
+    pub fn is_ok(&self) -> bool {
+        self.value >= 0
+    }
 }
 
 /// System call errors
