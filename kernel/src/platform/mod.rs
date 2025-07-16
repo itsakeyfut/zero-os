@@ -449,3 +449,8 @@ pub fn platform_version() -> &'static str {
 pub fn is_feature_supported(feature: &str) -> bool {
     target_platform::is_feature_supported(feature)
 }
+
+/// Get platform-specific configuration value
+pub fn get_config_value(key: &str) -> Option<u32> {
+    target_platform::get_config_value(key)
+}
