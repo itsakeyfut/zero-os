@@ -390,4 +390,8 @@ impl PlatformInterface for Platform {
     fn get_pending_interrupt(&mut self) -> Option<InterruptType> {
         self.inner.get_pending_interrupt()
     }
+
+    fn handle_uart_interrupt(&mut self) {
+        self.inner.handle_uart_interrupt()
+    }
 }
