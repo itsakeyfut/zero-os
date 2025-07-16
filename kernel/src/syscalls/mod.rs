@@ -239,6 +239,11 @@ impl SystemCallArgs {
     pub const fn from_array(args: [usize; MAX_SYSCALL_ARGS]) -> Self {
         Self { args }
     }
+
+    /// Get argument at index
+    pub fn get(&self, index: usize) -> Option<usize> {
+        self.args.get(index).copied()
+    }
 }
 
 /// System call errors
