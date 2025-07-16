@@ -334,4 +334,8 @@ impl PlatformInterface for Platform {
         crate::debug_print!("Platform late init completed");
         Ok(())
     }
+
+    fn platform_type(&self) -> PlatformType {
+        self.platform_type
+    }
 }
