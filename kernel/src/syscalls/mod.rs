@@ -234,6 +234,11 @@ impl SystemCallArgs {
             args: [0; MAX_SYSCALL_ARGS],
         }
     }
+
+    /// Create from argument array
+    pub const fn from_array(args: [usize; MAX_SYSCALL_ARGS]) -> Self {
+        Self { args }
+    }
 }
 
 /// System call errors
