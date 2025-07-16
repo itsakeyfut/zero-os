@@ -394,4 +394,8 @@ impl PlatformInterface for Platform {
     fn handle_uart_interrupt(&mut self) {
         self.inner.handle_uart_interrupt()
     }
+
+    fn handle_gpio_interrupt(&mut self) {
+        self.inner.handle_gpio_interrupt()
+    }
 }
