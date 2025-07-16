@@ -414,4 +414,9 @@ impl PlatformInterface for Platform {
     fn flush_io(&mut self) {
         self.inner.flush_io()
     }
+
+    fn shutdown(&mut self) {
+        crate::debug_print!("Platform shutdown requested");
+        self.inner.shutdown()
+    }
 }
