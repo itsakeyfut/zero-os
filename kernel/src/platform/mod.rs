@@ -444,3 +444,8 @@ pub fn platform_name() -> &'static str {
 pub fn platform_version() -> &'static str {
     target_platform::PLATFORM_VERSION
 }
+
+/// Check if feature is supported on this platform
+pub fn is_feature_supported(feature: &str) -> bool {
+    target_platform::is_feature_supported(feature)
+}
