@@ -157,3 +157,18 @@ impl Default for UartConfig {
         }
     }
 }
+
+/// GPIO pin configuration
+#[derive(Debug, Clone, Copy)]
+pub struct GpiConfig {
+    /// Pin number
+    pub pin: u32,
+    /// Pin mode (0=input, 1=output, 2=alternate)
+    pub mode: u8,
+    /// Pull resistor (0=none, 1=pull-up, 2=pull-down)
+    pub pull: u8,
+    /// Output type (0=push-pull, 1=open-drain)
+    pub output_type: u8,
+    /// Output speed (0=low, 1=medium, 2=high, 3=very-high)
+    pub speed: u8,
+}
