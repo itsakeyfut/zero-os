@@ -75,3 +75,28 @@ pub enum PlatformType {
     /// Unknown platform
     Unknown,
 }
+
+/// Hardware capabilities
+#[derive(Debug, Clone, Copy)]
+pub struct HardwareCapabilities {
+    /// Has memory management unit
+    pub has_mmu: bool,
+    /// Has floating point unit
+    pub has_fpu: bool,
+    /// Has cache
+    pub has_cache: bool,
+    /// Has DMA controller
+    pub has_dma: bool,
+    /// Has real-time clock
+    pub has_rtc: bool,
+    /// Has watching timer
+    pub has_watchdog: bool,
+    /// Number of CPU cores
+    pub cpu_cores: u32,
+    /// CPU frequency in Hz
+    pub cpu_frequency: u32,
+    /// Available RAM in bytes
+    pub ram_size: usize,
+    /// Available flash in bytes
+    pub flash_size: usize,
+}
