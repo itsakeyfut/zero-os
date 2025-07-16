@@ -100,3 +100,20 @@ pub struct HardwareCapabilities {
     /// Available flash in bytes
     pub flash_size: usize,
 }
+
+impl Default for HardwareCapabilities {
+    fn default() -> Self {
+        Self {
+            has_mmu: true,
+            has_fpu: false,
+            has_cache: true,
+            has_dma: false,
+            has_rtc: false,
+            has_watchdog: false,
+            cpu_cores: 1,
+            cpu_frequency: 100_000_000, // 100MHz default
+            ram_size: 128 * 1024 * 1024, // 128MB default
+            flash_size: 512 * 1024 * 1024, // 512MB default
+        }
+    }
+}
