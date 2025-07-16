@@ -370,4 +370,8 @@ impl PlatformInterface for Platform {
     fn set_timer_interrupt(&mut self, us: u64) -> PlatformResult<()> {
         self.inner.set_timer_interrupt(us)
     }
+
+    fn init_gpio(&mut self) -> PlatformResult<()> {
+        self.inner.init_gpio()
+    }
 }
