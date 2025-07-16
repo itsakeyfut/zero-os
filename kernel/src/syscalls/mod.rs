@@ -275,6 +275,17 @@ pub struct SystemCall {
     pub caller: ProcessId,
 }
 
+impl SystemCall {
+    /// Create a new system call
+    pub fn new(number: SystemCallNumber, args: SystemCallArgs, caller: ProcessId) -> Self {
+        Self {
+            number,
+            args,
+            caller,
+        }
+    }
+}
+
 /// System call errors
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u32)]
