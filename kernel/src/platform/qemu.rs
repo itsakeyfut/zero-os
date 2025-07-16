@@ -166,3 +166,37 @@ pub struct PlatformImpl {
     /// Initialization state
     initialized: bool,
 }
+
+impl PlatformImpl {
+    /// Create a new QEMU platform instance
+    pub const fn new() -> Self {
+        Self {
+            uart_config: UartConfig {
+                baud_rate: 115200,
+                data_bits: 8,
+                stop_bits: 1,
+                parity: 0,
+                flow_control: false,
+            },
+            timer_config: TimerConfig {
+                frequency: 1000000, // 1MHz
+                resolution_ns: 1000, // 1µs resolution
+                max_value: 0xFFFFFFFF,
+            },
+            capabilities: HardwareCapabilities {
+                has_mmu: true,
+                has_fpu: false,
+                has_cache: true,
+                has_dma: false,
+                has_rtc: false,
+                has_watchdog: true,
+                cpu_cores: 1,
+                cpu_frequency: 250_000_000, // 250MHz (typical for ARM1176)
+                ram_size: memory_layout::RAM_SIZE,
+                flash_size: 0, // No flash on VersatilePB
+            },
+            timer_value: 0,
+            initialized: false,
+        }
+    }
+}
