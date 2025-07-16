@@ -33,6 +33,7 @@ pub mod arch;
 pub mod memory;
 pub mod process;
 pub mod syscalls;
+pub mod platform;
 
 /// Core kernel error types
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
