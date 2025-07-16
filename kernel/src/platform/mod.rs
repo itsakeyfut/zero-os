@@ -424,4 +424,9 @@ impl PlatformInterface for Platform {
         // Emergency shutdown bypasses normal procedures
         self.inner.emergency_shutdown()
     }
+
+    fn halt(&mut self) -> ! {
+        crate::debug_print!("Platform halt");
+        self.inner.halt()
+    }
 }
