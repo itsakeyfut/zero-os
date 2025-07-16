@@ -491,4 +491,9 @@ pub mod interrupts {
     pub fn uart_irq() -> u32 {
         super::target_platform::interrupts::UART_IRQ
     }
+
+    /// Get GPIO interrupt number
+    pub fn gpio_irq() -> u32 {
+        super::target_platform::interrupts::GPIO_IRQ
+    }
 }
