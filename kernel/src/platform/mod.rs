@@ -463,4 +463,9 @@ pub mod memory_layout {
     pub fn kernel_load_address() -> PhysicalAddress {
         super::target_platform::memory_layout::KERNEL_LOAD_ADDRESS
     }
+
+    /// Get RAM start address
+    pub fn ram_start() -> PhysicalAddress {
+        super::target_platform::memory_layout::RAM_START
+    }
 }
