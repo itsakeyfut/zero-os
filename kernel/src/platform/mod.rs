@@ -117,3 +117,14 @@ impl Default for HardwareCapabilities {
         }
     }
 }
+
+/// Timer configuration
+#[derive(Debug, Clone, Copy)]
+pub struct TimerConfig {
+    /// Timer frequency in Hz
+    pub frequency: u32,
+    /// Timer resolution in nanoseconds
+    pub resolution_ns: u32,
+    /// Maximum timer value
+    pub max_value: u64,
+}
