@@ -454,3 +454,13 @@ pub fn is_feature_supported(feature: &str) -> bool {
 pub fn get_config_value(key: &str) -> Option<u32> {
     target_platform::get_config_value(key)
 }
+
+/// Platform-specific memory layout information
+pub mod memory_layout {
+    use crate::memory::{VirtualAddress, PhysicalAddress};
+
+    /// Get kernel load address
+    pub fn kernel_load_address() -> PhysicalAddress {
+        super::target_platform::memory_layout::KERNEL_LOAD_ADDRESS
+    }
+}
