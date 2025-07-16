@@ -118,3 +118,21 @@ mod uart_regs {
     /// Interrupt mask set/clear register
     pub const UARTIMSC: usize = 0x38;
 }
+
+/// Timer register offsets (SP804)
+mod timer_regs {
+    /// Timer 1 load register
+    pub const TIMER1_LOAD: usize = 0x00;
+    /// Timer 1 value register (read-only)
+    pub const TIMER1_VALUE: usize = 0x04;
+    /// Timer 1 control register
+    pub const TIMER1_CONTROL: usize = 0x08;
+    /// Timer 1 interrupt clear register
+    pub const TIMER1_INTCLR: usize = 0x0C;
+    /// Timer 1 raw interrupt status
+    pub const TIMER1_RIS: usize = 0x10;
+    /// Timer 1 masked interrupt status
+    pub const TIMER1_MIS: usize = 0x14;
+    /// Timer 1 background load register
+    pub const TIMER1_BGLOAD: usize = 0x18;
+}
