@@ -410,4 +410,8 @@ impl PlatformInterface for Platform {
     fn load_init_binary(&self) -> PlatformResult<&'static [u8]> {
         self.inner.load_init_binary()
     }
+
+    fn flush_io(&mut self) {
+        self.inner.flush_io()
+    }
 }
