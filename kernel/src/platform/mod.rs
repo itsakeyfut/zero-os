@@ -128,3 +128,18 @@ pub struct TimerConfig {
     /// Maximum timer value
     pub max_value: u64,
 }
+
+/// UART configuration
+#[derive(Debug, Clone, Copy)]
+pub struct UartConfig {
+    /// Baud rate
+    pub baud_rate: u32,
+    /// Data bits (5-8)
+    pub data_bits: u8,
+    /// Stop bits (1-2)
+    pub stop_bits: u8,
+    /// Parity (0=none, 1=odd, 2=even)
+    pub parity: u8,
+    /// Flow control enabled
+    pub flow_control: bool,
+}
