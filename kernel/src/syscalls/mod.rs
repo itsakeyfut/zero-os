@@ -244,6 +244,15 @@ impl SystemCallArgs {
     pub fn get(&self, index: usize) -> Option<usize> {
         self.args.get(index).copied()
     }
+
+    /// Get argument as pointer
+    /// 
+    /// # Safety
+    /// 
+    /// Caller must ensure the argument actualy contains a valid pointer
+    pub unsafe fn get_ptr<T>(&self, index: usize) -> Option<*const T> {
+        self.get(index).map(|addr| addr as *const T)
+    }
 }
 
 /// System call errors
