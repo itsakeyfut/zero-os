@@ -402,4 +402,8 @@ impl PlatformInterface for Platform {
     fn enter_low_power_mode(&mut self) {
         self.inner.enter_low_power_mode()
     }
+
+    fn should_wake_up(&self) -> bool {
+        self.inner.should_wake_up()
+    }
 }
