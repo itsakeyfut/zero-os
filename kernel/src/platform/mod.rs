@@ -374,4 +374,8 @@ impl PlatformInterface for Platform {
     fn init_gpio(&mut self) -> PlatformResult<()> {
         self.inner.init_gpio()
     }
+
+    fn configure_gpio(&mut self, config: GpioConfig) -> PlatformResult<()> {
+        self.inner.configure_gpio(config)
+    }
 }
