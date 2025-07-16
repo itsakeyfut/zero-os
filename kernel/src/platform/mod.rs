@@ -434,3 +434,8 @@ impl PlatformInterface for Platform {
         self.inner.halt()
     }
 }
+
+/// Get platform name as string
+pub fn platform_name() -> &'static str {
+    target_platform::PLATFORM_NAME
+}
