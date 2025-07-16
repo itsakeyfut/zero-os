@@ -136,3 +136,19 @@ mod timer_regs {
     /// Timer 1 background load register
     pub const TIMER1_BGLOAD: usize = 0x18;
 }
+
+/// VIC register offsets (PL190)
+mod vic_regs {
+    /// IRQ status register
+    pub const VIC_IRQSTATUS: usize = 0x00;
+    /// FIQ status register
+    pub const VIC_FIQSTATUS: usize = 0x04;
+    /// Raw interrupt status register
+    pub const VIC_RAWINTR: usize = 0x08;
+    /// Interrupt select register
+    pub const VIC_INTSELECT: usize = 0x0C;
+    /// Interrupt enable register
+    pub const VIC_INTENABLE: usize = 0x10;
+    /// Interrupt enable clear register
+    pub const VIC_INTENCLEAR: usize = 0x14;
+}
