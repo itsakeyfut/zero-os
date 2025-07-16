@@ -191,3 +191,6 @@ pub enum PlatformError {
     /// Resource busy
     ResourceBusy,
 }
+
+/// Result type for platform operations
+pub type PlatformResult<T> = Result<T, PlatformError>;
