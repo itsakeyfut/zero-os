@@ -366,4 +366,8 @@ impl PlatformInterface for Platform {
     fn timer_value(&self) -> u64 {
         self.inner.timer_value()
     }
+
+    fn set_timer_interrupt(&mut self, us: u64) -> PlatformResult<()> {
+        self.inner.set_timer_interrupt(us)
+    }
 }
