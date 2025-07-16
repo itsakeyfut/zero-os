@@ -47,3 +47,23 @@ pub const PLATFORM_NAME: &str = "QEMU VersatilePB";
 
 /// Platform version string
 pub const PLATFORM_VERSION: &str = "1.0.0";
+
+/// Memory layout constants
+pub mod memory_layout {
+    use crate::memory::PhysicalAddress;
+
+    /// Kernel load address
+    pub const KERNEL_LOAD_ADDRESS: PhysicalAddress = PhysicalAddress::new(0x10000);
+
+    /// RAM start address
+    pub const RAM_START: PhysicalAddress = PhysicalAddress::new(0x00000000);
+
+    /// RAM size (128MB default for QEMU)
+    pub const RAM_SIZE: usize = 128 * 1024 * 1024;
+
+    /// Device memory start
+    pub const DEVICE_START: PhysicalAddress = PhysicalAddress::new(0x10000000);
+
+    /// Device memory size
+    pub const DEVICE_SIZE: usize = 0x10000000;
+}
