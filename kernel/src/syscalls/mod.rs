@@ -220,6 +220,13 @@ impl TryFrom<u32> for SystemCallNumber {
     }
 }
 
+/// System call arguments
+#[derive(Debug, Clone, Copy)]
+pub struct SystemCallArgs {
+    /// Arguments array (up to 6 arguments)
+    pub args: [usize; MAX_SYSCALL_ARGS],
+}
+
 /// System call errors
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u32)]
