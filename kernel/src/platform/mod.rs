@@ -486,4 +486,9 @@ pub mod interrupts {
     pub fn timer_irq() -> u32 {
         super::target_platform::interrupts::TIMER_IRQ
     }
+
+    /// Get UART interrupt number
+    pub fn uart_irq() -> u32 {
+        super::target_platform::interrupts::UART_IRQ
+    }
 }
