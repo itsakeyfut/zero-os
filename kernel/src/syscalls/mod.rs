@@ -429,3 +429,14 @@ impl From<ProcessError> for SystemCallError {
         }
     }
 }
+
+/// Handle get system information system call
+fn handle_get_system_info(
+    syscall: SystemCall,
+    _process_manager: &mut ProcessManager,
+) -> SystemCallResult {
+    // Return basic system information
+    // In a real implementation, this would return comprehensive system stats
+    let system_info = 0x12345678; // Placeholder system info
+    SystemCallResult::ok(system_info)
+}
