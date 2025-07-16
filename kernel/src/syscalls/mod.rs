@@ -440,3 +440,21 @@ fn handle_get_system_info(
     let system_info = 0x12345678; // Placeholder system info
     SystemCallResult::ok(system_info)
 }
+
+/// Handle get process information system call
+fn handle_get_process_info(
+    syscall: SystemCall,
+    process_manager: &mut ProcessManager,
+) -> SystemCallResult {
+    let target_pid = match ProcessId::try_from(syscall.args.get(0).unwrap_or(0) as u32) {
+        Ok(pid) => pid,
+        Err(_) => return SystemCallResult::err(SystemCallError::InvalidArgument),
+    };
+
+    if let Some(process) = process_manager.get_process(target_pid) {
+        // Return process information (simplified)
+        SystemCallResult::ok2(process.id.as_u32() as usize, process.memory_usage())
+    } else {
+        SystemCallResult::err(SystemCallError::ProcessNotFound)
+    }
+}
