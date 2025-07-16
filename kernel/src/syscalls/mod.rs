@@ -253,6 +253,15 @@ impl SystemCallArgs {
     pub unsafe fn get_ptr<T>(&self, index: usize) -> Option<*const T> {
         self.get(index).map(|addr| addr as *const T)
     }
+
+    /// Get argument as mutable pointer
+    /// 
+    /// # Safety
+    /// 
+    /// Caller must ensure the argument actually contains a valid mutable pointer
+    pub unsafe fn get_mut_ptr<T>(&self, index: usize) -> Option<*mut T> {
+        self.get(index).map(|addr| addr as *mut T)
+    }
 }
 
 /// System call errors
