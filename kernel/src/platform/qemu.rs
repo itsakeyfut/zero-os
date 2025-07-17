@@ -254,3 +254,17 @@ impl PlatformImpl {
         }
     }
 }
+
+impl PlatformInterface for PlatformImpl {
+    fn early_init(&mut self) -> PlatformResult<()> {
+        // Early platform initialization
+        // This is called before memory management is set up
+
+        // Initialize VIC (Vectored Interrupt Controller)
+        self.vic_write_reg(vic_regs::VIC_INTENCLEAR, 0xFFFFFFFF); // Disable all interrupts
+        self.vic_write_reg(vic_regs::VIC_INTSELECT, 0x00000000); // All interrupts are IRQ
+
+        crate::debug_print!("QEMU VersatilePB early initialization completed");
+        Ok(())
+    }
+}
