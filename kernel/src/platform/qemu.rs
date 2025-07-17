@@ -226,4 +226,13 @@ impl PlatformImpl {
             addr.read_volatile()
         }
     }
+
+    /// Write to timer register
+    fn timer_write_reg(&self, offset: usize, value: u32) {
+        // SAFETY: Writing to memory-mapped timer registers
+        unsafe {
+            let addr = (registers::TIMER_BASE + offset) as *mut u32;
+            addr.write_volatile(value);
+        }
+    }
 }
