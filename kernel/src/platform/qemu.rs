@@ -214,7 +214,7 @@ impl PlatformImpl {
         // SAFETY: Writing to memory-mapped UART registers
         unsafe {
             let addr = (registers::UART_BASE + offset) as *mut u32;
-            addr.write_bolatile(value);
+            addr.write_volatile(value);
         }
     }
 
