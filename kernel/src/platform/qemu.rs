@@ -217,4 +217,13 @@ impl PlatformImpl {
             addr.write_bolatile(value);
         }
     }
+
+    /// Read from timer register
+    fn timer_read_reg(&self, offset: usize) -> u32 {
+        // SAFETY: Reading from memory-mapped timer registers
+        unsafe {
+            let addr = (registers::TIMER_BASE + offset) as *const u32;
+            addr.read_volatile()
+        }
+    }
 }
