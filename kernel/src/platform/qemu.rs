@@ -244,4 +244,13 @@ impl PlatformImpl {
             addr.read_volatile()
         }
     }
+
+    /// Write to VIC register
+    fn vic_write_reg(&self, offset: usize, value: u32) {
+        // SAFETY: Writing to memory-mapped VIC registers
+        unsafe {
+            let addr = (registers::INTERRUPT_CONTROLLER_BASE + offset) as *mut u32;
+            addr.write_volatile(value);
+        }
+    }
 }
