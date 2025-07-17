@@ -280,4 +280,8 @@ impl PlatformInterface for PlatformImpl {
     fn platform_type(&self) -> PlatformType {
         PlatformType::QemuVersatilePB
     }
+
+    fn hardware_capabilities(&self) -> HardwareCapabilities {
+        self.capabilities
+    }
 }
