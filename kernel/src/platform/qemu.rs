@@ -267,4 +267,13 @@ impl PlatformInterface for PlatformImpl {
         crate::debug_print!("QEMU VersatilePB early initialization completed");
         Ok(())
     }
+
+    fn late_init(&mut self) -> PlatformResult<()> {
+        // Late platform initialization
+        // This is called after memory management is set up
+
+        self.initialized = true;
+        crate::debug_print!("QEMU VersatilePB late initialization completed");
+        Ok(())
+    }
 }
