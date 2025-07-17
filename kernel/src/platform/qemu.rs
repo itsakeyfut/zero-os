@@ -235,4 +235,13 @@ impl PlatformImpl {
             addr.write_volatile(value);
         }
     }
+
+    /// Read from VIC register
+    fn vic_read_reg(&self, offset: usize) -> u32 {
+        // SAFETY: Reading from memory-mapped VIC registers
+        unsafe {
+            let addr = (registers::INTERRUPT_CONTROLLER_BASE + offset) as *const u32;
+            addr.read_volatile()
+        }
+    }
 }
