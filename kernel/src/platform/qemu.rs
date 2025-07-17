@@ -208,4 +208,13 @@ impl PlatformImpl {
             addr.read_volatile()
         }
     }
+
+    /// Write to UART register
+    fn uart_write_reg(&self, offset: usize, value: u32) {
+        // SAFETY: Writing to memory-mapped UART registers
+        unsafe {
+            let addr = (registers::UART_BASE + offset) as *mut u32;
+            addr.write_bolatile(value);
+        }
+    }
 }
