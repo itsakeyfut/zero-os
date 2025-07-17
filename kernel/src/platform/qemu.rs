@@ -341,4 +341,21 @@ impl PlatformInterface for PlatformImpl {
         self.uart_write_reg(uart_regs::UARTLCR_H, lcr);
         Ok(())
     }
+
+    fn uart_write(&mut self, data: &[u8]) -> PlatformResult<usize> {
+        let mut written = 0;
+
+        for &byte in data {
+            // Wait for TX FIFO not full
+            while (self.uart_read_reg(uart_regs::UARTFR) & (1 << 5)) != 0 {
+                // FIFO full, wait
+            }
+
+            // Write character
+            self.uart_write_reg(uart_regs::UARTDR, byte as u32);
+            written += 1;
+        }
+
+        Ok(written)
+    }
 }
