@@ -202,7 +202,7 @@ impl PlatformImpl {
 
     /// Read from UART register
     fn uart_read_reg(&self, offset: usize) -> u32 {
-        // SAFETY: Reading from memory-mapped UART registers\
+        // SAFETY: Reading from memory-mapped UART registers
         unsafe {
             let addr = (registers::UART_BASE + offset) as *const u32;
             addr.read_volatile()
