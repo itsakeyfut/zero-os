@@ -284,4 +284,29 @@ impl PlatformInterface for PlatformImpl {
     fn hardware_capabilities(&self) -> HardwareCapabilities {
         self.capabilities
     }
+
+    fn init_uart(&mut self) -> PlatformResult<()> {
+        // Initialize PL011 UART
+
+        // Disable UART
+        self.uart_write_reg(uart_regs::UARTCR, 0);
+
+        // Clear all interrupts
+        self.uart_write_reg(uart_regs::UARTIMSC, 0);
+
+        // Set baud rate (assuming 24MHz UART clock)
+        // Baud rate = UART_CLK / (16 * (IBRD + FBRD/64))
+        // For 115200: IBRD = 13, FBRD = 1 (approximately)
+        self.uart_write_reg(uart_regs::UARTIBRD, 13);
+        self.uart_write_reg(uart_regs::UARTFBRD, 1);
+
+        // Set 8N1 format (8 data bits, no parity, 1 stop bit)
+        self.uart_write_reg(uart_regs::UARTLCR_H, 0x70);
+
+        // Enable UART, TX, and RX
+        self.uart_write_reg(uart_regs::UARTCR, 0x301);
+
+        crate::debug_print!("UART initialized");
+        Ok(())
+    }
 }
