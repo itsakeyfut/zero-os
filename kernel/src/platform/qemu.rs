@@ -309,4 +309,36 @@ impl PlatformInterface for PlatformImpl {
         crate::debug_print!("UART initialized");
         Ok(())
     }
+
+    fn configure_uart(&mut self, config: UartConfig) -> PlatformResult<()> {
+        self.uart_config = config;
+
+        // Recalculate baud rate divisors based on new config
+        // This is a simplified calculation
+        let divisor = 24_000_000 / (16 * config.baud_rate);
+        self.uart_write_reg(uart_regs::UARTIBRD, divisor);
+
+        // Set data format
+        let mut lcr = 0;
+        match config.data_bits {
+            5 => lcr |= 0x00,
+            6 => lcr |= 0x20,
+            7 => lcr |= 0x40,
+            8 => lcr |= 0x60,
+            _ => return Err(PlatformError::InvalidParameter),
+        }
+
+        if config.stop_bits == 2 {
+            lcr |= 0x08;
+        }
+
+        match config.parity {
+            1 => lcr |= 0x02, // Odd parity
+            2 => lcr |= 0x06, // Even parity
+            _ => {} // No parity
+        }
+
+        self.uart_write_reg(uart_regs::UARTLCR_H, lcr);
+        Ok(())
+    }
 }
