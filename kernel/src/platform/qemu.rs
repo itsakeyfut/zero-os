@@ -276,4 +276,8 @@ impl PlatformInterface for PlatformImpl {
         crate::debug_print!("QEMU VersatilePB late initialization completed");
         Ok(())
     }
+
+    fn platform_type(&self) -> PlatformType {
+        PlatformType::QemuVersatilePB
+    }
 }
