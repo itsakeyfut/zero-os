@@ -268,3 +268,7 @@ __stack_pointer_supervisor = __supervisor_stack_top;
 __physical_memory_start = 0x00000000;
 __physical_memory_end = 0x08000000;    /* 128MB for QEMU VersatilePB */
 __physical_memory_size = __physical_memory_end - __physical_memory_start;
+
+/* Kernel heap limits */
+__heap_limit = __ram_start;  /* Heap can grow into available RAM */
+__heap_max_size = 0x4000000; /* Maximum 64MB heap */
