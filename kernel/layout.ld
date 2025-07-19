@@ -285,3 +285,12 @@ __page_table_end = __page_table_start + __page_table_size;
 
 /* Boot parameters location */
 __boot_params = __vectors_start + 0x100;  /* After reset vector */
+
+/* Assetions to ensure memory layout is valid */
+ASSERT(__text_start >= __vectors_end, "Text section overlaps with vectors")
+ASSERT(__rodata_start >= __text_end, "Read-only data overlaps with text")
+ASSERT(__data_start >= __rodata_end, "Data section overlaps with read-only data")
+ASSERT(__bss_start >= __data_end, "BSS section overlaps with data")
+ASSERT(__stack_start >= __bss_end, "Stack overlaps with BSS")
+ASSERT(__heap_start >= __stack_end, "Heap overlaps with stack")
+ASSERT(__heap_end <= __ram_start, "Kernel heap extends into available RAM")
