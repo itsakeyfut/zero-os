@@ -38,6 +38,9 @@ fn main() {
 
     // Configure target-specific build settings
     configure_target(&target);
+
+    // Set up linker configuration
+    configure_linker(&target, &out_dir);
 }
 
 /// Configure target-specific build settings
@@ -87,4 +90,99 @@ fn configure_target(target: &str) {
             println!("cargo:warning=Unknown target: {}, using generic configuration", target);
         }
     }
+}
+
+/// Configure linker settings
+fn configure_linker(target: &str, out_dir: &str) {
+    // Copy linker script to output directory
+    let linker_script = "layout.ld";
+    let out_path = Path::new(out_dir).join(linker_script);
+
+    if Path::new(linker_script).exists() {
+        fs::copy(linker_script, &out_path)
+            .expect("Failed to copy linker script");
+        println!("cargo:rerun-if-changed={}", linker_script);
+    } else {
+        // Generate default linker script if not found
+        generate_default_linker_script(target, &out_path);
+    }
+
+    // Configure linker flags
+    match target {
+        t if t.starts_with("arm") => {
+            // ARM-specific linker configuration
+            println!("cargo:rustc-link-arg=-nostartfiles");
+            println!("cargo:rustc-link-arg=-T{}", out_path.display());
+            println!("cargo:rustc-link-arg=-Map={}/kernel.map", out_dir);
+            println!("cargo:rustc-link-arg=--gc-sections");
+            println!("cargo:rustc-link-arg=--build-id=none");
+
+            // Specify ARM-specific linker
+            println!("cargo:rustc-linker=arm-none-eabi-gcc");
+        }
+        "x86_64-unknown-none" => {
+            // x86_64-specific linker configuration
+            println!("cargo:rustc-link-arg=-nostartfiles");
+            println!("cargo:rustc-link-arg=-T{}", out_path.display());
+            println!("cargo:rustc-link-arg=-Map={}/kernel.map", out_dir);
+            println!("cargo:rustc-link-arg=--gc-sections");
+        }
+        _ => {
+            println!("cargo:warning=Using default linker configuration for {}", target);
+        }
+    }
+}
+
+/// Generate default linker script if not found
+fn generate_default_linker_script(target: &str, output_path: &Path) {
+    let linker_script = match target {
+        t if t.starts_with("arm") => {
+            r#"
+                ENTRY(_start)
+                MEMORY
+                {
+                    FLASH : ORIGIN = 0x00000000, LENGTH = 128M
+                    RAM   : ORIGIN = 0x00000000, LENGTH = 128M
+                }
+
+                SECTIONS
+                {
+                    .text : { *(.text*) } > FLASH
+                    .rodata : { *(.rodata*) } > FLASH
+                    .data : { *(.data*) } > RAM
+                    .bss : { *(.bss*) } > RAM
+                }
+            "#
+        }
+        "x86_64-unknown-none" => {
+            r#"
+                ENTRY(_start)
+                SECTIONS
+                {
+                    . = 0x100000;
+                    .text : { *(.text*) }
+                    .rodata : { *(.rodata*) }
+                    .data : { *(.data*) }
+                    .bss : { *(.bss*) }
+                }
+            "#
+        }
+        _ => {
+            r#"
+                ENTRY(_start)
+                SECTIONS
+                {
+                    .text : { *(.text*) }
+                    .rodata : { *(.rodata*) }
+                    .data : { *(.data*) }
+                    .bss : { *(.bss*) }
+                }
+            "#
+        }
+    };
+
+    fs::write(output_path, linker_script)
+        .expect("Failed to write default linker script");
+
+    println!("cargo:warning=Generated default linker script for {}", target);
 }
