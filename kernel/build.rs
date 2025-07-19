@@ -50,6 +50,9 @@ fn main() {
 
     // Set optimization flags
     configure_optimization(&profile);
+
+    // Generate build information
+    generate_build_info(&out_dir);
 }
 
 /// Configure target-specific build settings
@@ -269,6 +272,68 @@ fn configure_optimization(profile: &str) {
             println!("cargo:warning=Unknown profile: {}, using default debug optimization", profile);
         }
     }
+}
+
+/// Generate build information
+fn generate_build_info(out_dir: &str) {
+    let build_info_path = Path::new(out_dir).join("build_info.rs");
+
+    // Get build timestamp
+    let build_time = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap()
+        .as_secs();
+    
+    // Get git information if available
+    let git_hash = Command::new("git")
+        .args(&["rev-parse", "HEAD"])
+        .output()
+        .ok()
+        .and_then(|output| {
+            if output.status.success() {
+                Some(String::from_utf8_lossy(&output.stdout).trim().to_string())
+            } else {
+                None
+            }
+        })
+        .unwrap_or_else(|| "unknown".to_string());
+    
+    let git_branch = Command::new("git")
+        .args(&["branch", "--show-current"])
+        .output()
+        .ok()
+        .and_then(|output| {
+            if output.status.success() {
+                Some(String::from_utf8_lossy(&output.stdout).trim().to_string())
+            } else {
+                None
+            }
+        })
+        .unwrap_or_else(|| "unknown".to_string());
+
+    // Generate build info file
+    let build_info_content = format!(
+        r#"
+            // Generated build information
+            pub const BUILD_TIME: u64 = {};
+            pub const GIT_HASH: &str = "{}";
+            pub const GIT_BRANCH: &str = "{}";
+            pub const KERNEL_VERSION: &str = "{}";
+            pub const TARGET: &str = "{}";
+            pub const PROFILE: &str = "{}";
+        "#,
+        build_time,
+        git_hash,
+        git_branch,
+        env::var("CARGO_PKG_VERSION").unwrap_or_else(|_| "unknown".to_string()),
+        env::var("TARGET").unwrap_or_else(|_| "unknown".to_string()),
+        env::var("PROFILE").unwrap_or_else(|_| "debug".to_string()),
+    );
+
+    fs::write(build_info_path, build_info_content)
+        .expect("Failed to write build information");
+
+    println!("cargo:warning=Generated build information");
 }
 
 /// Generate default linker script if not found
