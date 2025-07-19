@@ -319,3 +319,9 @@ ASSERT((__supervisor_stack_top - __undefined_stack_top) >= 0x1000, "Supervisor s
 PROVIDE(__stack_limit = __stack_start);
 PROVIDE(__heap_limit_runtime = __heap_limit);
 PROVIDE(__kernel_image_size = __kernel_size);
+
+/* Memory protection boundaries */
+PROVIDE(__text_boundary = __text_end);
+PROVIDE(__rodata_boundary = __rodata_end);
+PROVIDE(__data_boundary = __data_end);
+PROVIDE(__bss_boundary = __bss_end);
