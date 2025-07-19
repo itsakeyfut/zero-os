@@ -129,3 +129,24 @@ pub enum UartError {
     /// FIFO error
     FifoError,
 }
+
+/// UART status flags
+#[derive(Debug, Clone, Copy)]
+pub struct UartStatus {
+    /// Transmit FIFO empty
+    pub tx_empty: bool,
+    /// Transmit FIDO full
+    pub tx_full: bool,
+    /// Receive FIFO empty
+    pub rx_empty: bool,
+    /// Receive FIFO full
+    pub rx_full: bool,
+    /// Clear to send (CTS) status
+    pub cts: bool,
+    /// Data carrier detect (DCD) status
+    pub dcd: bool,
+    /// Data set ready (DSR) status
+    pub dsr: bool,
+    /// Rind indicator (RI) status
+    pub ri: bool,
+}
