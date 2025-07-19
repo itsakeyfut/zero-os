@@ -68,3 +68,14 @@ pub enum Parity {
     /// Space parity (always 0)
     Space,
 }
+
+/// Flow control types
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum FlowControl {
+    /// No flow control
+    None,
+    /// Hardware flow control (RTS/CTS)
+    Hardware,
+    /// Software flow control (XON/XOFF)
+    Software,
+}
