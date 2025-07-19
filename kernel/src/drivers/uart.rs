@@ -53,3 +53,18 @@ pub enum StopBits {
     /// 2 stop bits
     Two,
 }
+
+/// Parity configuration
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Parity {
+    /// No parity
+    None,
+    /// Even parity
+    Even,
+    /// Odd parity
+    Odd,
+    /// Mark parity (always 1)
+    Mark,
+    /// Space parity (always 0)
+    Space,
+}
