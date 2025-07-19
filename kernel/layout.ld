@@ -263,3 +263,8 @@ __stack_pointer_fiq = __fiq_stack_top;
 __stack_pointer_abort = __abort_stack_top;
 __stack_pointer_undefined = __undefined_stack_top;
 __stack_pointer_supervisor = __supervisor_stack_top;
+
+/* Memory management symbols */
+__physical_memory_start = 0x00000000;
+__physical_memory_end = 0x08000000;    /* 128MB for QEMU VersatilePB */
+__physical_memory_size = __physical_memory_end - __physical_memory_start;
