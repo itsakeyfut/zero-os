@@ -41,6 +41,9 @@ fn main() {
 
     // Set up linker configuration
     configure_linker(&target, &out_dir);
+
+    // Configure platform-specific features
+    configure_platform();
 }
 
 /// Configure target-specific build settings
@@ -130,6 +133,40 @@ fn configure_linker(target: &str, out_dir: &str) {
         _ => {
             println!("cargo:warning=Using default linker configuration for {}", target);
         }
+    }
+}
+
+/// Configure platform-specific features
+fn configure_platform() {
+    // Check for platform-specific features
+    if env::var("CARGO_FEATURE_QEMU").is_ok() {
+        println!("cargo:rustc-cfg=feature=\"qemu\"");
+        println!("cargo:rustc-cfg=platform=\"qemu\"");
+    } else if env::var("CARGO_FEATURE_RASPBERRY_PI").is_ok() {
+        println!("cargo:rustc-cfg=feature=\"raspberry-pi\"");
+        println!("cargo:rustc-cfg=platform=\"raspberry-pi\"");
+    } else if env::var("CARGO_FEATURE_STM32").is_ok() {
+        println!("cargo:rustc-cfg=feature=\"stm32\"");
+        println!("cargo:rustc-cfg=platform=\"stm32\"");
+    } else {
+        // Default to QEMU for development
+        println!("cargo:rustc-cfg=feature=\"qemu\"");
+        println!("cargo:rustc-cfg=platform=\"qemu\"");
+        println!("cargo:warning=No platform specified, defaulting to QEMU");
+    }
+    
+    // Configure debugging features
+    if env::var("CARGO_FEATURE_DEBUG_UART").is_ok() {
+        println!("cargo:rustc-cfg=feature=\"debug-uart\"");
+    }
+    
+    if env::var("CARGO_FEATURE_DEBUG_LED").is_ok() {
+        println!("cargo:rustc-cfg=feature=\"debug-led\"");
+    }
+    
+    // Configure real-time features
+    if env::var("CARGO_FEATURE_RTIC_SUPPORT").is_ok() {
+        println!("cargo:rustc-cfg=feature=\"rtic\"");
     }
 }
 
