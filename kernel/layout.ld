@@ -229,3 +229,11 @@ SECTIONS
         *(.rela.*)
     }
 }
+
+/* Exported symbols for kernel use */
+
+/* Memory layout symbols */
+__kernel_start = ORIGIN(KERNEL);
+__kernel_end = __heap_end;
+__kernel_size = __kernel_end - __kernel_start;
+
