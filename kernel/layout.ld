@@ -255,3 +255,11 @@ __text_pages = (__text_size + 4095) / 4096;
 __rodata_pages = (__rodata_size + 4095) / 4096;
 __data_pages = (__data_size + 4095) / 4096;
 __bss_pages = (__bss_size + 4095) / 4096;
+
+/* Stack pointers for different ARM modes */
+__stack_pointer_main = __main_stack_top;
+__stack_pointer_irq = __irq_stack_top;
+__stack_pointer_fiq = __fiq_stack_top;
+__stack_pointer_abort = __abort_stack_top;
+__stack_pointer_undefined = __undefined_stack_top;
+__stack_pointer_supervisor = __supervisor_stack_top;
