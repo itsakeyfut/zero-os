@@ -249,3 +249,9 @@ __data_size = __data_end - __data_start;
 __bss_size = __bss_end - __bss_start;
 __stack_size = __stack_end - __stack_start;
 __heap_size = __heap_end - __heap_start;
+
+/* Page-aligned sections for MMU */
+__text_pages = (__text_size + 4095) / 4096;
+__rodata_pages = (__rodata_size + 4095) / 4096;
+__data_pages = (__data_size + 4095) / 4096;
+__bss_pages = (__bss_size + 4095) / 4096;
