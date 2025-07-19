@@ -77,4 +77,7 @@ impl GrantId {
     pub const fn as_u32(self) -> u32 {
         self.0
     }
+
+    /// Invalid grant ID
+    pub const INVALID: GrantId = GrantId(0);
 }
