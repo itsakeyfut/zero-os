@@ -57,6 +57,11 @@ fn main() {
     // Validate memory layout
     validate_memory_layout(&target);
 
+    // Optional
+    check_required_tools();
+    setup_cross_compilation();
+    additional_build_config();
+
     println!("cargo:warning=Kernel build configuration completed successfully");
 }
 
@@ -421,4 +426,53 @@ fn generate_default_linker_script(target: &str, output_path: &Path) {
         .expect("Failed to write default linker script");
 
     println!("cargo:warning=Generated default linker script for {}", target);
+}
+
+/// Check for required tools
+fn check_required_tools() {
+    let tools = match env::var("TARGET").unwrap_or_default().as_str() {
+        t if t.starts_with("arm") => vec!["arm-none-eabi-gcc", "arm-none-eabi-ld", "arm-none-eabi-objcopy"],
+        "x86_64-unknown-none" => vec!["gcc", "ld", "objcopy"],
+        _ => vec![],
+    };
+
+    for tool in tools {
+        if Command::new(tool).arg("--version").output().is_err() {
+            println!("cargo:warning=Required tool '{}' not found in PATH", tool);
+        }
+    }
+}
+
+/// Setup cross-compilation for environment
+fn setup_cross_compilation() {
+    // Set up environment for cross-compilation
+    if env::var("TARGET").unwrap_or_default().starts_with("arm") {
+        // ARM cross-compilation setup
+        if let Ok(sysroot) = env::var("ARM_SYSROOT") {
+            println!("cargo:rustc-link-arg=--sysroot={}", sysroot);
+        }
+        
+        unsafe {
+            // Set up ARM-specific environment variables
+            env::set_var("CC_armv7a_none_eabi", "arm-none-eabi-gcc");
+            env::set_var("AR_armv7a_none_eabi", "arm-none-eabi-ar");
+            env::set_var("OBJCOPY_armv7a_none_eabi", "arm-none-eabi-objcopy");
+        }
+    }
+}
+
+/// Additional build configuration
+fn additional_build_config() {
+    // Enable unstable features if needed
+    println!("cargo:rustc-cfg=feature=\"unstable\"");
+    
+    // Set up custom allocator if specified
+    if env::var("CARGO_FEATURE_CUSTOM_ALLOCATOR").is_ok() {
+        println!("cargo:rustc-cfg=feature=\"custom-allocator\"");
+    }
+    
+    // Enable panic handler configuration
+    if env::var("CARGO_FEATURE_PANIC_HALT").is_ok() {
+        println!("cargo:rustc-cfg=feature=\"panic-halt\"");
+    }
 }
