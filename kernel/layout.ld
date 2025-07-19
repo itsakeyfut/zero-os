@@ -307,3 +307,10 @@ ASSERT((__data_start & 0xFFF) == 0, "Data section not page-aligned")
 ASSERT((__bss_start & 0xFFF) == 0, "BSS section not page-aligned")
 ASSERT((__stack_start & 0xFFF) == 0, "Stack not page-aligned")
 ASSERT((__heap_start & 0xFFF) == 0, "Heap not page-aligned")
+
+/* Stack size checks for each mode */
+ASSERT((__irq_stack_top - __main_stack_top) >= 0x2000, "IRQ stack too small")
+ASSERT((__fiq_stack_top - __irq_stack_top) >= 0x1000, "FIQ stack too small")
+ASSERT((__abort_stack_top - __fiq_stack_top) >= 0x1000, "Abort stack too small")
+ASSERT((__undefined_stack_top - __abort_stack_top) >= 0x1000, "Undefined stack too small")
+ASSERT((__supervisor_stack_top - __undefined_stack_top) >= 0x1000, "Supervisor stack too small")
