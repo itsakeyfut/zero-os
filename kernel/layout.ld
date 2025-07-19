@@ -299,3 +299,11 @@ ASSERT(__heap_end <= __ram_start, "Kernel heap extends into available RAM")
 ASSERT(__kernel_size <= LENGTH(KERNEL), "Kernel too large for allocated space")
 ASSERT(__stack_size >= 0x8000, "Stack too small (minimum 32KB)")
 ASSERT(__heap_size >= 0x100000, "Heap too small (minimum 1MB)")
+
+/* Alignment checks */
+ASSERT((__text_start & 0xFFF) == 0, "Text section not page-aligned")
+ASSERT((__rodata_start & 0xFFF) == 0, "Read-only data not page-aligned")
+ASSERT((__data_start & 0xFFF) == 0, "Data section not page-aligned")
+ASSERT((__bss_start & 0xFFF) == 0, "BSS section not page-aligned")
+ASSERT((__stack_start & 0xFFF) == 0, "Stack not page-aligned")
+ASSERT((__heap_start & 0xFFF) == 0, "Heap not page-aligned")
