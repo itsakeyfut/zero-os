@@ -62,6 +62,20 @@ pub struct UartConfig {
     pub rx_timeout_ms: u32,
 }
 
+impl Default for UartConfig {
+    fn default() -> Self {
+        Self {
+            baud_rate: 115200,
+            data_bits: 8,
+            stop_bits: StopBits::One,
+            parity: Parity::None,
+            flow_control: FlowControl::None,
+            rx_timeout: false,
+            rx_timeout_ms: 100,
+        }
+    }
+}
+
 /// Stop bits configuration
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum StopBits {
