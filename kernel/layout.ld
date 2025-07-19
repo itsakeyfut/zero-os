@@ -22,6 +22,7 @@
 ENTRY(_start)
 
 /* Memory configuration for QEMU VersatilePB */
+MEMORY
 {
     /* Exception vectors at start of RAM */
     VECTORS (rx)  : ORIGIN = 0x00000000, LENGTH = 0x1000     /* 4KB for vectors */
@@ -284,9 +285,9 @@ __page_table_size = 0x4000;            /* 16KB for page tables */
 __page_table_end = __page_table_start + __page_table_size;
 
 /* Boot parameters location */
-__boot_params = __vectors_start + 0x100;  /* After reset vector */
+__boot_params = __vectors_start + 0x100; /* After reset vector */
 
-/* Assetions to ensure memory layout is valid */
+/* Assertions to ensure memory layout is valid */
 ASSERT(__text_start >= __vectors_end, "Text section overlaps with vectors")
 ASSERT(__rodata_start >= __text_end, "Read-only data overlaps with text")
 ASSERT(__data_start >= __rodata_end, "Data section overlaps with read-only data")
