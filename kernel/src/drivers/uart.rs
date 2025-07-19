@@ -112,3 +112,20 @@ pub enum FlowControl {
     /// Software flow control (XON/XOFF)
     Software,
 }
+
+/// UART error types
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum UartError {
+    /// Frame error (stop bit not detected)
+    FrameError,
+    /// Parity Error
+    ParityError,
+    /// Buffer overrun
+    Overrun,
+    /// Break condition detected
+    Break,
+    /// Hardware timeout
+    Timeout,
+    /// FIFO error
+    FifoError,
+}
