@@ -169,3 +169,40 @@ pub struct UartStats {
     /// Parity errors
     pub parity_errors: u32,
 }
+
+/// UART register layout for PL011
+#[repr(C)]
+struct Pl011Registers {
+    /// Data register
+    dr: u32,
+    /// Receive status register / Error clear register
+    rsr_ecr: u32,
+    /// Reserved
+    _reserved1: [u32; 4],
+    /// Flag register
+    fr: u32,
+    /// Reserved
+    _reserved2: u32,
+    /// Low-power counter register
+    ilpr: u32,
+    /// Integer baud rate register
+    ibrd: u32,
+    /// Fractional baud rate register
+    fbrd: u32,
+    /// Line control register
+    lcr_h: u32,
+    /// Control register
+    cr: u32,
+    /// Interrupt FIFO level select register
+    ifls: u32,
+    /// Interrupt mask set/clear register
+    imsc: u32,
+    /// Raw interrupt status register
+    ris: u32,
+    /// Masked interrupt status register
+    mis: u32,
+    /// Interrupt clear register
+    icr: u32,
+    /// DMA control register
+    dmacr: u32,
+}
