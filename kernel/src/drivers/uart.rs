@@ -150,3 +150,22 @@ pub struct UartStatus {
     /// Rind indicator (RI) status
     pub ri: bool,
 }
+
+/// UART statistics
+#[derive(Debug, Default, Clone, Copy)]
+pub struct UartStats {
+    /// Bytes transmitted
+    pub bytes_transmitted: u64,
+    /// Bytes received
+    pub bytes_received: u64,
+    /// Transmission errors
+    pub tx_errors: u32,
+    /// Reception errors
+    pub rx_errors: u32,
+    /// Buffer overruns
+    pub overruns: u32,
+    /// Frame errors
+    pub frame_errors: u32,
+    /// Parity errors
+    pub parity_errors: u32,
+}
