@@ -237,3 +237,7 @@ __kernel_start = ORIGIN(KERNEL);
 __kernel_end = __heap_end;
 __kernel_size = __kernel_end - __kernel_start;
 
+/* Available RAM for dynamic allocation */
+__ram_start = ORIGIN(RAM);
+__ram_end = ORIGIN(RAM) + LENGTH(RAM);
+__ram_size = LENGTH(RAM);
