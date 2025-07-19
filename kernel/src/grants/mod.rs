@@ -72,4 +72,9 @@ impl GrantId {
     pub const fn new(id: u32) -> Self {
         Self(id)
     }
+
+    /// Get the raw ID value
+    pub const fn as_u32(self) -> u32 {
+        self.0
+    }
 }
