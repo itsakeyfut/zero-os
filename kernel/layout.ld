@@ -272,3 +272,8 @@ __physical_memory_size = __physical_memory_end - __physical_memory_start;
 /* Kernel heap limits */
 __heap_limit = __ram_start;  /* Heap can grow into available RAM */
 __heap_max_size = 0x4000000; /* Maximum 64MB heap */
+
+/* Virtual memory layout constants */
+__virtual_kernel_base = 0xC0000000;    /* 3GB virtual address for kernel */
+__virtual_user_base = 0x00000000;      /* 0GB virtual address for user */
+__virtual_user_limit = 0x40000000;     /* 1GB limit for user space */
