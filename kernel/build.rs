@@ -47,6 +47,9 @@ fn main() {
 
     // Compile assembly files
     compile_assembly_files(&target, &out_dir);
+
+    // Set optimization flags
+    configure_optimization(&profile);
 }
 
 /// Configure target-specific build settings
@@ -237,6 +240,35 @@ fn compile_assembly_file(target: &str, asm_file: &str, out_dir: &str) {
 
     println!("cargo:rustc-link-arg={}", output_path.display());
     println!("cargo:warning=Compiled assembly file: {} -> {}", asm_file, output_path.display());
+}
+
+/// Configure optimization settings
+fn configure_optimization(profile: &str) {
+    match profile {
+        "release" => {
+            // Release build optimizations
+            println!("cargo:rustc-cfg=optimize=\"size\"");
+            println!("cargo:rustc-link-arg=-Os");
+            println!("cargo:rustc-link-arg=-filo");
+            println!("cargo:rustc-link-arg=--strip-debug");
+        }
+        "debug" => {
+            // Debug build settings
+            println!("cargo:rustc-cfg=optimize=\"debug\"");
+            println!("cargo:rustc-link-arg=-O0");
+            println!("cargo:rustc-link-arg=-g");
+        }
+        "realtime" => {
+            // Real-time profile optimizatinos
+            println!("cargo:rustc-cfg=optimize=\"speed\"");
+            println!("cargo:rustc-link-arg=-O3");
+            println!("cargo:rustc-link-arg=-flto");
+            println!("cargo:rustc-link-arg=-march=native");
+        }
+        _ => {
+            println!("cargo:warning=Unknown profile: {}, using default debug optimization", profile);
+        }
+    }
 }
 
 /// Generate default linker script if not found
