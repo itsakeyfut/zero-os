@@ -81,3 +81,16 @@ impl GrantId {
     /// Invalid grant ID
     pub const INVALID: GrantId = GrantId(0);
 }
+
+/// Grant types for different use cases
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum GrantType {
+    /// Process-specific grant (isolated per process)
+    Process,
+    /// Driver grant (shared among driver instances)
+    Driver,
+    /// System grant (global kernel data)
+    System,
+    /// Temporary grant (short-lived)
+    Temporary,
+}
