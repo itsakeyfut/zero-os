@@ -62,3 +62,7 @@ pub const DEFAULT_GRANT_SIZE: usize = 4096;
 
 /// Grant alignment requirement (must be power of 2)
 pub const GRANT_ALIGNMENT: usize = 8;
+
+/// Grant identifier
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct GrantId(u32);
