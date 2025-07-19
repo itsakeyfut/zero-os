@@ -241,3 +241,11 @@ __kernel_size = __kernel_end - __kernel_start;
 __ram_start = ORIGIN(RAM);
 __ram_end = ORIGIN(RAM) + LENGTH(RAM);
 __ram_size = LENGTH(RAM);
+
+/* Section size calculations */
+__text_size = __text_end - __text_start;
+__rodata_size = __rodata_end - __rodata_start;
+__data_size = __data_end - __data_start;
+__bss_size = __bss_end - __bss_start;
+__stack_size = __stack_end - __stack_start;
+__heap_size = __heap_end - __heap_start;
