@@ -43,6 +43,25 @@ pub const DEFAULT_TX_BUFFER_SIZE: usize = 256;
 /// Maximum baud rate supported
 pub const MAX_BAUD_RATE: u32 = 3_000_000;
 
+/// UART configuration parameters
+#[derive(Debug, Clone, Copy)]
+pub struct UartConfig {
+    /// Baud rate in bits per second
+    pub baud_rate: u32,
+    /// Number of data bits (5-8)
+    pub data_bits: u8,
+    /// Stop bits configuration
+    pub stop_bits: StopBits,
+    /// Parity configuration
+    pub parity: Parity,
+    /// Flow control type
+    pub flow_control: FlowControl,
+    /// Enable receive timeout
+    pub rx_timeout: bool,
+    /// Receive timeout in milliseconds
+    pub rx_timeout_ms: u32,
+}
+
 /// Stop bits configuration
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum StopBits {
