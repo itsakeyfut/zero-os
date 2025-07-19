@@ -44,6 +44,9 @@ fn main() {
 
     // Configure platform-specific features
     configure_platform();
+
+    // Compile assembly files
+    compile_assembly_files(&target, &out_dir);
 }
 
 /// Configure target-specific build settings
@@ -168,6 +171,72 @@ fn configure_platform() {
     if env::var("CARGO_FEATURE_RTIC_SUPPORT").is_ok() {
         println!("cargo:rustc-cfg=feature=\"rtic\"");
     }
+}
+
+/// Compile assembly files
+fn compile_assembly_files(target: &str, out_dir: &str) {
+    let asm_files = [
+        "src/arch/arm/boot.S",
+        "src/arch/arm/vectors.S",
+        "src/arch/arm/context_switch.S",
+    ];
+
+    for asm_file in &asm_files {
+        let asm_path = Path::new(asm_file);
+        if asm_path.exists() {
+            println!("cargo:rerun-if-changed={}", asm_file);
+            compile_assembly_file(target, asm_file, out_dir);
+        }
+    }
+}
+
+/// Compile a single assembly file
+fn compile_assembly_file(target: &str, asm_file: &str, out_dir: &str) {
+    let output_name = Path::new(asm_file)
+        .file_stem()
+        .unwrap()
+        .to_str()
+        .unwrap();
+    let output_path = Path::new(out_dir).join(format!("{}.o", output_name));
+
+    let mut cmd = match target {
+        t if t.starts_with("arm") => {
+            let mut c = Command::new("arm-none-eabi-gcc");
+            c.arg("-c")
+             .arg("-mcpu=arm1176jzf-s")
+             .arg("-mfloat-abi=soft")
+             .arg("-mthumb-interwork")
+             .arg("-nostartfiles")
+             .arg("-ffreestanding");
+            c
+        }
+        "x86_64-unknown-none" => {
+            let mut c = Command::new("gcc");
+            c.arg("-c")
+             .arg("-m64")
+             .arg("-nostartfiles")
+             .arg("-ffreestanding");
+            c
+        }
+        _ => {
+            println!("cargo:warning=Skipping assembly compilation for unsupported target: {}", target);
+            return;
+        }
+    };
+
+    let output = cmd
+        .arg("-o")
+        .arg(&output_path)
+        .arg(asm_file)
+        .output()
+        .expect("Failed to execute assembler");
+
+    if !output.status.success() {
+        panic!("Assembly compilation failed: {}", String::from_utf8_lossy(&output.stderr));
+    }
+
+    println!("cargo:rustc-link-arg={}", output_path.display());
+    println!("cargo:warning=Compiled assembly file: {} -> {}", asm_file, output_path.display());
 }
 
 /// Generate default linker script if not found
