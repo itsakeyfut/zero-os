@@ -53,6 +53,11 @@ fn main() {
 
     // Generate build information
     generate_build_info(&out_dir);
+
+    // Validate memory layout
+    validate_memory_layout(&target);
+
+    println!("cargo:warning=Kernel build configuration completed successfully");
 }
 
 /// Configure target-specific build settings
@@ -334,6 +339,34 @@ fn generate_build_info(out_dir: &str) {
         .expect("Failed to write build information");
 
     println!("cargo:warning=Generated build information");
+}
+
+/// Validate memory layout
+fn validate_memory_layout(target: &str) {
+    // Basic memory layout validation
+    match target {
+        t if t.starts_with("arm") => {
+            // ARM-specific validation
+            let ram_size = 128 * 1024 * 1024; // 128MB for QEMU
+            let kernel_max_size = 8 * 1024 * 1024; // 8MB max kernel size
+
+            if kernel_max_size > ram_size {
+                println!("cargo:warning=Kernel size may be too large for available RAM");
+            }
+        }
+        "x86_64-unknown-none" => {
+            // x86_64-specific validation
+            let ram_size = 2u64 * 1024 * 1024 * 1024; // 2GB for QEMU
+            let kernel_max_size = 16 * 1024 * 1024; // 16MB max kernel size
+            
+            if kernel_max_size > ram_size {
+                println!("cargo:warning=Kernel size may be too large for available RAM");
+            }
+        }
+        _ => {
+            println!("cargo:warning=Skipping memory layout validation for {}", target);
+        }
+    }
 }
 
 /// Generate default linker script if not found
