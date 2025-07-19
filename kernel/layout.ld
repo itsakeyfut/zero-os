@@ -32,3 +32,200 @@ ENTRY(_start)
     /* Available RAM for dynamic allocation */
     RAM (rw)      : ORIGIN = 0x00800000, LENGTH = 0x7800000  /* ~120MB available */
 }
+
+/* Section definitions */
+SECTIONS
+{
+    /* Exception vector table */
+    .vectors : ALIGN(4)
+    {
+        __vectors_start =.;
+        KEEP(*(.vectors))
+        KEEP(*(.vectors.*))
+        . = ALIGN(4);
+        __vectors_end = .;
+    } > VECTORS
+
+    /* Kernel code section */
+    .text : ALIGN(4)
+    {
+        __text_start = .;
+
+        /* Boot code must come first */
+        KEEP(*(.boot))
+        KEEP(*(.boot.*))
+
+        /* Main kernel code */
+        *(.text)
+        *(.text.*)
+
+        /* ARM-specific code sections */
+        *(.text.unlikely)
+        *(.text.exit)
+        *(.text.startup)
+        *(.text.hot)
+
+        /* Ensure proper alignment */
+        . = ALIGN(4);
+        __text_end = .;
+    } > KERNEL
+
+    /* Read-only data section */
+    .rodata : ALIGN(4)
+    {
+        __rodata_start = .;
+
+        /* String literals and constants */
+        *(.rodata)
+        *(.rodata.*)
+
+        /* Debug strings (if enabled) */
+        *(.rodata.str1.1)
+        *(.rodata.str1.4)
+        *(.rodata.str1.8)
+
+        /* Global offset table (for position-independent code) */
+        *(.got)
+        *(.got.plt)
+
+        /* Exception frame info */
+        *(.eh_frame)
+        *(.eh_frame_hdr)
+
+        /* GNU stack information */
+        *(.note.GNU-stack)
+
+        . = ALIGN(4);
+        __rodata_end = .;
+    } > KERNEL
+
+    /* Initialized data section */
+    .data : ALIGN(4)
+    {
+        __data_start = .;
+
+        /* Global and static variables */
+        *(.data)
+        *(.data.*)
+
+        /* Small data sections (for some ARM variants) */
+        *(.sdata)
+        *(.sdata.*)
+
+        /* Thread-local storage */
+        *(.tdata)
+        *(.tdata.*)
+
+        . = ALIGN(4);
+        __data_end = .;
+    } > KERNEL
+
+    /* Uninitialized data section */
+    .bss : ALIGN(4)
+    {
+        __bss_start = .;
+
+        /* Zero-initialized variables */
+        *(.bss)
+        *(.bss.*)
+
+        /* Small BSS sections */
+        *(.sbss)
+        *(.sbss.*)
+
+        /* Thread-local BSS */
+        *(.tbss)
+        *(.tbss.*)
+
+        /* Common symbols */
+        *(COMMON)
+
+        . = ALIGN(4)
+        __bss_end = .;
+    } > KERNEL
+
+    /* Kernel stack section */
+    .stack : ALIGN(4096)
+    {
+        __stack_start = .;
+
+        /* Reserve space for different stack types */
+
+        /* Main kernel stack (16KB) */
+        . = . + 0x4000;
+        __main_stack_top = .;
+
+        /* IRQ stack (8KB) */
+        . = . + 0x2000;
+        __irq_stack_top = ,;
+
+        /* FIQ stack (4KB) */
+        . = . + 0x1000;
+        __fiq_stack_top = .;
+
+        /* Abort stack (4KB) */
+        . = . + 0x1000;
+        __abort_stack_top = .;
+
+        /* Undefined stack (4KB) */
+        . = . + 0x1000;
+        __undefined_stack_top .;
+
+        /* Supervisor stack (4KB) */
+        . = . _ 0x1000;
+        __supervisor_stack_top = .;
+
+        . = ALIGN(4096);
+        __stack_end = .;
+    } > KERNEL
+
+    /* Kernel heap section */
+    .heap : ALIGN(4096)
+    {
+        __heap_start = .;
+
+        /* Reserve initial heap space (1MB) */
+        . = . + 0x100000;
+
+        __heap_end = .;
+    } > KERNEL
+
+    /* Symbol table (for debugging) */
+    .symtab : { *(.symtab) }
+    .strtab : { *(.strtab) }
+    .shstrtab : { *(.shstrtab) }
+
+    /* Debug information (DWARF) */
+    .debug_info     0 : { *(.debug_info) }
+    .debug_abbrev   0 : { *(.debug_abbrev) }
+    .debug_line     0 : { *(.debug_line) }
+    .debug_str      0 : { *(.debug_str) }
+    .debug_loc      0 : { *(.debug_loc) }
+    .debug_ranges   0 : { *(.debug_ranges) }
+    .debug_frame    0 : { *(.debug_frame) }
+    
+    /* ARM-specific debug sections */
+    .ARM.attributes 0 : { *(.ARM.attributes) }
+    .ARM.exidx      0 : { *(.ARM.exidx) }
+    .ARM.extab      0 : { *(.ARM.extab) }
+
+    /* Discard unwanted sections */
+    /DISCARD/ :
+    {
+        *(.note.*)
+        *(.comment)
+        *(.interp)
+        *(.dynamic)
+        *(.dynsym)
+        *(.dynstr)
+        *(.hash)
+        *(.gnu.hash)
+        *(.gnu.version)
+        *(.gnu.version_d)
+        *(.gnu.version_r)
+        *(.plt)
+        *(.iplt)
+        *(.rel.*)
+        *(.rela.*)
+    }
+}
