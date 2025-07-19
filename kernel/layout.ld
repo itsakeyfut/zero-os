@@ -325,3 +325,5 @@ PROVIDE(__text_boundary = __text_end);
 PROVIDE(__rodata_boundary = __rodata_end);
 PROVIDE(__data_boundary = __data_end);
 PROVIDE(__bss_boundary = __bss_end);
+
+/* End of linker script */
