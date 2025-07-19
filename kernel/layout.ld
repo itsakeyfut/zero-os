@@ -282,3 +282,6 @@ __virtual_user_limit = 0x40000000;     /* 1GB limit for user space */
 __page_table_start = __ram_start;
 __page_table_size = 0x4000;            /* 16KB for page tables */
 __page_table_end = __page_table_start + __page_table_size;
+
+/* Boot parameters location */
+__boot_params = __vectors_start + 0x100;  /* After reset vector */
