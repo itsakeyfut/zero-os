@@ -66,3 +66,10 @@ pub const GRANT_ALIGNMENT: usize = 8;
 /// Grant identifier
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct GrantId(u32);
+
+impl GrantId {
+    /// Create a new grant ID
+    pub const fn new(id: u32) -> Self {
+        Self(id)
+    }
+}
