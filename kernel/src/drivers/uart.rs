@@ -42,3 +42,14 @@ pub const DEFAULT_TX_BUFFER_SIZE: usize = 256;
 
 /// Maximum baud rate supported
 pub const MAX_BAUD_RATE: u32 = 3_000_000;
+
+/// Stop bits configuration
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum StopBits {
+    /// 1 stop bit
+    One,
+    /// 1.5 stop bits
+    OnePointFive,
+    /// 2 stop bits
+    Two,
+}
