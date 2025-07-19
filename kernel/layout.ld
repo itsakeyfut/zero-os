@@ -314,3 +314,8 @@ ASSERT((__fiq_stack_top - __irq_stack_top) >= 0x1000, "FIQ stack too small")
 ASSERT((__abort_stack_top - __fiq_stack_top) >= 0x1000, "Abort stack too small")
 ASSERT((__undefined_stack_top - __abort_stack_top) >= 0x1000, "Undefined stack too small")
 ASSERT((__supervisor_stack_top - __undefined_stack_top) >= 0x1000, "Supervisor stack too small")
+
+/* Provide symbols for runtime checks */
+PROVIDE(__stack_limit = __stack_start);
+PROVIDE(__heap_limit_runtime = __heap_limit);
+PROVIDE(__kernel_image_size = __kernel_size);
