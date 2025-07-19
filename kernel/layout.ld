@@ -294,3 +294,8 @@ ASSERT(__bss_start >= __data_end, "BSS section overlaps with data")
 ASSERT(__stack_start >= __bss_end, "Stack overlaps with BSS")
 ASSERT(__heap_start >= __stack_end, "Heap overlaps with stack")
 ASSERT(__heap_end <= __ram_start, "Kernel heap extends into available RAM")
+
+/* Size constraints */
+ASSERT(__kernel_size <= LENGTH(KERNEL), "Kernel too large for allocated space")
+ASSERT(__stack_size >= 0x8000, "Stack too small (minimum 32KB)")
+ASSERT(__heap_size >= 0x100000, "Heap too small (minimum 1MB)")
