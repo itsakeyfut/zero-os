@@ -35,4 +35,56 @@ fn main() {
     println!("cargo:warning=Building Zero OS Kernel for target: {}", target);
     println!("cargo:warning=Building profile: {}", profile);
     println!("cargo:warning=Output directory: {}", out_dir);
+
+    // Configure target-specific build settings
+    configure_target(&target);
+}
+
+/// Configure target-specific build settings
+fn configure_target(target: &str) {
+    match target {
+        "armv7a-none-eabi" => {
+            println!("cargo:rustc-cfg=target_arch=\"arm\"");
+            println!("cargo:rustc-cfg=target_abi=\"eabi\"");
+            println!("cargo:rustc-cfg=target_endian=\"little\"");
+            println!("cargo:rustc-cfg=target_pointer_width=\"32\"");
+            println!("cargo:rustc-cfg=target_feature=\"v7\"");
+            
+            // ARM-specific compiler flags
+            println!("cargo:rustc-link-arg=-mcpu=arm1176jzf-s");
+            println!("cargo:rustc-link-arg=-mfloat-abi=soft");
+            println!("cargo:rustc-link-arg=-mthumb-interwork");
+            
+            // Enable ARM-specific features
+            println!("cargo:rustc-cfg=feature=\"arm\"");
+            println!("cargo:rustc-cfg=feature=\"cortex-a\"");
+        }
+        "armv7em-none-eabihf" => {
+            println!("cargo:rustc-cfg=target_arch=\"arm\"");
+            println!("cargo:rustc-cfg=target_abi=\"eabihf\"");
+            println!("cargo:rustc-cfg=target_endian=\"little\"");
+            println!("cargo:rustc-cfg=target_pointer_width=\"32\"");
+            println!("cargo:rustc-cfg=target_feature=\"v7em\"");
+            
+            // Cortex-M specific flags
+            println!("cargo:rustc-link-arg=-mcpu=cortex-m4");
+            println!("cargo:rustc-link-arg=-mfloat-abi=hard");
+            println!("cargo:rustc-link-arg=-mfpu=fpv4-sp-d16");
+            
+            // Enable Cortex-M features
+            println!("cargo:rustc-cfg=feature=\"arm\"");
+            println!("cargo:rustc-cfg=feature=\"cortex-m\"");
+        }
+        "x86_64-unknown-none" => {
+            println!("cargo:rustc-cfg=target_arch=\"x86_64\"");
+            println!("cargo:rustc-cfg=target_endian=\"little\"");
+            println!("cargo:rustc-cfg=target_pointer_width=\"64\"");
+            
+            // x86_64-specific features
+            println!("cargo:rustc-cfg=feature=\"x86_64\"");
+        }
+        _ => {
+            println!("cargo:warning=Unknown target: {}, using generic configuration", target);
+        }
+    }
 }
