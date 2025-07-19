@@ -277,3 +277,8 @@ __heap_max_size = 0x4000000; /* Maximum 64MB heap */
 __virtual_kernel_base = 0xC0000000;    /* 3GB virtual address for kernel */
 __virtual_user_base = 0x00000000;      /* 0GB virtual address for user */
 __virtual_user_limit = 0x40000000;     /* 1GB limit for user space */
+
+/* Page table locations (in available RAM) */
+__page_table_start = __ram_start;
+__page_table_size = 0x4000;            /* 16KB for page tables */
+__page_table_end = __page_table_start + __page_table_size;
