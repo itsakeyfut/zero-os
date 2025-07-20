@@ -124,3 +124,15 @@ impl SlabAllocator {
         }
     }
 }
+
+/// Buddy allocator for medium-sized grants
+struct BuddyAllocator {
+    /// Free lists for each order
+    free_lists: [Option<NonNull<FreeBlock>>; BUDDY_ORDERS],
+    /// Base address of allocator memory
+    base_address: VirtualAddress,
+    /// Total size of allocator memory
+    total_size: usize,
+    /// Memory currently in use
+    used_memory: usize,
+}
