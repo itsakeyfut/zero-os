@@ -361,4 +361,12 @@ impl<T> Grant<T> {
             ptr.as_mut()
         }
     }
+
+    /// Map a function over the grat data (read-only)
+    pub fn map<R, F>(&self, f: F) -> Option<R>
+    where
+        F: FnOnce(&T) -> R,
+    {
+        self.read().map(f)
+    }
 }
