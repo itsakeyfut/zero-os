@@ -323,4 +323,9 @@ impl<T> Grant<T> {
     pub fn size(&self) -> usize {
         self.region.size
     }
+
+    /// Get the address of the grant
+    pub fn address(&self) -> VirtualAddress {
+        self.region.address
+    }
 }
