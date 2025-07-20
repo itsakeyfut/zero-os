@@ -369,4 +369,12 @@ impl<T> Grant<T> {
     {
         self.read().map(f)
     }
+
+    /// Map a function over that grant data (mutable)
+    pub fn map_mut<R, F>(&mut self, f: F) -> Option<R>
+    where
+        F: FnOnce(&mut T) -> R,
+    {
+        self.write().map(f)
+    }
 }
