@@ -462,6 +462,39 @@ impl GrantAllocator {
         self.grants.get(&grant_id)
     }
 
+    /// Check if a process can access a grant
+    pub fn check_access(
+        &self,
+        grant_id: GrantId,
+        process_id: ProcessId,
+        capability: &GrantCapability,
+    ) -> bool {
+        // Verify capability matches grant
+        if capability.grant_id() != grant_id {
+            return false;
+        }
+        
+        // Check if capability is still valid
+        let current_time = crate::arch::target::Architecture::current_time_us();
+        if !capability.is_valid(current_time) {
+            return false;
+        }
+        
+        // Get grant region
+        let region = match self.grants.get(&grant_id) {
+            Some(region) => region,
+            None => return false,
+        };
+        
+        // Check process ownership or shareability
+        match region.owner {
+            Some(owner) => {
+                owner == process_id || (region.permissions.shareable && capability.can_share())
+            }
+            None => true, // System grants are accessible by all with proper capability
+        }
+    }
+
     /// Allocate memory for grants
     fn allocate_memory(&mut self, size: usize, alignment: usize) -> GrantResult<VirtualAddress> {
         let aligned_size = (size + alignment - 1) & !(alignment - 1);
