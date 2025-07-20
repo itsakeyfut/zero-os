@@ -107,3 +107,15 @@ pub struct GrantPermissions {
     /// Allow sharing with other processes
     pub shareable: bool,
 }
+
+impl GrantPermissions {
+    /// Read-only permissions
+    pub const fn read_only() -> Self {
+        Self {
+            read: true,
+            write: false,
+            execute: false,
+            shareable: false,
+        }
+    }
+}
