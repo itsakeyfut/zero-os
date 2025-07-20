@@ -184,6 +184,34 @@ pub mod sctlr_bits {
     pub const VECTORED_INTERRUPT: u32 = 1 << 24;
 }
 
+/// Early boot initialization
+pub fn early_boot_init() {
+    // SAFETY: Early boot code runs in privileged mode
+    unsafe {
+        // Disable inerrupts
+        asm!("cpsid if", options(nomem, nostack));
+
+        // Set up stack pointers for different modes
+        setup_stack_pointers();
+
+        // Configure CPU features
+        configure_cpu();
+
+        // Set up exception vectors
+        setup_exception_vectors();
+
+        // Clear BSS section
+        clear_bss();
+
+        // Set up initial page tables (if MMU enabled)
+        #[cfg(feature = "mmu")]
+        setup_initial_page_tables();
+
+        // Enable caches and MMU
+        enable_caches_and_mmu();
+    }
+}
+
 /// Set up stack pointers for all ARM processor modes
 unsafe fn setup_stack_pointers() {
     // Get stack addresses from linker script
