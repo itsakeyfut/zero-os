@@ -65,3 +65,20 @@ impl Default for BootConfig {
         }
     }
 }
+
+/// CPU identification information
+#[derive(Debug, Clone, Copy)]
+pub struct CpuInfo {
+    /// Main ID register value
+    pub main_id: u32,
+    /// Cache type register
+    pub cache_type: u32,
+    /// TLB type register
+    pub tlb_type: u32,
+    /// Processor feature registers
+    pub processor_features: [u32; 2],
+    /// Memory model features
+    pub memory_model_features: [u32; 4],
+    /// Instruction set attributes
+    pub instruction_set_attributes: [u32; 5],
+}
