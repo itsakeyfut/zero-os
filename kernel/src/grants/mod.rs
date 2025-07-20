@@ -298,3 +298,19 @@ pub struct Grant<T> {
     /// Phantom data for type safety
     _phantom: PhantomData<T>,
 }
+
+impl<T> Grant<T> {
+    /// Create a new grant handle
+    /// 
+    /// # Safety
+    /// 
+    /// Caller must ensure that the memory region is valid and properly aligned
+    /// for type T, and that the grant capability is valid.
+    pub unsafe fn new(region: GrantRegion, capability: GrantCapability) -> Self {
+        Self {
+            region,
+            capability,
+            _phantom: PhantomData,
+        }
+    }
+}
