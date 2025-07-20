@@ -486,4 +486,9 @@ pub trait GrantData: 'static {
     fn alignment() -> usize {
         core::mem::align_of::<Self>()
     }
+
+    /// Get the size of this type
+    fn size() -> usize {
+        core::mem::size_of::<Self>()
+    }
 }
