@@ -213,4 +213,68 @@ impl BuddyAllocator {
         
         None
     }
+
+    /// Free memory back to buddy allocator
+    /// 
+    /// # Safety
+    /// 
+    /// Caller must ensure the pointer was allocated by this allocator.
+    unsafe fn deallocate(&mut self, ptr: NonNull<u8>, size: usize) {
+        let order = self.size_to_order(size);
+        if order >= BUDDY_ORDERS {
+            return;
+        }
+
+        let mut block_addr = ptr.as_ptr() as usize;
+        let mut current_order = order;
+
+        // Coalesce with buddy blocks
+        while current_order < BUDDY_ORDERS - 1 {
+            let buddy_addr = block_addr ^ (1 << current_order);
+
+            // Check if buddy is free
+            let mut prev: Option<NonNull<FreeBlock>> = None;
+            let mut current = self.free_lists[current_order];
+
+            while let Some(free_block) = current {
+                if free_block.as_ptr() as usize == buddy_addr {
+                    // Remove buddy from free list
+                    unsafe {
+                        let next = (*free_block.as_ptr()).next;
+                        if let Some(prev_block) = prev {
+                            (*prev_block.as_ptr()).next = next;
+                        } else {
+                            self.free_lists[current_order] = next;
+                        }
+                    }
+
+                    // Coalesce blocks
+                    if buddy_addr < block_addr {
+                        block_addr = buddy_addr;
+                    }
+                    current_order += 1;
+                    break;
+                }
+
+                prev = current;
+                unsafe {
+                    current = (*free_block.as_ptr()).next;
+                }
+            }
+
+            if current.is_none() {
+                break; // Buddy not free, can't coalesce
+            }
+        }
+
+        // Add coalesced block to free list
+        unsafe {
+            let block = block_addr as *mut FreeBlock;
+            (*block).size = 1 << current_order;
+            (*block).next = self.free_lists[current_order];
+            self.free_lists[current_order] = NonNull::new(block);
+        }
+
+        self.used_memory -= 1 << order;
+    }
 }
