@@ -442,3 +442,6 @@ pub enum GrantError {
     /// System limit exceeded
     LimitExceeded,
 }
+
+/// Result type for grant operations
+pub type GrantResult<T> = Result<T, GrantError>;
