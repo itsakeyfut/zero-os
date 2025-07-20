@@ -502,6 +502,23 @@ impl GrantAllocator {
             .unwrap_or_default()
     }
 
+    /// Free all grants for a process
+    pub fn free_process_grants(&mut self, process_id: ProcessId) -> GrantResult<()> {
+        let grant_ids = self.get_process_grants(process_id);
+
+        for grant_id in grant_ids {
+            if let Some(region) = self.grants.remove(&grant_id) {
+                self.free_memory(region.address, region.size)?;
+                self.stats.active_grants -= 1;
+                self.stats.process_grants -= 1;
+                self.stats.used_memory -= region.size;
+            }
+        }
+
+        self.process_grants.remove(&process_id);
+        Ok(())
+    }
+
     /// Allocate memory for grants
     fn allocate_memory(&mut self, size: usize, alignment: usize) -> GrantResult<VirtualAddress> {
         let aligned_size = (size + alignment - 1) & !(alignment - 1);
