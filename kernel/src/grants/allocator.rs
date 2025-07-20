@@ -136,3 +136,15 @@ struct BuddyAllocator {
     /// Memory currently in use
     used_memory: usize,
 }
+
+impl BuddyAllocator {
+    /// Create a new buddy allocator
+    const fn new() -> Self {
+        Self {
+            free_lists: [None; BUDDY_ORDERS],
+            base_address: VirtualAddress::new(0),
+            total_size: 0,
+            used_memory: 0,
+        }
+    }
+}
