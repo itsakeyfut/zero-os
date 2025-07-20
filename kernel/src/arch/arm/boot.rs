@@ -155,3 +155,31 @@ impl CpuInfo {
         self.cache_type != 0
     }
 }
+
+/// System Control Register (SCTLR) bits
+pub mod sctlr_bits {
+    /// MMU enable
+    pub const MMU_ENABLE: u32 = 1 << 0;
+    /// Alignment check enable
+    pub const ALIGNMENT_CHECK: u32 = 1 << 1;
+    /// Data cache enable
+    pub const DATA_CACHE_ENABLE: u32 = 1 << 2;
+    /// Write buffer enable
+    pub const WRITE_BUFFER_ENABLE: u32 = 1 << 3;
+    /// Exception endianness
+    pub const EXCEPTION_ENDIAN: u32 = 1 << 25;
+    /// Instruction cache enable
+    pub const INSTRUCTION_CACHE_ENABLE: u32 = 1 << 12;
+    /// High vectors (0xFFFF0000)
+    pub const HIGH_VECTORS: u32 = 1 << 13;
+    /// Round robin replacement
+    pub const ROUND_ROBIN: u32 = 1 << 14;
+    /// Disable loading TBIT
+    pub const DISABLE_TBIT: u32 = 1 << 15;
+    /// Fast interrupt configuration
+    pub const FI: u32 = 1 << 21;
+    /// Unaligned access enable
+    pub const UNALIGNED_ACCESS: u32 = 1 << 22;
+    /// Vectored interrupt enable
+    pub const VECTORED_INTERRUPT: u32 = 1 << 24;
+}
