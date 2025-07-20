@@ -205,4 +205,9 @@ impl GrantCapability {
     pub fn grant_id(&self) -> GrantId {
         self.grant_id
     }
+
+    /// Get the process ID
+    pub fn process_id(&self) -> ProcessId {
+        self.process_id
+    }
 }
