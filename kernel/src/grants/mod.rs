@@ -395,4 +395,9 @@ impl<T> Grant<T> {
     pub fn capability(&self) -> &GrantCapability {
         &self.capability
     }
+
+    /// Get the region information
+    pub fn region(&self) -> &GrantRegion {
+        &self.region
+    }
 }
