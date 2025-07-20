@@ -138,4 +138,14 @@ impl GrantPermissions {
             shareable: true,
         }
     }
+
+    /// Shareable read-write permissions
+    pub const fn shareable_read_write() -> Self {
+        Self {
+            read: true,
+            write: true,
+            execute: false,
+            shareable: true,
+        }
+    }
 }
