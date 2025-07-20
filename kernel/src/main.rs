@@ -37,3 +37,12 @@ macro_rules! debug_print {
         }
     };
 }
+
+#[derive(Debug, Clone, Copy)]
+pub enum KernelError {
+    OutOfMemory,
+    InvalidParameter,
+    ProcessNotFound,
+    ResourceUnavailable,
+    PermissionDenied,
+}
