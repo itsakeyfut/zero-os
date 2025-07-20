@@ -10,6 +10,20 @@
 use core::panic::PanicInfo;
 
 mod arch;
+mod memory;
+mod platform;
+mod process;
+mod syscalls;
+
+use platform::Platform;
+use process::ProcessManager;
+use memory::MemroyManager;
+
+pub struct Kernel {
+    process_manager: ProcessManager,
+    memory_manager: MemoryManager,
+    platform: Platform,
+}
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
