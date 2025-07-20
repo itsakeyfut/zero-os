@@ -495,6 +495,13 @@ impl GrantAllocator {
         }
     }
 
+    /// Get grants for a specific process
+    pub fn get_process_grants(&self, process_id: ProcessId) -> Vec<GrantId, 16> {
+        self.process_grants.get(&process_id)
+            .cloned()
+            .unwrap_or_default()
+    }
+
     /// Allocate memory for grants
     fn allocate_memory(&mut self, size: usize, alignment: usize) -> GrantResult<VirtualAddress> {
         let aligned_size = (size + alignment - 1) & !(alignment - 1);
