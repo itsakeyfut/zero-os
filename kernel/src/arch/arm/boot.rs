@@ -362,3 +362,29 @@ unsafe fn setup_initial_page_tables() {
         asm!("mcr p15, 0, {}, c3, c0, 0", in(reg) 0x1u32, options(nomem, nostack));
     }
 }
+
+/// Enable caches and MMU
+unsafe fn enable_caches_and_mmu() {
+    let mut sctlr: u32;
+
+    // SAFETY: We're enabling caches and MMU during boot
+    unsafe {
+        // Read current SCTLR
+        asm!("mrc p15, 0, {}, c1, c0, 0", out(reg) sctlr, options(nomem, nostack));
+
+        // Enable data cache
+        sctlr |= sctlr_bits::DATA_CACHE_ENABLE;
+
+        // Enable MMU (if page tables are set up)
+        #[cfg(feature = "mmu")]
+        {
+            sctlr |= sctlr_bits::MMU_ENABLE;
+        }
+
+        // Write back SCTLR
+        asm!("mcr p15, 0, {}, c1, c0, 0", in(reg) sctlr, options(nomem, nostack));
+
+        // Instruction synchronization barrier
+        asm!("isb", options(nomem, nostack));
+    }
+}
