@@ -445,3 +445,26 @@ pub enum GrantError {
 
 /// Result type for grant operations
 pub type GrantResult<T> = Result<T, GrantError>;
+
+/// Grant statistics for monitoring and debugging
+#[derive(Debug, Default, Clone, Copy)]
+pub struct GrantStats {
+    /// Total number of grants allocated
+    pub total_grants: u32,
+    /// Number of active grants
+    pub active_grants: u32,
+    /// Number of process grants
+    pub process_grants: u32,
+    /// Number of driver grants
+    pub driver_grants: u32,
+    /// Number of system grants
+    pub system_grants: u32,
+    /// Total memory allocated for grants
+    pub total_memory: usize,
+    /// Memory currently in use
+    pub used_memory: usize,
+    /// Number of grant allocation failures
+    pub allocation_failures: u32,
+    /// Number of permission violations
+    pub permission_violations: u32,
+}
