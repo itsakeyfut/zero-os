@@ -481,4 +481,9 @@ pub trait GrantData: 'static {
         }
         hash
     }
+
+    /// Get the required alignment for this type
+    fn alignment() -> usize {
+        core::mem::align_of::<Self>()
+    }
 }
