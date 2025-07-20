@@ -51,3 +51,12 @@ const SLAB_SIZES: [usize; SLAB_SIZE_CLASSES] = [8, 16, 24, 32, 40, 48, 56, 64];
 
 /// Number of buddy allocator orders
 const BUDDY_ORDERS: usize = 12; // Up to 4KB
+
+/// Free block header for buddy allocator
+#[repr(C)]
+struct FreeBlock {
+    /// Size of this block
+    size: usize,
+    /// Pointer to next free block
+    next: Option<NonNull<FreeBlock>>,
+}
