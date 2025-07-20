@@ -633,4 +633,30 @@ impl GrantAllocator {
 
         Ok(grant)
     }
+
+    /// Clean up expired grants
+    pub fn cleanup_expired_grants(&mut self) {
+        let current_time = crate::arch::target::Architecture::current_time_us();
+        let mut expired_grants = Vec::<GrantId, 32>::new();
+        
+        // Find expired grants
+        for (grant_id, region) in &self.grants {
+            if region.grant_type == GrantType::Temporary {
+                // Check if grant has expired (simplified check)
+                // In a real implementation, we'd check the actual expiration time
+                if current_time > region.created_at + 1_000_000 { // 1 second timeout
+                    expired_grants.push(*grant_id).ok();
+                }
+            }
+        }
+        
+        // Remove expired grants
+        for grant_id in expired_grants {
+            if let Some(region) = self.grants.remove(&grant_id) {
+                let _ = self.free_memory(region.address, region.size);
+                self.stats.active_grants -= 1;
+                self.stats.used_memory -= region.size;
+            }
+        }
+    }
 }
