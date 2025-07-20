@@ -712,3 +712,14 @@ pub fn grant_allocator() -> Option<&'static mut GrantAllocator> {
     // SAFETY: Grant allocator is initialized once and used from single thread
     unsafe { GRANT_ALLOCATOR.as_mut() }
 }
+
+/// Convenience function to allocate a grant
+pub fn allocate_grant<T: GrantData>(
+    grant_type: GrantType,
+    owner: Option<ProcessId>,
+    permissions: GrantPermissions,
+) -> GrantResult<Grant<T>> {
+    grant_allocator()
+        .ok_or(GrantError::InvalidParameter)?
+        .allocate_grant(grant_type, owner, permissions)
+}
