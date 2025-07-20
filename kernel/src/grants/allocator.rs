@@ -723,3 +723,10 @@ pub fn allocate_grant<T: GrantData>(
         .ok_or(GrantError::InvalidParameter)?
         .allocate_grant(grant_type, owner, permissions)
 }
+
+/// Convenience function to free a grant
+pub fn free_grant<T>(grant: Grant<T>) -> GrantResult<()> {
+    grant_allocator()
+        .ok_or(GrantError::InvalidParameter)?
+        .free_grant(grant)
+}
