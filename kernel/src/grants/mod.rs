@@ -318,4 +318,9 @@ impl<T> Grant<T> {
     pub fn grant_id(&self) -> GrantId {
         self.region.grant_id
     }
+
+    /// Get the size of the grant
+    pub fn size(&self) -> usize {
+        self.region.size
+    }
 }
