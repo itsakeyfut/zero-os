@@ -190,4 +190,9 @@ impl GrantCapability {
     pub fn can_read(&self) -> bool {
         self.permissions.read
     }
+
+    /// Check if capability allows write access
+    pub fn can_write(&self) -> bool {
+        self.permissions.write
+    }
 }
