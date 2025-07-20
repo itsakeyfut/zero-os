@@ -200,4 +200,9 @@ impl GrantCapability {
     pub fn can_share(&self) -> bool {
         self.permissions.shareable
     }
+
+    /// Get the grant ID
+    pub fn grant_id(&self) -> GrantId {
+        self.grant_id
+    }
 }
