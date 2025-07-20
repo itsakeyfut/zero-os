@@ -11,6 +11,20 @@ use core::panic::PanicInfo;
 
 mod arch;
 
+#[panic_handler]
+fn panic(info: &PanicInfo) -> ! {
+    if let Some(message) = info.message() {
+        debug_print!("KERNEL PANIC: {}", message);
+    }
+
+    if let Some(location) = info.location() {
+        debug_print!("Location: {}:{}:{}",
+                    location.file(),
+                    location.line(),
+                    location.column());
+    }
+}
+
 #[macro_export]
 macro_rules! debug_print {
     ($($arg:tt)*) => {
