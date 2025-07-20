@@ -409,3 +409,9 @@ impl<T> Drop for Grant<T> {
         crate::debug_print!("Dropping grant {:?}", self.grant_id());
     }
 }
+
+// Grant can be sent between threads if T is Send
+unsafe impl<T: Send> Send for Grant<T> {}
+
+// Grant can be shared between threads if T is Sync and the grant is read-only
+unsafe impl<T: Sync> Sync for Grant<T> {}
