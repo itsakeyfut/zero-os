@@ -423,3 +423,21 @@ pub fn get_boot_params() -> BootConfig {
     // For now, return default configuration
     BootConfig::default()
 }
+
+/// Validate that the CPU is supported
+pub fn validate_cpu() -> bool {
+    let cpu_info = CpuInfo::read();
+
+    // Check for minimum ARM architecture version
+    let arch_version = cpu_info.architecture();
+    if arch_version < 6 {
+        return false; // Require ARMv6 or later
+    }
+
+    // Check for required features
+    if !cpu_info.has_mmu() {
+        return false; // MMU is required
+    }
+
+    true
+}
