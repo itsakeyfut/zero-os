@@ -183,3 +183,59 @@ pub mod sctlr_bits {
     /// Vectored interrupt enable
     pub const VECTORED_INTERRUPT: u32 = 1 << 24;
 }
+
+/// Set up stack pointers for all ARM processor modes
+unsafe fn setup_stack_pointers() {
+    // Get stack addresses from linker script
+    unsafe extern "C" {
+        static __main_stack_top: u8;
+        static __irq_stack_top: u8;
+        static __fiq_stack_top: u8;
+        static __abort_stack_top: u8;
+        static __undefined_stack_top: u8;
+        static __supervisor_stack_top: u8;
+    }
+    
+    // SAFETY: We're setting up stacks during boot
+    unsafe {
+        // IRQ mode stack
+        asm!(
+            "cps #0x12",  // Switch to IRQ mode
+            "ldr sp, ={}",
+            sym __irq_stack_top,
+            options(nomem, nostack)
+        );
+        
+        // FIQ mode stack  
+        asm!(
+            "cps #0x11",  // Switch to FIQ mode
+            "ldr sp, ={}",
+            sym __fiq_stack_top,
+            options(nomem, nostack)
+        );
+        
+        // Abort mode stack
+        asm!(
+            "cps #0x17",  // Switch to Abort mode
+            "ldr sp, ={}",
+            sym __abort_stack_top,
+            options(nomem, nostack)
+        );
+        
+        // Undefined mode stack
+        asm!(
+            "cps #0x1B",  // Switch to Undefined mode
+            "ldr sp, ={}",
+            sym __undefined_stack_top,
+            options(nomem, nostack)
+        );
+        
+        // Supervisor mode stack (main kernel mode)
+        asm!(
+            "cps #0x13",  // Switch to Supervisor mode
+            "ldr sp, ={}",
+            sym __supervisor_stack_top,
+            options(nomem, nostack)
+        );
+    }
+}
