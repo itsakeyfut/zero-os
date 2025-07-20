@@ -129,4 +129,9 @@ impl CpuInfo {
     pub fn variant(&self) -> u8 {
         ((self.main_id >> 20) & 0xF) as u8
     }
+
+    /// Get CPU architecture version
+    pub fn architecture(&self) -> u8 {
+        ((self.main_id >> 16) & 0xF) as u8
+    }
 }
