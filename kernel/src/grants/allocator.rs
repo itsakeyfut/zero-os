@@ -706,3 +706,9 @@ pub fn init_grant_allocator() -> GrantResult<()> {
 
     Ok(())
 }
+
+/// Get reference to the global grant allocator
+pub fn grant_allocator() -> Option<&'static mut GrantAllocator> {
+    // SAFETY: Grant allocator is initialized once and used from single thread
+    unsafe { GRANT_ALLOCATOR.as_mut() }
+}
