@@ -80,4 +80,9 @@ impl SlabAllocator {
             used_memory: 0,
         }
     }
+
+    /// Find size class for allocation size
+    fn size_class(size: usize) -> Option<usize> {
+        SLAB_SIZES.iter().position(|&s| s >= size)
+    }
 }
