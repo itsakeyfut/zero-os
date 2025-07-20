@@ -659,4 +659,29 @@ impl GrantAllocator {
             }
         }
     }
+
+    /// Validate grant integrity
+    pub fn validate_grants(&self) -> bool {
+        let mut calculated_stats = GrantStats::default();
+        
+        for region in self.grants.values() {
+            calculated_stats.total_grants += 1;
+            calculated_stats.active_grants += 1;
+            calculated_stats.used_memory += region.size;
+            
+            match region.grant_type {
+                GrantType::Process => calculated_stats.process_grants += 1,
+                GrantType::Driver => calculated_stats.driver_grants += 1,
+                GrantType::System => calculated_stats.system_grants += 1,
+                _ => {}
+            }
+        }
+        
+        // Check if statistics match
+        calculated_stats.total_grants == self.stats.total_grants &&
+        calculated_stats.active_grants == self.stats.active_grants &&
+        calculated_stats.process_grants == self.stats.process_grants &&
+        calculated_stats.driver_grants == self.stats.driver_grants &&
+        calculated_stats.system_grants == self.stats.system_grants
+    }
 }
