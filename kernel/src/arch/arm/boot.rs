@@ -308,3 +308,21 @@ unsafe fn setup_exception_vectors() {
         asm!("isb", options(nomem, nostack));
     }
 }
+
+/// Clear BSS section to zero
+unsafe fn clear_bss() {
+    unsafe extern "C" {
+        static mut __bss_start: u8;
+        static __bss_end: u8;
+    }
+
+    // SAFETY: We're clearing BSS during boot
+    unsafe {
+        let bss_start = &mut __bss_start as *mut u8;
+        let bss_end = &__bss_end as *const u8;
+        let bss_size = bss_end as usize - bss_start as usize;
+
+        // Clear BSS section
+        core::ptr::write_bytes(bss_start, 0, bss_size);
+    }
+}
