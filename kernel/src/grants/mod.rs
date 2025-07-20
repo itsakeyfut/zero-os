@@ -481,14 +481,28 @@ pub trait GrantData: 'static {
         }
         hash
     }
-
+    
     /// Get the required alignment for this type
     fn alignment() -> usize {
         core::mem::align_of::<Self>()
     }
-
+    
     /// Get the size of this type
     fn size() -> usize {
         core::mem::size_of::<Self>()
     }
 }
+
+// Implement GrantData for common types
+impl GrantData for u8 {}
+impl GrantData for u16 {}
+impl GrantData for u32 {}
+impl GrantData for u64 {}
+impl GrantData for i8 {}
+impl GrantData for i16 {}
+impl GrantData for i32 {}
+impl GrantData for i64 {}
+impl GrantData for usize {}
+impl GrantData for isize {}
+
+impl<T: GrantData, const N: usize> GrantData for [T; N] {}
