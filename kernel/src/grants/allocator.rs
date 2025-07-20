@@ -298,3 +298,29 @@ pub struct GrantAllocator {
     /// Initialization state
     initialized: bool,
 }
+
+impl GrantAllocator {
+    /// Create a new grant allocator
+    pub const fn new() -> Self {
+        Self {
+            grants: FnvIndexMap::new(),
+            process_grants: FnvIndexMap::new(),
+            next_grant_id: 1,
+            slab_allocator: SlabAllocator::new(),
+            buddy_allocator: BuddyAllocator::new(),
+            large_grants: Vec::new(),
+            stats: GrantStats {
+                total_grants: 0,
+                active_grants: 0,
+                process_grants: 0,
+                driver_grants: 0,
+                system_grants: 0,
+                total_memory: 0,
+                used_memory: 0,
+                allocation_failures: 0,
+                permission_violations: 0,
+            },
+            initialized: false,
+        }
+    }
+}
