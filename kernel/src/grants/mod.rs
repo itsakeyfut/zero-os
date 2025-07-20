@@ -328,4 +328,9 @@ impl<T> Grant<T> {
     pub fn address(&self) -> VirtualAddress {
         self.region.address
     }
+
+    /// Check if the grant is shareable
+    pub fn is_shareable(&self) -> bool {
+        self.region.permissions.shareable
+    }
 }
