@@ -178,4 +178,39 @@ impl BuddyAllocator {
         
         order
     }
+
+    /// Allocate memory from buddy allocator
+    fn allocate(&mut self, size: usize) -> Option<NonNull<u8>> {
+        let order = self.size_to_order(size);
+        if order >= BUDDY_ORDERS {
+            return None;
+        }
+        
+        // Find a free block of sufficient size
+        for current_order in order..BUDDY_ORDERS {
+            if let Some(block) = self.free_lists[current_order] {
+                // SAFETY: We maintain the invariant that free_lists contains valid pointers
+                unsafe {
+                    let next = (*block.as_ptr()).next;
+                    self.free_lists[current_order] = next;
+                    
+                    // Split block if necessary
+                    let current_block = block;
+                    for split_order in (order..current_order).rev() {
+                        let buddy_addr = current_block.as_ptr() as usize + (1 << split_order);
+                        let buddy = buddy_addr as *mut FreeBlock;
+                        
+                        (*buddy).size = 1 << split_order;
+                        (*buddy).next = self.free_lists[split_order];
+                        self.free_lists[split_order] = NonNull::new(buddy);
+                    }
+                    
+                    self.used_memory += 1 << order;
+                    return Some(current_block.cast());
+                }
+            }
+        }
+        
+        None
+    }
 }
