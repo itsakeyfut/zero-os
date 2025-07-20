@@ -139,4 +139,9 @@ impl CpuInfo {
     pub fn part_number(&self) -> u16 {
         ((self.main_id >> 4) & 0xFFF) as u16
     }
+
+    /// Get CPU revision
+    pub fn revision(&self) -> u8 {
+        (self.main_id & 0xF) as u8
+    }
 }
