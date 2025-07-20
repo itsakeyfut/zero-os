@@ -134,4 +134,9 @@ impl CpuInfo {
     pub fn architecture(&self) -> u8 {
         ((self.main_id >> 16) & 0xF) as u8
     }
+
+    /// Get CPU part number
+    pub fn part_number(&self) -> u16 {
+        ((self.main_id >> 4) & 0xFFF) as u16
+    }
 }
