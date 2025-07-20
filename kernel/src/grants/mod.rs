@@ -313,4 +313,9 @@ impl<T> Grant<T> {
             _phantom: PhantomData,
         }
     }
+
+    /// Get the grant ID
+    pub fn grant_id(&self) -> GrantId {
+        self.region.grant_id
+    }
 }
