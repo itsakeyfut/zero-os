@@ -323,4 +323,18 @@ impl GrantAllocator {
             initialized: false,
         }
     }
+
+    /// Initialize the grant allocator
+    pub fn init(&mut self) -> GrantResult<()> {
+        if self.initialized {
+            return Ok(());
+        }
+
+        // Initialize allocators with memory regions
+        // In a real implementation, this would get memory from the memory manager
+        self.initialized = true;
+
+        crate::debug_print!("Grant allocator initialized");
+        Ok(())
+    }
 }
