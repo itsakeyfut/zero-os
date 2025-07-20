@@ -239,3 +239,25 @@ unsafe fn setup_stack_pointers() {
         );
     }
 }
+
+/// Configure CPU features and coprocessor registers
+unsafe fn configure_cpu() {
+    let mut sctlr: u32;
+    
+    // SAFETY: We're configuring CPU during boot
+    unsafe {
+        // Read current SCTLR
+        asm!("mrc p15, 0, {}, c1, c0, 0", out(reg) sctlr, options(nomem, nostack));
+        
+        // Configure basic CPU features
+        sctlr |= sctlr_bits::UNALIGNED_ACCESS;  // Allow unaligned access
+        sctlr |= sctlr_bits::INSTRUCTION_CACHE_ENABLE; // Enable I-cache
+        sctlr &= !sctlr_bits::HIGH_VECTORS;     // Use low vectors (0x00000000)
+        
+        // Write back SCTLR
+        asm!("mcr p15, 0, {}, c1, c0, 0", in(reg) sctlr, options(nomem, nostack));
+        
+        // Instruction synchronization barrier
+        asm!("isb", options(nomem, nostack));
+    }
+}
