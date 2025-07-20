@@ -94,3 +94,16 @@ pub enum GrantType {
     /// Temporary grant (short-lived)
     Temporary,
 }
+
+/// Grant access permissions
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct GrantPermissions {
+    /// Read permission
+    pub read: bool,
+    /// Write permission
+    pub write: bool,
+    /// Execute permission (rarely used)
+    pub execute: bool,
+    /// Allow sharing with other processes
+    pub shareable: bool,
+}
