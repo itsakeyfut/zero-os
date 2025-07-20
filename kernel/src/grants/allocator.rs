@@ -519,6 +519,11 @@ impl GrantAllocator {
         Ok(())
     }
 
+    /// Get allocator statistics
+    pub fn stats(&self) -> GrantStats {
+        self.stats
+    }
+
     /// Allocate memory for grants
     fn allocate_memory(&mut self, size: usize, alignment: usize) -> GrantResult<VirtualAddress> {
         let aligned_size = (size + alignment - 1) & !(alignment - 1);
