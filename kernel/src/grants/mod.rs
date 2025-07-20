@@ -151,6 +151,7 @@ impl GrantPermissions {
 }
 
 /// Grant capability token for access control
+#[derive(Clone)]
 pub struct GrantCapability {
     /// Grant ID this capability provides access to
     grant_id: GrantId,
@@ -376,5 +377,17 @@ impl<T> Grant<T> {
         F: FnOnce(&mut T) -> R,
     {
         self.write().map(f)
+    }
+
+    /// Try to clone the grant (only works for shareable grants)
+    pub fn try_clone(&self) -> Option<Self> {
+        if !self.capability.can_share() {
+            return None;
+        }
+        
+        // SAFETY: We're cloning a valid grant with sharing permission
+        unsafe {
+            Some(Grant::new(self.region.clone(), self.capability.clone()))
+        }
     }
 }
