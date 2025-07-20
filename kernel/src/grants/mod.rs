@@ -347,4 +347,18 @@ impl<T> Grant<T> {
             ptr.as_ref()
         }
     }
+
+    /// Get a mutable reference to the data (if write permission exists)
+    pub fn write(&mut self) -> Option<&mut T> {
+        if !self.capability.can_write() {
+            return None;
+        }
+
+        // SAFETY: We've verified write permission and the grant was created
+        // with proper type safety guarantees
+        unsafe {
+            let ptr = self.region.address.as_usize() as *mut T;
+            ptr.as_mut()
+        }
+    }
 }
