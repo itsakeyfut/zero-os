@@ -278,3 +278,23 @@ impl BuddyAllocator {
         self.used_memory -= 1 << order;
     }
 }
+
+/// Grant allocator managing all grant memory
+pub struct GrantAllocator {
+    /// All allocated grants
+    grants: FnvIndexMap<GrantId, GrantRegion, MAX_GRANTS>,
+    /// Process to grants mapping
+    process_grants: FnvIndexMap<ProcessId, Vec<GrantId, 16>, 64>,
+    /// Next available grant ID
+    next_grant_id: u32,
+    /// Slab allocator for small grants
+    slab_allocator: SlabAllocator,
+    /// Buddy allocator for medium grants
+    buddy_allocator: BuddyAllocator,
+    /// Large grant free list (simple first-fit)
+    large_grants: Vec<(VirtualAddress, usize), 32>,
+    /// Grnat statistics
+    stats: GrantStats,
+    /// Initialization state
+    initialized: bool,
+}
