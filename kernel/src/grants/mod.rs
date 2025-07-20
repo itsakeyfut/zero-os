@@ -415,3 +415,30 @@ unsafe impl<T: Send> Send for Grant<T> {}
 
 // Grant can be shared between threads if T is Sync and the grant is read-only
 unsafe impl<T: Sync> Sync for Grant<T> {}
+
+/// Error types for grant operations
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum GrantError {
+    /// Grant not found
+    NotFound,
+    /// Permission denied
+    PermissionDenied,
+    /// Grant already exists
+    AlreadyExists,
+    /// Invalid grant size
+    InvalidSize,
+    /// Invalid alignment
+    InvalidAlignment,
+    /// Out of memory
+    OutOfMemory,
+    /// Grant expired
+    Expired,
+    /// Type mismatch
+    TypeMismatch,
+    /// Invalid parameter
+    InvalidParameter,
+    /// Grant is in use
+    InUse,
+    /// System limit exceeded
+    LimitExceeded,
+}
