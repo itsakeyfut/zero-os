@@ -422,6 +422,41 @@ impl GrantAllocator {
         }
     }
 
+    /// Free a grant
+    pub fn free_grant<T>(&mut self, grant: Grant<T>) -> GrantResult<()> {
+        let grant_id = grant.grant_id();
+        let region = grant.region().clone();
+
+        // Remove from grants map
+        self.grants.remove(&grant_id)
+            .ok_or(GrantError::NotFound)?;
+
+        // Remove from process tracking
+        if let Some(owner) = region.owner {
+            if let Some(process_grant_list) = self.process_grants.get_mut(&owner) {
+                if let Some(pos) = process_grant_list.iter().position(|&id| id == grant_id) {
+                    process_grant_list.swap_remove(pos);
+                }
+            }
+        }
+
+        // Free memory
+        self.free_memory(region.address, region.size)?;
+
+        // Update statistics
+        self.stats.active_grants -= 1;
+        self.stats.used_memory -= region.size;
+
+        match region.grant_type {
+            GrantType::Process => self.stats.process_grants -= 1,
+            GrantType::Driver => self.stats.driver_grants -= 1,
+            GrantType::System => self.stats.system_grants -= 1,
+            _ => {}
+        }
+
+        Ok(())
+    }
+
     /// Allocate memory for grants
     fn allocate_memory(&mut self, size: usize, alignment: usize) -> GrantResult<VirtualAddress> {
         let aligned_size = (size + alignment - 1) & !(alignment - 1);
@@ -446,6 +481,30 @@ impl GrantAllocator {
             // Use large grant allocator (first-fit)
             self.allocate_large_grant(aligned_size, alignment)
         }
+    }
+
+    /// Free memory for grants
+    fn free_memory(&mut self, address: VirtualAddress, size: usize) -> GrantResult<()> {
+        if size <= SMALL_GRANT_MAX_SIZE {
+            // SAFETY: Address was allocated by our slab allocator
+            unsafe {
+                let ptr = NonNull::new(address.as_usize() as *mut u8)
+                    .ok_or(GrantError::InvalidParameter)?;
+                self.slab_allocator.deallocate(ptr, size);
+            }
+        } else if size <= MEDIUM_GRANT_MAX_SIZE {
+            // SAFETY: Address was allocated by our buddy allocator
+            unsafe {
+                let ptr = NonNull::new(address.as_usize() as *mut u8)
+                    .ok_or(GrantError::InvalidParameter)?;
+                self.buddy_allocator.deallocate(ptr, size);
+            }
+        } else {
+            // Return to large grant free list
+            self.free_large_grant(address, size)?;
+        }
+
+        Ok(())
     }
 
     /// Allocate large grant using first-fit
@@ -476,5 +535,15 @@ impl GrantAllocator {
 
         self.stats.allocation_failures += 1;
         Err(GrantError::OutOfMemory)
+    }
+
+    /// Free large grant
+    fn free_large_grant(&mut self, address: VirtualAddress, size: usize) -> GrantResult<()> {
+        // Simple implementation: add to free list
+        // In a real implementation, this would coalesce adjustment blocks
+        self.large_grants.push((address, size))
+            .map_err(|_| GrantError::OutOfMemory)?;
+
+        Ok(())
     }
 }
