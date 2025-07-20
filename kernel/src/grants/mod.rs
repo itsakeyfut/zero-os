@@ -39,11 +39,8 @@
 #![warn(clippy::undocumented_unsafe_blocks)]
 
 use core::marker::PhantomData;
-use core::mem;
-use core::ptr::NonNull;
-use heapless::{FnvIndexMap, Vec};
 use crate::process::ProcessId;
-use crate::memory::{MemoryManager, VirtualAddress, MemoryRegion, MemoryType, MemoryFlags};
+use crate::memory::VirtualAddress;
 
 // Submodules
 pub mod allocator;
@@ -72,12 +69,12 @@ impl GrantId {
     pub const fn new(id: u32) -> Self {
         Self(id)
     }
-
+    
     /// Get the raw ID value
     pub const fn as_u32(self) -> u32 {
         self.0
     }
-
+    
     /// Invalid grant ID
     pub const INVALID: GrantId = GrantId(0);
 }
@@ -100,7 +97,7 @@ pub enum GrantType {
 pub struct GrantPermissions {
     /// Read permission
     pub read: bool,
-    /// Write permission
+    /// Write permission  
     pub write: bool,
     /// Execute permission (rarely used)
     pub execute: bool,
@@ -118,7 +115,7 @@ impl GrantPermissions {
             shareable: false,
         }
     }
-
+    
     /// Read-write permissions
     pub const fn read_write() -> Self {
         Self {
@@ -128,7 +125,7 @@ impl GrantPermissions {
             shareable: false,
         }
     }
-
+    
     /// Shareable read-only permissions
     pub const fn shareable_read_only() -> Self {
         Self {
@@ -138,7 +135,7 @@ impl GrantPermissions {
             shareable: true,
         }
     }
-
+    
     /// Shareable read-write permissions
     pub const fn shareable_read_write() -> Self {
         Self {
@@ -151,7 +148,7 @@ impl GrantPermissions {
 }
 
 /// Grant capability token for access control
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct GrantCapability {
     /// Grant ID this capability provides access to
     grant_id: GrantId,
@@ -178,7 +175,7 @@ impl GrantCapability {
             expires_at,
         }
     }
-
+    
     /// Check if capability is valid
     pub fn is_valid(&self, current_time: u64) -> bool {
         match self.expires_at {
@@ -186,27 +183,27 @@ impl GrantCapability {
             None => true,
         }
     }
-
+    
     /// Check if capability allows read access
     pub fn can_read(&self) -> bool {
         self.permissions.read
     }
-
+    
     /// Check if capability allows write access
     pub fn can_write(&self) -> bool {
         self.permissions.write
     }
-
+    
     /// Check if capability allows sharing
     pub fn can_share(&self) -> bool {
         self.permissions.shareable
     }
-
+    
     /// Get the grant ID
     pub fn grant_id(&self) -> GrantId {
         self.grant_id
     }
-
+    
     /// Get the process ID
     pub fn process_id(&self) -> ProcessId {
         self.process_id
@@ -260,7 +257,7 @@ impl GrantRegion {
             created_at,
         }
     }
-
+    
     /// Check if address is within this grant region
     pub fn contains_address(&self, addr: VirtualAddress) -> bool {
         let start = self.address.as_usize();
@@ -268,7 +265,7 @@ impl GrantRegion {
         let addr_val = addr.as_usize();
         addr_val >= start && addr_val < end
     }
-
+    
     /// Increment reference count
     pub fn acquire(&mut self) -> bool {
         if self.permissions.shareable {
@@ -278,7 +275,7 @@ impl GrantRegion {
             self.ref_count == 1
         }
     }
-
+    
     /// Decrement reference count
     pub fn release(&mut self) -> bool {
         if self.ref_count > 0 {
@@ -294,7 +291,7 @@ impl GrantRegion {
 pub struct Grant<T> {
     /// Grant region information
     region: GrantRegion,
-    /// Capability fo access control
+    /// Capability for access control
     capability: GrantCapability,
     /// Phantom data for type safety
     _phantom: PhantomData<T>,
@@ -314,33 +311,33 @@ impl<T> Grant<T> {
             _phantom: PhantomData,
         }
     }
-
+    
     /// Get the grant ID
     pub fn grant_id(&self) -> GrantId {
         self.region.grant_id
     }
-
+    
     /// Get the size of the grant
     pub fn size(&self) -> usize {
         self.region.size
     }
-
+    
     /// Get the address of the grant
     pub fn address(&self) -> VirtualAddress {
         self.region.address
     }
-
+    
     /// Check if the grant is shareable
     pub fn is_shareable(&self) -> bool {
         self.region.permissions.shareable
     }
-
+    
     /// Get a reference to the data (if read permission exists)
     pub fn read(&self) -> Option<&T> {
         if !self.capability.can_read() {
             return None;
         }
-
+        
         // SAFETY: We've verified read permission and the grant was created
         // with proper type safety guarantees
         unsafe {
@@ -348,13 +345,13 @@ impl<T> Grant<T> {
             ptr.as_ref()
         }
     }
-
+    
     /// Get a mutable reference to the data (if write permission exists)
     pub fn write(&mut self) -> Option<&mut T> {
         if !self.capability.can_write() {
             return None;
         }
-
+        
         // SAFETY: We've verified write permission and the grant was created
         // with proper type safety guarantees
         unsafe {
@@ -362,23 +359,23 @@ impl<T> Grant<T> {
             ptr.as_mut()
         }
     }
-
-    /// Map a function over the grat data (read-only)
+    
+    /// Map a function over the grant data (read-only)
     pub fn map<R, F>(&self, f: F) -> Option<R>
     where
         F: FnOnce(&T) -> R,
     {
         self.read().map(f)
     }
-
-    /// Map a function over that grant data (mutable)
+    
+    /// Map a function over the grant data (mutable)
     pub fn map_mut<R, F>(&mut self, f: F) -> Option<R>
     where
         F: FnOnce(&mut T) -> R,
     {
         self.write().map(f)
     }
-
+    
     /// Try to clone the grant (only works for shareable grants)
     pub fn try_clone(&self) -> Option<Self> {
         if !self.capability.can_share() {
@@ -390,12 +387,12 @@ impl<T> Grant<T> {
             Some(Grant::new(self.region.clone(), self.capability.clone()))
         }
     }
-
+    
     /// Get the capability for this grant
     pub fn capability(&self) -> &GrantCapability {
         &self.capability
     }
-
+    
     /// Get the region information
     pub fn region(&self) -> &GrantRegion {
         &self.region
@@ -405,7 +402,7 @@ impl<T> Grant<T> {
 impl<T> Drop for Grant<T> {
     fn drop(&mut self) {
         // Automatically release the grant when dropped
-        // This woud normally notify the grant allocator
+        // This would normally notify the grant allocator
         crate::debug_print!("Dropping grant {:?}", self.grant_id());
     }
 }
