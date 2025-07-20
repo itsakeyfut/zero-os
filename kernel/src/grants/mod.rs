@@ -277,4 +277,14 @@ impl GrantRegion {
             self.ref_count == 1
         }
     }
+
+    /// Decrement reference count
+    pub fn release(&mut self) -> bool {
+        if self.ref_count > 0 {
+            self.ref_count -= 1;
+            self.ref_count == 0
+        } else {
+            false
+        }
+    }
 }
