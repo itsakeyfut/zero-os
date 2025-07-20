@@ -17,12 +17,22 @@ mod syscalls;
 
 use platform::Platform;
 use process::ProcessManager;
-use memory::MemroyManager;
+use memory::MemoryManager;
 
 pub struct Kernel {
     process_manager: ProcessManager,
     memory_manager: MemoryManager,
     platform: Platform,
+}
+
+impl Kernel {
+    pub fn new() -> Self {
+        Self {
+            process_manager: ProcessManager::new(),
+            memory_manager: MemoryManager::new(),
+            platform: Platform::new(),
+        }
+    }
 }
 
 #[panic_handler]
