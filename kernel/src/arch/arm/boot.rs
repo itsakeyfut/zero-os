@@ -53,3 +53,15 @@ pub struct BootConfig {
     /// Total memory size
     pub memory_size: usize,
 }
+
+impl Default for BootConfig {
+    fn default() -> Self {
+        Self {
+            kernel_physical_start: PhysicalAddress::new(0x10000),
+            kernel_virtual_start: VirtualAddress::new(0xC0010000),
+            kernel_size: 8 * 1024 * 1024, // 8MB
+            memory_start: PhysicalAddress::new(0x00000000),
+            memory_size: 128 * 1024 * 1024, // 128MB
+        }
+    }
+}
