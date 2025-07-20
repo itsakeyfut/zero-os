@@ -60,3 +60,13 @@ struct FreeBlock {
     /// Pointer to next free block
     next: Option<NonNull<FreeBlock>>,
 }
+
+/// Slab allocator for small grants
+struct SlabAllocator {
+    /// Free lists for each size class
+    free_lists: [Option<NonNull<u8>>; SLAB_SIZE_CLASSES],
+    /// Total memory allocated for slabs
+    total_memory: usize,
+    /// Memory currently in use
+    used_memory: usize,
+}
