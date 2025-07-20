@@ -149,3 +149,15 @@ impl GrantPermissions {
         }
     }
 }
+
+/// Grant capability token for access control
+pub struct GrantCapability {
+    /// Grant ID this capability provides access to
+    grant_id: GrantId,
+    /// Process that owns this capability
+    process_id: ProcessId,
+    /// Permissions granted
+    permissions: GrantPermissions,
+    /// Expiration time (None for permanent)
+    expires_at: Option<u64>,
+}
