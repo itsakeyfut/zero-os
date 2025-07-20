@@ -46,3 +46,5 @@ pub enum KernelError {
     ResourceUnavailable,
     PermissionDenied,
 }
+
+pub type KernelResult<T> = Result<T, KernelError>;
