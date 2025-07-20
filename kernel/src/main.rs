@@ -35,6 +35,19 @@ impl Kernel {
     }
 }
 
+#[no_mangle]
+pub extern "C" fn kernel_main() -> ! {
+    arch::early_debug_init();
+
+    debug_print!("Zero OS - Tactical Support Kernel");
+    debug_print!("Kernel starting...");
+
+    let mut kernel = Kernel::new();
+
+    // TODO: implment boot method
+    // kernel.boot();
+}
+
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     if let Some(message) = info.message() {
