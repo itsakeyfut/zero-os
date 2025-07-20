@@ -144,4 +144,9 @@ impl CpuInfo {
     pub fn revision(&self) -> u8 {
         (self.main_id & 0xF) as u8
     }
+
+    /// Check if MMU is present
+    pub fn has_mmu(&self) -> bool {
+        (self.memory_model_features[0] & 0xF) != 0
+    }
 }
