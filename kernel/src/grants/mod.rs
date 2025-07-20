@@ -267,4 +267,14 @@ impl GrantRegion {
         let addr_val = addr.as_usize();
         addr_val >= start && addr_val < end
     }
+
+    /// Increment reference count
+    pub fn acquire(&mut self) -> bool {
+        if self.permissions.shareable {
+            self.ref_count += 1;
+            true
+        } else {
+            self.ref_count == 1
+        }
+    }
 }
