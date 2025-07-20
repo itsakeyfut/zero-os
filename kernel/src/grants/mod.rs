@@ -177,4 +177,12 @@ impl GrantCapability {
             expires_at,
         }
     }
+
+    /// Check if capability is valid
+    pub fn is_valid(&self, current_time: u64) -> bool {
+        match self.expires_at {
+            Some(expiry) => current_time < expiry,
+            None => true,
+        }
+    }
 }
