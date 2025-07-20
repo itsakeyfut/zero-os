@@ -390,4 +390,9 @@ impl<T> Grant<T> {
             Some(Grant::new(self.region.clone(), self.capability.clone()))
         }
     }
+
+    /// Get the capability for this grant
+    pub fn capability(&self) -> &GrantCapability {
+        &self.capability
+    }
 }
