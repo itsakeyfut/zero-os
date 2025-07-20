@@ -455,3 +455,24 @@ pub fn print_cpu_info() {
     crate::debug_print!("  MMU: {}", if cpu_info.has_mmu() { "Yes" } else { "No" });
     crate::debug_print!("  Cache: {}", if cpu_info.has_cache() { "Yes" } else { "No" });
 }
+
+/// Entry point from assembly boot code
+#[no_mangle]
+pub extern "C" fn rust_boot_main() -> ! {
+    // Perform early boot initialization
+    early_boot_init();
+
+    // Validate CPU
+    if !validate_cpu() {
+        panic!("Unsupported CPU");
+    }
+
+    // Print CPU information
+    print_cpu_info();
+
+    // Get boot configuration
+    let _boot_config = get_boot_params();
+
+    // Call main kernel entry point
+    crate::kernel_main();
+}
