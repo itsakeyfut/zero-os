@@ -85,4 +85,23 @@ impl SlabAllocator {
     fn size_class(size: usize) -> Option<usize> {
         SLAB_SIZES.iter().position(|&s| s >= size)
     }
+
+    /// Allocate memory from slab
+    fn allocate(&mut self, size: usize) -> Option<NonNull<u8>> {
+        let class = Self::size_class(size)?;
+        let actual_size = SLAB_SIZES[class];
+
+        if let Some(ptr) = self.free_lists[class] {
+            // SAFETY: We maintain the invariant that free_lists contains valid pointers
+            unsafe {
+                let next = *(ptr.as_ptr() as *const Option<NonNull<u8>>);
+                self.free_lists[class] = next;
+                self.used_memory += actual_size;
+                Some(ptr)
+            }
+        } else {
+            // Would allocate new slab here in a real implementation
+            None
+        }
+    }
 }
