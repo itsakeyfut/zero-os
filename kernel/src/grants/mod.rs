@@ -211,3 +211,26 @@ impl GrantCapability {
         self.process_id
     }
 }
+
+/// Grant region metadata
+#[derive(Debug, Clone)]
+pub struct GrantRegion {
+    /// Grant identifier
+    pub grant_id: GrantId,
+    /// Grant type
+    pub grant_type: GrantType,
+    /// Virtual address of the grant
+    pub address: VirtualAddress,
+    /// Size of the grant in bytes
+    pub size: usize,
+    /// Process that owns this grant (None for system grants)
+    pub owner: Option<ProcessId>,
+    /// Current permissions
+    pub permissions: GrantPermissions,
+    /// Reference count for shared grants
+    pub ref_count: u32,
+    /// Type ID for type safety
+    pub type_id: u64,
+    /// Creation timestamp
+    pub created_at: u64,
+}
