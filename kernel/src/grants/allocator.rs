@@ -70,3 +70,14 @@ struct SlabAllocator {
     /// Memory currently in use
     used_memory: usize,
 }
+
+impl SlabAllocator {
+    /// Create a new slab allocator
+    const fn new() -> Self {
+        Self {
+            free_lists: [None; SLAB_SIZE_CLASSES],
+            total_memory: 0,
+            used_memory: 0,
+        }
+    }
+}
