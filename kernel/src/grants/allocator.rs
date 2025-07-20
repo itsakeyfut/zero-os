@@ -337,4 +337,144 @@ impl GrantAllocator {
         crate::debug_print!("Grant allocator initialized");
         Ok(())
     }
+
+    /// Allocate a new grant
+    pub fn allocate_grant<T: GrantData>(
+        &mut self,
+        grant_type: GrantType,
+        owner: Option<ProcessId>,
+        permissions: GrantPermissions,
+    ) -> GrantResult<Grant<T>> {
+        if !self.initialized {
+            return Err(GrantError::InvalidParameter);
+        }
+
+        let size = T::size();
+        let alignment = T::alignment();
+        let type_id = T::type_id();
+
+        if size == 0 {
+            return Err(GrantError::InvalidSize);
+        }
+
+        if !alignment.is_power_of_two() || alignment < GRANT_ALIGNMENT {
+            return Err(GrantError::InvalidAlignment);
+        }
+
+        // Allocate memory for the grant
+        let address = self.allocate_memory(size, alignment)?;
+
+        // Create grant region
+        let grant_id = GrantId::new(self.next_grant_id);
+        self.next_grant_id += 1;
+
+        let current_time = crate::arch::target::Architecture::current_time_us();
+
+        let region = GrantRegion::new(
+            grant_id,
+            grant_type,
+            address,
+            size,
+            owner,
+            permissions,
+            type_id,
+            current_time,
+        );
+
+        // Create capability
+        let capability = GrantCapability::new(
+            grant_id,
+            owner.unwrap_or(ProcessId::new(0)), // Use kernel process for system grants
+            permissions,
+            None, // No expiration for now
+        );
+
+        // Register grant
+        self.grants.insert(grant_id, region.clone())
+            .map_err(|_| GrantError::LimitExceeded)?;
+
+        // Track by process if applicable
+        if let Some(process_id) = owner {
+            if !self.process_grants.contains_key(&process_id) {
+                self.process_grants.insert(process_id, Vec::new()).ok();
+            }
+            let process_grant_list = self.process_grants.get_mut(&process_id).unwrap();
+            process_grant_list.push(grant_id)
+                .map_err(|_| GrantError::LimitExceeded)?;
+            self.stats.process_grants += 1;
+        } else {
+            match grant_type {
+                GrantType::Driver => self.stats.driver_grants += 1,
+                GrantType::System => self.stats.system_grants += 1,
+                _ => {}
+            }
+        }
+
+        // Update statistics
+        self.stats.total_grants += 1;
+        self.stats.active_grants += 1;
+        self.stats.used_memory += size;
+
+        // SAFETY: We just allocated the memory and vertified the type
+        unsafe {
+            let grant = Grant::new(region, capability);
+            Ok(grant)
+        }
+    }
+
+    /// Allocate memory for grants
+    fn allocate_memory(&mut self, size: usize, alignment: usize) -> GrantResult<VirtualAddress> {
+        let aligned_size = (size + alignment - 1) & !(alignment - 1);
+
+        if aligned_size <= SMALL_GRANT_MAX_SIZE {
+            // Use slab allocator
+            if let Some(ptr) = self.slab_allocator.allocate(aligned_size) {
+                Ok(VirtualAddress::new(ptr.as_ptr() as usize))
+            } else {
+                self.stats.allocation_failures += 1;
+                Err(GrantError::OutOfMemory)
+            }
+        } else if aligned_size <= MEDIUM_GRANT_MAX_SIZE {
+            // Use buddy allocator
+            if let Some(ptr) = self.buddy_allocator.allocate(aligned_size) {
+                Ok(VirtualAddress::new(ptr.as_ptr() as usize))
+            } else {
+                self.stats.allocation_failures += 1;
+                Err(GrantError::OutOfMemory)
+            }
+        } else {
+            // Use large grant allocator (first-fit)
+            self.allocate_large_grant(aligned_size, alignment)
+        }
+    }
+
+    /// Allocate large grant using first-fit
+    fn allocate_large_grant(&mut self, size: usize, alignment: usize) -> GrantResult<VirtualAddress> {
+        for i in 0..self.large_grants.len() {
+            let (addr, available_size) = self.large_grants[i];
+
+            // Check alignment
+            let aligned_addr = (addr.as_usize() + alignment - 1) & !(alignment - 1);
+            let aligned_offset = aligned_addr - addr.as_usize();
+
+            if aligned_offset + size <= available_size {
+                // Remove this block
+                self.large_grants.swap_remove(i);
+
+                // Add remaining space back if any
+                let remaining_addr = aligned_addr + size;
+                let remaining_size = available_size - aligned_offset - size;
+
+                if remaining_size > 0 {
+                    self.large_grants.push((VirtualAddress::new(remaining_addr), remaining_size))
+                        .map_err(|_| GrantError::OutOfMemory)?;
+                }
+
+                return Ok(VirtualAddress::new(aligned_addr));
+            }
+        }
+
+        self.stats.allocation_failures += 1;
+        Err(GrantError::OutOfMemory)
+    }
 }
