@@ -288,3 +288,13 @@ impl GrantRegion {
         }
     }
 }
+
+/// Grant handle providing type-safe access to granted memory
+pub struct Grant<T> {
+    /// Grant region information
+    region: GrantRegion,
+    /// Capability fo access control
+    capability: GrantCapability,
+    /// Phantom data for type safety
+    _phantom: PhantomData<T>,
+}
