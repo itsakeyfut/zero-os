@@ -441,3 +441,17 @@ pub fn validate_cpu() -> bool {
 
     true
 }
+
+/// Print CPU information for debugging
+pub fn print_cpu_info() {
+    let cpu_info = CpuInfo::read();
+    
+    crate::debug_print!("CPU Info:");
+    crate::debug_print!("  Implementer: 0x{:02X}", cpu_info.implementer());
+    crate::debug_print!("  Architecture: v{}", cpu_info.architecture());
+    crate::debug_print!("  Part: 0x{:03X}", cpu_info.part_number());
+    crate::debug_print!("  Variant: 0x{:X}", cpu_info.variant());
+    crate::debug_print!("  Revision: 0x{:X}", cpu_info.revision());
+    crate::debug_print!("  MMU: {}", if cpu_info.has_mmu() { "Yes" } else { "No" });
+    crate::debug_print!("  Cache: {}", if cpu_info.has_cache() { "Yes" } else { "No" });
+}
