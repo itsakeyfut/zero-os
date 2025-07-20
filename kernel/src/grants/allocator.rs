@@ -685,3 +685,6 @@ impl GrantAllocator {
         calculated_stats.system_grants == self.stats.system_grants
     }
 }
+
+/// Global grant allocator instance
+static mut GRANT_ALLOCATOR: Option<GrantAllocator> = None;
