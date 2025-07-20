@@ -506,3 +506,16 @@ impl GrantData for usize {}
 impl GrantData for isize {}
 
 impl<T: GrantData, const N: usize> GrantData for [T; N] {}
+
+/// Helper macros for grant operations
+#[macro_export]
+macro_rules! grant_data {
+    ($name:ident { $($field:ident: $type:ty),* $(,)? }) => {
+        #[derive(Debug, Clone)]
+        pub struct $name {
+            $(pub $field: $type,)*
+        }
+        
+        impl $crate::grants::GrantData for $name {}
+    };
+}
