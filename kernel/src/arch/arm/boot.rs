@@ -124,4 +124,9 @@ impl CpuInfo {
     pub fn implementer(&self) -> u8 {
         ((self.main_id >> 24) & 0xFF) as u8
     }
+
+    /// Get CPU variant
+    pub fn variant(&self) -> u8 {
+        ((self.main_id >> 20) & 0xF) as u8
+    }
 }
