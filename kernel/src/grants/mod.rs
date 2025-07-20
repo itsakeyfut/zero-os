@@ -185,4 +185,9 @@ impl GrantCapability {
             None => true,
         }
     }
+
+    /// Check if capability allows read access
+    pub fn can_read(&self) -> bool {
+        self.permissions.read
+    }
 }
