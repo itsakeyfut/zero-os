@@ -104,4 +104,23 @@ impl SlabAllocator {
             None
         }
     }
+
+    /// Free memory back to slab
+    /// 
+    /// # Safety
+    /// 
+    /// Caller must ensure the pointer was allocated by this allocator
+    /// and size matches the original allocation.
+    unsafe fn deallocate(&mut self, ptr: NonNull<u8>, size: usize) {
+        if let Some(class) = Self::size_class(size) {
+            let actual_size = SLAB_SIZES[class];
+
+            // SAFETY: Caller guarantees pointer validity
+            unsafe {
+                *(ptr.as_ptr() as *mut Option<NonNull<u8>>) = self.free_lists[class];
+                self.free_lists[class] = Some(ptr);
+                self.used_memory -= actual_size;
+            }
+        }
+    }
 }
