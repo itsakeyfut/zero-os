@@ -519,3 +519,16 @@ macro_rules! grant_data {
         impl $crate::grants::GrantData for $name {}
     };
 }
+
+/// Create a typed grant reference
+#[macro_export]
+macro_rules! grant_ref {
+    ($grant:expr, $type:ty) => {
+        unsafe {
+            $crate::grants::Grant::<$type>::new(
+                $grant.region().clone(),
+                $grant.capability().clone(),
+            )
+        }
+    };
+}
