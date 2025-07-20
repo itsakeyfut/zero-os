@@ -119,4 +119,9 @@ impl CpuInfo {
 
         info
     }
+
+    /// Get COU implementer ID
+    pub fn implementer(&self) -> u8 {
+        ((self.main_id >> 24) & 0xFF) as u8
+    }
 }
