@@ -195,4 +195,9 @@ impl GrantCapability {
     pub fn can_write(&self) -> bool {
         self.permissions.write
     }
+
+    /// Check if capability allows sharing
+    pub fn can_share(&self) -> bool {
+        self.permissions.shareable
+    }
 }
