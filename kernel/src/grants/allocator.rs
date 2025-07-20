@@ -688,3 +688,21 @@ impl GrantAllocator {
 
 /// Global grant allocator instance
 static mut GRANT_ALLOCATOR: Option<GrantAllocator> = None;
+
+/// Initialize the global grant allocator
+pub fn init_grant_allocator() -> GrantResult<()> {
+    // SAFETY: This is called once during system initialization
+    unsafe {
+        if GRANT_ALLOCATOR.is_some() {
+            return Err(GrantError::AlreadyExists);
+        }
+
+        GRANT_ALLOCATOR = Some(GrantAllocator::new());
+
+        if let Some(allocator) = GRANT_ALLOCATOR.as_mut() {
+            allocator.init()?;
+        }
+    }
+
+    Ok(())
+}
