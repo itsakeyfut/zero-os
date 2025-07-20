@@ -468,3 +468,17 @@ pub struct GrantStats {
     /// Number of permission violations
     pub permission_violations: u32,
 }
+
+/// Type-safe wrapper for different grant data types
+pub trait GrantData: 'static {
+    /// Get the type ID for this grant data type
+    fn type_id() -> u64 {
+        // Simple type ID based on type name hash
+        let type_name = core::any::type_name::<Self>();
+        let mut hash = 0u64;
+        for byte in type_name.bytes() {
+            hash = hash.wrapping_mul(31).wrapping_add(byte as u64);
+        }
+        hash
+    }
+}
