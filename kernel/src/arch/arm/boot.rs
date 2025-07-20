@@ -259,5 +259,28 @@ unsafe fn configure_cpu() {
         
         // Instruction synchronization barrier
         asm!("isb", options(nomem, nostack));
+
+        // Configure auxiliary control register if needed
+        configure_auxiliary_control();
+    }
+}
+
+/// Configure auxiliary control register for performance
+unsafe fn configure_auxiliary_control() {
+    let mut actlr: u32;
+
+    // SAFETY: We're configuring CPU during boot
+    unsafe {
+        // Read auxiliary control register
+        asm!("mrc p15, 0, {}, c1, c0, 1", out(reg) actlr, options(nomem, nostack));
+
+        // Enable return stack (if available)
+        actlr |= 1 << 2;
+
+        // Enable dynamic branch prediction (if available)
+        actlr |= 1 << 1;
+
+        // Write back auxiliary control register
+        asm!("mcr p15, 0, {}, c1, c0, 1", in(reg) actlr, options(nomem, nostack));
     }
 }
