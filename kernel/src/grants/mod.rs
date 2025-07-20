@@ -259,4 +259,12 @@ impl GrantRegion {
             created_at,
         }
     }
+
+    /// Check if address is within this grant region
+    pub fn contains_address(&self, addr: VirtualAddress) -> bool {
+        let start = self.address.as_usize();
+        let end = start + self.size;
+        let addr_val = addr.as_usize();
+        addr_val >= start && addr_val < end
+    }
 }
