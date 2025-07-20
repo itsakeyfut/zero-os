@@ -290,20 +290,20 @@ unsafe fn setup_exception_vectors() {
     unsafe extern "C" {
         static __vectors_start: u8;
     }
-
+    
     // SAFETY: We're setting up exception vectors during boot
     unsafe {
         // Set vector base address register (if available)
         let vectors_addr = &__vectors_start as *const u8 as u32;
-
+        
         // Try to set VBAR (Vector Base Address Register) if available
         // This may not be available on all ARM cores
         asm!(
             "mcr p15, 0, {}, c12, c0, 0",
             in(reg) vectors_addr,
-            options(nomem, nostack),
+            options(nomem, nostack)
         );
-
+        
         // Ensure vectors are installed
         asm!("isb", options(nomem, nostack));
     }
