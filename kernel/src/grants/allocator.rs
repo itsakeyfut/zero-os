@@ -147,4 +147,35 @@ impl BuddyAllocator {
             used_memory: 0,
         }
     }
+
+    /// Initialize buddy allocator with memory region
+    fn init(&mut self, base: VirtualAddress, size: usize) {
+        self.base_address = base;
+        self.total_size = size;
+
+        // Add initial block to largest order
+        let order = self.size_to_order(size);
+        if order < BUDDY_ORDERS {
+            // SAFETY: We're initializing with a valid memory region
+            unsafe {
+                let block = base.as_usize() as *mut FreeBlock;
+                (*block).size = 1 << order;
+                (*block).next = None;
+                self.free_lists[order] = NonNull::new(block);
+            }
+        }
+    }
+
+    /// Convert size to buddy order
+    fn size_to_order(&self, size: usize) -> usize {
+        let mut order = 0;
+        let mut block_size = 1;
+        
+        while block_size < size && order < BUDDY_ORDERS {
+            block_size <<= 1;
+            order += 1;
+        }
+        
+        order
+    }
 }
