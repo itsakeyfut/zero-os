@@ -234,3 +234,29 @@ pub struct GrantRegion {
     /// Creation timestamp
     pub created_at: u64,
 }
+
+impl GrantRegion {
+    /// Create a new grant region
+    pub fn new(
+        grant_id: GrantId,
+        grant_type: GrantType,
+        address: VirtualAddress,
+        size: usize,
+        owner: Option<ProcessId>,
+        permissions: GrantPermissions,
+        type_id: u64,
+        created_at: u64,
+    ) -> Self {
+        Self {
+            grant_id,
+            grant_type,
+            address,
+            size,
+            owner,
+            permissions,
+            ref_count: 1,
+            type_id,
+            created_at,
+        }
+    }
+}
