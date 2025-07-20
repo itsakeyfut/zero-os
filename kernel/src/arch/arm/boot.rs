@@ -326,3 +326,39 @@ unsafe fn clear_bss() {
         core::ptr::write_bytes(bss_start, 0, bss_size);
     }
 }
+
+/// Set up initial page tables for MMU
+#[cfg(feature = "mmu")]
+unsafe fn setup_initial_page_tables() {
+    unsafe extern "C" {
+        static __page_table_start: u8;
+    }
+
+    // SAFETY: We're setting up page tables during boot
+    unsafe {
+        let page_table_base = &__page_table_start as *const u8 as *mut u32;
+
+        // Create identity mapping for first 1GB
+        // This is a simplified setup - real implementation would be more complex
+        for i in 0..256 {
+            let section_base = i * 0x100000; // 1MB sections
+            let entry = section_base | 0x402; // Section, cacheable, bufferable
+            page_table_base.add(1).write_volatile(entry as u32);
+        }
+
+        // Set up kernel mapping (3GB virtual -> 0GB physical)
+        for i in 0..256 {
+            let virtual_addr = 0xC0000000 + (i * 0x100000);
+            let physical_addr = i * 0x100000;
+            let entry = physical_addr | 0x402; // Section, cacheable, bufferable
+            let table_index = virtual_addr >> 20;
+            page_table_base.add(table_index).write_volatile(entry as u32);
+        }
+        
+        // Set Translation Table Base Register
+        asm!("mcr p15, 0, {}, c2, c0, 0", in(reg) page_table_base, options(nomem, nostack));
+        
+        // Set domain access control (domain 0 = client)
+        asm!("mcr p15, 0, {}, c3, c0, 0", in(reg) 0x1u32, options(nomem, nostack));
+    }
+}
