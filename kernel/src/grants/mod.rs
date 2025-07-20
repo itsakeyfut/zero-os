@@ -333,4 +333,18 @@ impl<T> Grant<T> {
     pub fn is_shareable(&self) -> bool {
         self.region.permissions.shareable
     }
+
+    /// Get a reference to the data (if read permission exists)
+    pub fn read(&self) -> Option<&T> {
+        if !self.capability.can_read() {
+            return None;
+        }
+
+        // SAFETY: We've verified read permission and the grant was created
+        // with proper type safety guarantees
+        unsafe {
+            let ptr = self.region.address.as_usize() as *const T;
+            ptr.as_ref()
+        }
+    }
 }
