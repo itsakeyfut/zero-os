@@ -401,3 +401,11 @@ impl<T> Grant<T> {
         &self.region
     }
 }
+
+impl<T> Drop for Grant<T> {
+    fn drop(&mut self) {
+        // Automatically release the grant when dropped
+        // This woud normally notify the grant allocator
+        crate::debug_print!("Dropping grant {:?}", self.grant_id());
+    }
+}
