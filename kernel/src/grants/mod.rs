@@ -470,7 +470,7 @@ pub struct GrantStats {
 }
 
 /// Type-safe wrapper for different grant data types
-pub trait GrantData: 'static {
+pub trait GrantData: 'static + Sized {
     /// Get the type ID for this grant data type
     fn type_id() -> u64 {
         // Simple type ID based on type name hash
