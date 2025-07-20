@@ -416,3 +416,10 @@ unsafe fn enable_caches_and_mmu() {
         asm!("isb", options(nomem, nostack));
     }
 }
+
+/// Get boot parameters passed by bootloader
+pub fn get_boot_params() -> BootConfig {
+    // In a real implementation, this would parse ATAGS or device tree
+    // For now, return default configuration
+    BootConfig::default()
+}
