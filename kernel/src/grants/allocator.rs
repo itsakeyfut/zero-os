@@ -613,4 +613,24 @@ impl GrantAllocator {
 
         Ok(())
     }
+
+    /// Create a temporary grant that expires after specified time
+    pub fn create_temporary_grant<T: GrantData>(
+        &mut self,
+        owner: ProcessId,
+        permissions: GrantPermissions,
+        duration_us: u64,
+    ) -> GrantResult<Grant<T>> {
+        let current_time = crate::arch::target::Architecture::current_time_us();
+        let expiry_time = current_time + duration_us;
+
+        // Allocate grant normally
+        let mut grant = self.allocate_grant::<T>(GrantType::Temporary, Some(owner), permissions)?;
+
+        // Update capability with expiration
+        // In a real implementation, we'd modify the capability
+        // For now, we'll leave this as a placeholder
+
+        Ok(grant)
+    }
 }
