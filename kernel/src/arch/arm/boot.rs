@@ -149,4 +149,9 @@ impl CpuInfo {
     pub fn has_mmu(&self) -> bool {
         (self.memory_model_features[0] & 0xF) != 0
     }
+
+    /// Check if caches are present
+    pub fn has_cache(&self) -> bool {
+        self.cache_type != 0
+    }
 }
