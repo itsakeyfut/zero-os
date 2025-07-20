@@ -457,6 +457,11 @@ impl GrantAllocator {
         Ok(())
     }
 
+    /// Get grant by ID
+    pub fn get_grant(&self, grant_id: GrantId) -> Option<&GrantRegion> {
+        self.grants.get(&grant_id)
+    }
+
     /// Allocate memory for grants
     fn allocate_memory(&mut self, size: usize, alignment: usize) -> GrantResult<VirtualAddress> {
         let aligned_size = (size + alignment - 1) & !(alignment - 1);
