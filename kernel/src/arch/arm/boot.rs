@@ -82,3 +82,41 @@ pub struct CpuInfo {
     /// Instruction set attributes
     pub instruction_set_attributes: [u32; 5],
 }
+
+impl CpuInfo {
+    /// Read CPU identification from coprocessor registers
+    pub fn read() -> Self {
+        let mut info = Self {
+            main_id: 0,
+            cache_type: 0,
+            tlb_type: 0,
+            processor_features: [0; 2],
+            memory_model_features: [0; 4],
+            instruction_set_attributes: [0; 5],
+        };
+
+        // SAFETY: Reading CPU identification registers is safe
+        unsafe {
+            // Main ID register
+            asm!("mrc p15, 0, {}, c0, c0, 0", out(reg) info.main_id, options(nomem, nostack));
+            
+            // Cache type register
+            asm!("mrc p15, 0, {}, c0, c0, 1", out(reg) info.cache_type, options(nomem, nostack));
+            
+            // TLB type register
+            asm!("mrc p15, 0, {}, c0, c0, 3", out(reg) info.tlb_type, options(nomem, nostack));
+            
+            // Processor feature registers
+            asm!("mrc p15, 0, {}, c0, c1, 0", out(reg) info.processor_features[0], options(nomem, nostack));
+            asm!("mrc p15, 0, {}, c0, c1, 1", out(reg) info.processor_features[1], options(nomem, nostack));
+            
+            // Memory model feature registers
+            asm!("mrc p15, 0, {}, c0, c1, 4", out(reg) info.memory_model_features[0], options(nomem, nostack));
+            asm!("mrc p15, 0, {}, c0, c1, 5", out(reg) info.memory_model_features[1], options(nomem, nostack));
+            asm!("mrc p15, 0, {}, c0, c1, 6", out(reg) info.memory_model_features[2], options(nomem, nostack));
+            asm!("mrc p15, 0, {}, c0, c1, 7", out(reg) info.memory_model_features[3], options(nomem, nostack));
+        }
+
+        info
+    }
+}
