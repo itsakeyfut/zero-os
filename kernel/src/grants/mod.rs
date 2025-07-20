@@ -161,3 +161,20 @@ pub struct GrantCapability {
     /// Expiration time (None for permanent)
     expires_at: Option<u64>,
 }
+
+impl GrantCapability {
+    /// Create a new grant capability
+    pub fn new(
+        grant_id: GrantId,
+        process_id: ProcessId,
+        permissions: GrantPermissions,
+        expires_at: Option<u64>,
+    ) -> Self {
+        Self {
+            grant_id,
+            process_id,
+            permissions,
+            expires_at,
+        }
+    }
+}
