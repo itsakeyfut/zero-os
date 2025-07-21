@@ -517,3 +517,13 @@ pub fn enable_caches() {
         manager.enable_caches();
     }
 }
+
+/// Flush all caches (convenience function)
+pub fn flush_dcache_all() {
+    if let Some(manager) = cache_manager() {
+        // SAFETY: Flushing caches is safe
+        unsafe {
+            manager.clean_invalidate_dcache_all();
+        }
+    }
+}
