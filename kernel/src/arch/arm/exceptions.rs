@@ -63,3 +63,21 @@ pub mod vectors {
     /// FIQ vector offset
     pub const FIQ: usize = 0x1C;
 }
+
+/// ARM processor modes
+pub mod modes {
+    /// User mode
+    pub const USER: u32 = 0x10;
+    /// FIQ mode
+    pub const FIQ: u32 = 0x11;
+    /// IRQ mode
+    pub const IRQ: u32 = 0x12;
+    /// Supervisor mode
+    pub const SUPERVISOR: u32 = 0x13;
+    /// Abort mode
+    pub const ABORT: u32 = 0x17;
+    /// Undefined mode
+    pub const UNDEFINED: u32 = 0x1B;
+    /// System mode
+    pub const SYSTEM: u32 = 0x1F;
+}
