@@ -352,6 +352,37 @@ impl CacheManager {
         }
     }
 
+    /// Perform data cache operation on address range
+    unsafe fn dcache_operation_range(&self, start: usize, size: usize, op: CacheOp) {
+        let line_size = self.info.dcache_line_size();
+        let end = start + size;
+        let mut addr = start & !(line_size - 1); // Align to cache line
+        
+        // SAFETY: Performing cache maintenance operations by address
+        unsafe {
+            while addr < end {
+                match op {
+                    CacheOp::Clean => {
+                        asm!("mcr p15, 0, {}, c7, c10, 1", in(reg) addr, options(nomem, nostack)); // DCCMVAC
+                    }
+                    CacheOp::Invalidate => {
+                        asm!("mcr p15, 0, {}, c7, c6, 1", in(reg) addr, options(nomem, nostack)); // DCIMVAC
+                    }
+                    CacheOp::CleanInvalidate => {
+                        asm!("mcr p15, 0, {}, c7, c14, 1", in(reg) addr, options(nomem, nostack)); // DCCIMVAC
+                    }
+                    CacheOp::Flush => {
+                        // Flush is equivalent to clean+invalidate
+                        asm!("mcr p15, 0, {}, c7, c14, 1", in(reg) addr, options(nomem, nostack)); // DCCIMVAC
+                    }
+                }
+                addr += line_size;
+            }
+            
+            asm!("dsb", options(nomem, nostack));
+        }
+    }
+
     /// Prefetch data into cache
     pub fn prefetch(&self, addr: usize) {
         // SAFETY: Prefetching is safe and optional
