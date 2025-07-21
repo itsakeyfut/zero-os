@@ -438,4 +438,19 @@ impl CacheManager {
     pub fn is_enabled(&self) -> bool {
         self.enabled
     }
+
+    /// Perform cache coherency operation for DMA
+    pub unsafe fn dma_coherent_range(&self, start: usize, size: usize, to_device: bool) {
+        if to_device {
+            // Clean cache to ensure data is written to memory
+            unsafe {
+                self.clean_dcache_range(start, size);
+            }
+        } else {
+            // Invalidate cache to ensure fresh data is read from memory
+            unsafe {
+                self.invalidate_dcache_range(start, size);
+            }
+        }
+    }
 }
