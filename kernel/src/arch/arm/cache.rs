@@ -82,4 +82,10 @@ impl CacheInfo {
 
         info
     }
+
+    /// Get instruction cache line size
+    pub fn icache_line_size(&self) -> usize {
+        let line_size_bits = self.ctr & 0xF;
+        4 << line_size_bits
+    }
 }
