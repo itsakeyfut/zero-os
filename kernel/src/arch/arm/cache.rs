@@ -178,6 +178,24 @@ impl CacheManager {
         Ok(())
     }
 
+    /// Enable all caches
+    pub fn enable_caches(&mut self) {
+        // SAFETY: Enabling caches is safe
+        unsafe {
+            // Enable instruction cache
+            self.enable_icache();
+
+            // Enable data cache
+            self.enable_dcache();
+
+            // Enable branch prediction if available
+            self.enable_branch_prediction();
+        }
+
+        self.enabled = true;
+        crate::debug_print!("Caches enabled");
+    }
+
     /// Enable instruction cache
     unsafe fn enable_icache(&self) {
         let mut sctlr: u32;
