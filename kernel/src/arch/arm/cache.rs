@@ -219,4 +219,18 @@ impl CacheManager {
             asm!("isb", options(nomem, nostack));
         }
     }
+
+    /// Disable data cache
+    unsafe fn disable_dcache(&self) {
+        let mut sctlr: i32;
+
+        // SAFETY: We're disabling data cache
+        unsafe {
+            asm!("mrc p15, 0, {}, c1, c0, 0", out(reg) sctlr, options(nomem, nostack));
+            sctlr &= !(1 << 2); // Clear C bit
+            asm!("mcr p15, 0, {}, c1, c0, 0", in(reg) sctlr, options(nomem, nostack));
+            asm!("dsb", options(nomem, nostack));
+            asm!("isb", options(nomem, nostack));
+        }
+    }
 }
