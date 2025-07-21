@@ -196,3 +196,24 @@ pub struct ExceptionManager {
     /// Initialization state
     initialized: bool,
 }
+
+impl ExceptionManager {
+    /// Create a new exception manager
+    pub const fn new() -> Self {
+        Self {
+            stats: ExceptionStats {
+                total_exceptions: 0,
+                undefined_instructions: 0,
+                system_calls: 0,
+                prefetch_aborts: 0,
+                data_aborts: 0,
+                irq_count: 0,
+                fiq_count: 0,
+                nested_interrupts: 0,
+                max_nesting_level: 0,
+            },
+            nesting_level: 0,
+            initialized: false,
+        }
+    }
+}
