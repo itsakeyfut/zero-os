@@ -129,3 +129,35 @@ pub mod dfsr_bits {
     /// Permission fault (level 2)
     pub const PERMISSION_L2: u32 = 0x0F;
 }
+
+/// Exception information structure
+pub struct ExceptionInfo {
+    /// Exception type
+    pub exception_type: ExceptionType,
+    /// Fault address (for data/prefetch aborts)
+    pub fault_address: Option<u32>,
+    /// Fault status (for aborts)
+    pub fault_status: Option<u32>,
+    /// Instruction that caused the exception
+    pub fault_instruction: Option<u32>,
+    /// Process ID that caused the exception
+    pub process_id: Option<ProcessId>,
+}
+
+/// Exception types
+pub enum ExceptionType {
+    /// Reset exception
+    Reset,
+    /// Undefined instruction
+    UndefinedInstruction,
+    /// Software interrupt (system call)
+    SoftwareInterrupt,
+    /// Prefetch abort
+    PrefetchAbort,
+    /// Data abort
+    DataAbort,
+    /// IRQ interrupt
+    Irq,
+    /// FIQ interrupt
+    Fiq,
+}
