@@ -453,4 +453,17 @@ impl CacheManager {
             }
         }
     }
+
+    /// Warm up cache with specific memory range
+    pub fn warm_cache(&self, start: usize, size: usize) {
+        let line_size = self.info.min_cache_line_size();
+        let end = start + size;
+        let mut addr = start & !(line_size - 1);
+        
+        // Touch each cache line to bring it into cache
+        while addr < end {
+            self.prefetch(addr);
+            addr += line_size;
+        }
+    }
 }
