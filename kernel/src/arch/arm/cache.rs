@@ -256,4 +256,21 @@ impl CacheManager {
             asm!("isb", options(nomem, nostack));
         }
     }
+
+    /// Invalidate instructino cache by address range
+    pub unsafe fn invalidate_icache_range(&self, start: usize, size: usize) {
+        let line_size = self.info.icache_line_size();
+        let end = start + size;
+        let mut addr = start & !(line_size - 1); // Align to cache line
+
+        // SAFETY: Invalidating instruction cache by address is safe
+        unsafe {
+            while addr < end {
+                asm!("mcr p15, 0, {}, c7, c5, 1", in(reg) addr, options(nomem, nostack)); // ICIMVAU
+                addr += line_size;
+            }
+            asm!("dsb", options(nomem, nostack));
+            asm!("isb", options(nomem, nostack));
+        }
+    }
 }
