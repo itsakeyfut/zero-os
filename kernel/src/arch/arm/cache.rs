@@ -335,4 +335,12 @@ impl CacheManager {
             asm!("pld [{}]", in(reg) addr, options(nomem, nostack));
         }
     }
+
+    /// Prefetch instruction into cache
+    pub fn prefetch_instruction(&self, addr: usize) {
+        // SAFETY: Instruction prefetching is safe
+        unsafe {
+            asm!("pli [{}]", in(reg) addr, options(nomem, nostack));
+        }
+    }
 }
