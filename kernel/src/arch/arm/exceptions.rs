@@ -123,7 +123,7 @@ pub mod dfsr_bits {
     /// Domain fault (level 1)
     pub const DOMAIN_L1: u32 = 0x09;
     /// Domain fault (level 2)
-    pub const DOMAIN_L2: u32 = 0x08;
+    pub const DOMAIN_L2: u32 = 0x0B;
     /// Permission fault (level 1)
     pub const PERMISSION_L1: u32 = 0x0D;
     /// Permission fault (level 2)
@@ -131,6 +131,7 @@ pub mod dfsr_bits {
 }
 
 /// Exception information structure
+#[derive(Debug, Clone, Copy)]
 pub struct ExceptionInfo {
     /// Exception type
     pub exception_type: ExceptionType,
@@ -145,6 +146,7 @@ pub struct ExceptionInfo {
 }
 
 /// Exception types
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ExceptionType {
     /// Reset exception
     Reset,
@@ -168,7 +170,7 @@ pub struct ExceptionStats {
     /// Total exceptions handled
     pub total_exceptions: u64,
     /// Undefined instruction count
-    pub undefined_instruction: u32,
+    pub undefined_instructions: u32,
     /// System call count
     pub system_calls: u64,
     /// Prefetch abort count
