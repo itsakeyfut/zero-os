@@ -99,4 +99,9 @@ impl CacheInfo {
     pub fn min_cache_line_size(&self) -> usize {
         core::cmp::min(self.icache_line_size(), self.dcache_line_size())
     }
+
+    /// Get number of cache sets
+    pub fn cache_sets(&self) -> u32 {
+        ((self.ccsidr >> 13) & 0x7FFF) + 1
+    }
 }
