@@ -316,6 +316,13 @@ impl CacheManager {
         }
     }
 
+    /// Clean data cache by address range
+    pub unsafe fn clean_dcache_range(&self, start: usize, size: usize) {
+        unsafe {
+            self.dcache_operation_range(start, size, CacheOp::Clean);
+        }
+    }
+
     /// Perform data cache operation on all cache
     unsafe fn dcache_operation_all(&self, op: CacheOp) {
         let sets = self.info.cache_sets();
