@@ -146,3 +146,11 @@ pub enum CacheType {
     /// Unified cache (both instruction and data)
     Unified,
 }
+
+/// Cache maintenance operations
+pub struct CacheManager {
+    /// Cache information
+    info: CacheInfo,
+    /// Whether caches are enabled
+    enabled: bool,
+}
