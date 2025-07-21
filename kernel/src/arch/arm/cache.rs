@@ -109,4 +109,12 @@ impl CacheInfo {
     pub fn cache_associativity(&self) -> u32 {
         ((self.ccsidr >> 3) & 0x3FF) + 1
     }
+
+    /// Get cache size in bytes
+    pub fn cache_size(&self) -> usize {
+        let line_size = self.dcache_line_size();
+        let sets = self.cache_sets();
+        let ways = self.cache_associativity();
+        line_size * sets as usize * ways as usize
+    }
 }
