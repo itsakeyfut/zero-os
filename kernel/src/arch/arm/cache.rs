@@ -163,25 +163,25 @@ impl CacheManager {
             enabled: false,
         }
     }
-
+    
     /// Initialize cache management
     pub fn init(&mut self) -> ArchResult<()> {
         // Read current cache state
         self.info = CacheInfo::read();
-
+        
         crate::debug_print!("Cache Info:");
         crate::debug_print!("  I-cache line size: {} bytes", self.info.icache_line_size());
         crate::debug_print!("  D-cache line size: {} bytes", self.info.dcache_line_size());
         crate::debug_print!("  Cache size: {} KB", self.info.cache_size() / 1024);
         crate::debug_print!("  Separate caches: {}", self.info.has_separate_caches());
-
+        
         Ok(())
     }
 
     /// Enable instruction cache
     unsafe fn enable_icache(&self) {
         let mut sctlr: u32;
-
+        
         // SAFETY: We're enabling instruction cache
         unsafe {
             asm!("mrc p15, 0, {}, c1, c0, 0", out(reg) sctlr, options(nomem, nostack));
@@ -194,11 +194,12 @@ impl CacheManager {
     /// Disable instruction cache
     unsafe fn disable_icache(&self) {
         let mut sctlr: u32;
-
+        
         // SAFETY: We're disabling instruction cache
         unsafe {
             // Invalidate instruction cache first
-
+            self.invalidate_icache_all();
+            
             asm!("mrc p15, 0, {}, c1, c0, 0", out(reg) sctlr, options(nomem, nostack));
             sctlr &= !(1 << 12); // Clear I bit
             asm!("mcr p15, 0, {}, c1, c0, 0", in(reg) sctlr, options(nomem, nostack));
@@ -206,10 +207,9 @@ impl CacheManager {
         }
     }
 
-    /// Enable data cache
     unsafe fn enable_dcache(&self) {
         let mut sctlr: u32;
-
+        
         // SAFETY: We're enabling data cache
         unsafe {
             asm!("mrc p15, 0, {}, c1, c0, 0", out(reg) sctlr, options(nomem, nostack));
@@ -222,8 +222,8 @@ impl CacheManager {
 
     /// Disable data cache
     unsafe fn disable_dcache(&self) {
-        let mut sctlr: i32;
-
+        let mut sctlr: u32;
+        
         // SAFETY: We're disabling data cache
         unsafe {
             asm!("mrc p15, 0, {}, c1, c0, 0", out(reg) sctlr, options(nomem, nostack));
@@ -243,6 +243,16 @@ impl CacheManager {
             asm!("mrc p15, 0, {}, c1, c0, 0", out(reg) sctlr, options(nomem, nostack));
             sctlr |= 1 << 11; // Z bit
             asm!("mcr p15, 0, {}, c1, c0, 0", in(reg) sctlr, options(nomem, nostack));
+            asm!("isb", options(nomem, nostack));
+        }
+    }
+
+    /// Invalidate all instruction caches
+    pub unsafe fn invalidate_icache_all(&self) {
+        // SAFETY: Invalidating instruction cache is safe
+        unsafe {
+            asm!("mcr p15, 0, {}, c7, c5, 0", in(reg) 0u32, options(nomem, nostack));
+            asm!("dsb", options(nomem, nostack));
             asm!("isb", options(nomem, nostack));
         }
     }
