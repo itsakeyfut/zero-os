@@ -300,6 +300,14 @@ impl CacheManager {
         }
     }
 
+    /// Invalidate all data caches
+    pub unsafe fn invalidate_dcache_all(&self) {
+        // SAFETY: Invalidating data cache is safe but requires care
+        unsafe {
+            self.dcache_operation_all(CacheOp::Invalidate);
+        }
+    }
+
     /// Perform data cache operation on all cache
     unsafe fn dcache_operation_all(&self, op: CacheOp) {
         let sets = self.info.cache_sets();
