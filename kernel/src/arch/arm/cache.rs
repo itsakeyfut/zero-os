@@ -291,4 +291,40 @@ impl CacheManager {
             asm!("isb", options(nomem, nostack));
         }
     }
+
+    /// Perform data cache operation on all cache
+    unsafe fn dcache_operation_all(&self, op: CacheOp) {
+        let sets = self.info.cache_sets();
+        let ways = self.info.cache_associativity();
+        let line_size_bits = (self.info.ccsidr & 0x7) + 4; // Log2 of line size
+        let way_shift = 32 - ways.leading_zeros();
+        let set_shift = line_size_bits;
+        
+        // SAFETY: Performing cache maintenance operations
+        unsafe {
+            for way in 0..ways {
+                for set in 0..sets {
+                    let value = (way << way_shift) | (set << set_shift);
+                    
+                    match op {
+                        CacheOp::Clean => {
+                            asm!("mcr p15, 0, {}, c7, c10, 2", in(reg) value, options(nomem, nostack)); // DCCSW
+                        }
+                        CacheOp::Invalidate => {
+                            asm!("mcr p15, 0, {}, c7, c6, 2", in(reg) value, options(nomem, nostack)); // DCISW
+                        }
+                        CacheOp::CleanInvalidate => {
+                            asm!("mcr p15, 0, {}, c7, c14, 2", in(reg) value, options(nomem, nostack)); // DCCISW
+                        }
+                        CacheOp::Flush => {
+                            // Flush is equivalent to clean+invalidate
+                            asm!("mcr p15, 0, {}, c7, c14, 2", in(reg) value, options(nomem, nostack)); // DCCISW
+                        }
+                    }
+                }
+            }
+            
+            asm!("dsb", options(nomem, nostack));
+        }
+    }
 }
