@@ -486,3 +486,21 @@ impl CacheManager {
 
 /// Global cache manager instance
 static mut CACHE_MANAGER: Option<CacheManager> = None;
+
+/// Initialize global cache manager
+pub fn init_cache_manager() -> ArchResult<()> {
+    // SAFETY: This is called once during system initialization
+    unsafe {
+        if CACHE_MANAGER.is_some() {
+            return Ok(());
+        }
+
+        CACHE_MANAGER = Some(CacheManager::new());
+
+        if let Some(manager) = CACHE_MANAGER.as_mut() {
+            manager.init()?;
+        }
+    }
+
+    Ok(())
+}
