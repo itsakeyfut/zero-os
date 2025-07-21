@@ -330,6 +330,13 @@ impl CacheManager {
         }
     }
 
+    /// Clean and invalidate data cache by address range
+    pub unsafe fn clean_invalidate_dcache_range(&self, start: usize, size: usize) {
+        unsafe {
+            self.dcache_operation_range(start, size, CacheOp::CleanInvalidate);
+        }
+    }
+
     /// Perform data cache operation on all cache
     unsafe fn dcache_operation_all(&self, op: CacheOp) {
         let sets = self.info.cache_sets();
