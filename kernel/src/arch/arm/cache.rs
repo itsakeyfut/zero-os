@@ -504,3 +504,9 @@ pub fn init_cache_manager() -> ArchResult<()> {
 
     Ok(())
 }
+
+/// Get reference to global cache manager
+pub fn cache_manager() -> Option<&'static mut CacheManager> {
+    // SAFETY: Cache manager is initialized once
+    unsafe { CACHE_MANAGER.as_mut() }
+}
