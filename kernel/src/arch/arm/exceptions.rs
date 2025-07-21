@@ -161,3 +161,26 @@ pub enum ExceptionType {
     /// FIQ interrupt
     Fiq,
 }
+
+/// Exception statistics for monitoring
+#[derive(Debug, Default, Clone, Copy)]
+pub struct ExceptionStats {
+    /// Total exceptions handled
+    pub total_exceptions: u64,
+    /// Undefined instruction count
+    pub undefined_instruction: u32,
+    /// System call count
+    pub system_calls: u64,
+    /// Prefetch abort count
+    pub prefetch_aborts: u32,
+    /// Data abort count
+    pub data_aborts: u32,
+    /// IRQ count
+    pub irq_count: u64,
+    /// FIQ count
+    pub fiq_count: u64,
+    /// Nested interrupt count
+    pub nested_interrupts: u32,
+    /// Maximum interrupt nesting level
+    pub max_nesting_level: u32,
+}
