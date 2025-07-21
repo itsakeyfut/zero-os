@@ -257,12 +257,12 @@ impl CacheManager {
         }
     }
 
-    /// Invalidate instructino cache by address range
+    /// Invalidate instruction cache by address range
     pub unsafe fn invalidate_icache_range(&self, start: usize, size: usize) {
         let line_size = self.info.icache_line_size();
         let end = start + size;
         let mut addr = start & !(line_size - 1); // Align to cache line
-
+        
         // SAFETY: Invalidating instruction cache by address is safe
         unsafe {
             while addr < end {
