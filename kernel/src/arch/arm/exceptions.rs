@@ -81,3 +81,25 @@ pub mod modes {
     /// System mode
     pub const SYSTEM: u32 = 0x1F;
 }
+
+/// CPSR (Current Program Status Register) flags
+pub mod cpsr_flags {
+    /// Negative flag
+    pub const N: u32 = 1 << 31;
+    /// Zero flag
+    pub const Z: u32 = 1 << 30;
+    /// Carry flag
+    pub const C: u32 = 1 << 29;
+    /// Overflow flag
+    pub const V: u32 = 1 << 28;
+    /// Sticky overflow flag
+    pub const Q: u32 = 1 << 27;
+    /// IRQ disable
+    pub const I: u32 = 1 << 7;
+    /// FIQ disable
+    pub const F: u32 = 1 << 6;
+    /// Thumb state
+    pub const T: u32 = 1 << 5;
+    /// Mode mask
+    pub const MODE_MASK: u32 = 0x1F;
+}
