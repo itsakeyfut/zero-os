@@ -52,7 +52,34 @@ pub struct CacheInfo {
     /// Cache type register value
     pub ctr: u32,
     /// Cache size identification register
-    pub cosidr: u32,
+    pub ccsidr: u32,
     /// Cache level ID register
     pub clidr: u32,
+}
+
+impl CacheInfo {
+    /// Read cache information from coprocessor registers
+    pub fn read() -> Self {
+        let mut info = Self {
+            ctr: 0,
+            ccsidr: 0,
+            clidr: 0,
+        };
+
+        // SAFETY: Reading cache identification registers is safe
+        unsafe {
+            // Cache Type Register
+            asm!("mrc p15, 0, {}, c0, c0, 1", out(reg) info.ctr, options(nomem, nostack));
+
+            // Cache Level ID Register
+            asm!("mrc p15, 1, {}, c0, c0, 1", out(reg) info.clidr, options(nomem, nostack));
+
+            // Select L1 data cache and read Cache Size ID Register
+            asm!("mcr p15, 2, {}, c0, c0, 0", in(reg) 0u32, options(nomem, nostack));
+            asm!("isb", options(nomem, nostack));
+            asm!("mrc p15, 1, {}, c0, c0, 0", out(reg) info.ccsidr, options(nomem, nostack));
+        }
+
+        info
+    }
 }
