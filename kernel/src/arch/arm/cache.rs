@@ -136,3 +136,13 @@ pub enum CacheOp {
     /// Flush cache (implementation specific)
     Flush,
 }
+
+/// Cache types
+pub enum CacheType {
+    /// Instruction cache
+    Instruction,
+    /// Data cache
+    Data,
+    /// Unified cache (both instruction and data)
+    Unified,
+}
