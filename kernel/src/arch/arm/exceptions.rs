@@ -186,3 +186,13 @@ pub struct ExceptionStats {
     /// Maximum interrupt nesting level
     pub max_nesting_level: u32,
 }
+
+/// Exception handler manager
+pub struct ExceptionManager {
+    /// Exception statistics
+    stats: ExceptionStats,
+    /// Current interrupt nesting level
+    nesting_level: u32,
+    /// Initialization state
+    initialized: bool,
+}
