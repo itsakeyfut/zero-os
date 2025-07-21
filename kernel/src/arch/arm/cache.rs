@@ -348,4 +348,9 @@ impl CacheManager {
     pub fn cache_info(&self) -> &CacheInfo {
         &self.info
     }
+
+    /// Check if caches are enabled
+    pub fn is_enabled(&self) -> bool {
+        self.enabled
+    }
 }
