@@ -266,4 +266,21 @@ impl ExceptionManager {
 
         Ok(())
     }
+
+    /// Handle undefined instruction exception
+    pub fn handle_undefined_instruction(&mut self, context: &mut CpuContext) -> bool {
+        self.stats.total_exceptions += 1;
+        self.stats.undefined_instructions += 1;
+
+        crate::debug_print!("Undefined instruction at PC: 0x{:08X}", context.program_counter);
+
+        // In a real implementation, this might:
+        // 1. Check if it's an emulation trap
+        // 2. Handle floating point emulation
+        // 3. Deliver signal to process
+        // 4. Terminate process if unhandleable
+        
+        // For now, just terminate the process
+        false // Return false to indicate the process should be terminated
+    }
 }
