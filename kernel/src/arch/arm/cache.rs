@@ -117,4 +117,9 @@ impl CacheInfo {
         let ways = self.cache_associativity();
         line_size * sets as usize * ways as usize
     }
+
+    /// Check if instruction and data caches are separate
+    pub fn has_separate_caches(&self) -> bool {
+        (self.ctr & (1 << 24)) == 0
+    }
 }
