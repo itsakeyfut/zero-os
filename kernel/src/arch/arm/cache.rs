@@ -88,4 +88,10 @@ impl CacheInfo {
         let line_size_bits = self.ctr & 0xF;
         4 << line_size_bits
     }
+
+    /// Get data cache line size
+    pub fn dcache_line_size(&self) -> usize {
+        let line_size_bits = (self.ctr >> 16) & 0xF;
+        4 << line_size_bits
+    }
 }
