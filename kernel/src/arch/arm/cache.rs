@@ -537,3 +537,16 @@ pub fn flush_icache_all() {
         }
     }
 }
+
+/// Clean and invalidate data cache by address range (convenience function)
+pub unsafe fn clean_invalidate_dcache_range(start: usize, size: usize) -> ArchResult<()> {
+    if let Some(manager) = cache_manager() {
+        // SAFETY: Caller guarantees address range is valid
+        unsafe {
+            manager.clean_invalidate_dcache_range(start, size);
+        }
+        Ok(())
+    } else {
+        Err(crate::arch::ArchError::InvalidAddress)
+    }
+}
