@@ -103,3 +103,29 @@ pub mod cpsr_flags {
     /// Mode mask
     pub const MODE_MASK: u32 = 0x1F;
 }
+
+/// Data Fault Statue Register (DFSR) bits
+pub mod dfsr_bits {
+    /// External abort on non-linefetch
+    pub const EXT_ABORT: u32 = 0x01;
+    /// Alignment fault
+    pub const ALIGNMENT: u32 = 0x02;
+    /// Debug event
+    pub const DEBUG: u32 = 0x04;
+    /// Access flag fault (level 1)
+    pub const ACCESS_FLAG_L1: u32 = 0x05;
+    /// Translation fault (level 1)
+    pub const TRANSLATION_L1: u32 = 0x06;
+    /// Access flag fault (level 2)
+    pub const ACCESS_FLAG_L2: u32 = 0x07;
+    /// Translation fault (level 2)
+    pub const TRANSLATION_L2: u32 = 0x08;
+    /// Domain fault (level 1)
+    pub const DOMAIN_L1: u32 = 0x09;
+    /// Domain fault (level 2)
+    pub const DOMAIN_L2: u32 = 0x08;
+    /// Permission fault (level 1)
+    pub const PERMISSION_L1: u32 = 0x0D;
+    /// Permission fault (level 2)
+    pub const PERMISSION_L2: u32 = 0x0F;
+}
