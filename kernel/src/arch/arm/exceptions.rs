@@ -246,4 +246,24 @@ impl ExceptionManager {
 
         Ok(())
     }
+
+    /// Configure exception handling features
+    fn configure_exception(&self) -> Result<(), &'static str> {
+        // SAFETY: We're configuring exception handling
+        unsafe {
+            let mut sctlr: u32;
+
+            // Read SCTLR
+            asm!("mrc p15, 0, {}, c1, c0, 0", out(reg) sctlr, options(nomem, nostack));
+
+            // Ensure low vectors (clear V bit)
+            sctlr &= !(1 << 13);
+
+            // Write back SCTLR
+            asm!("mcr p15, 0, {}, c1, c0, 0", in(reg) sctlr, options(nomem, nostack));
+            asm!("isb", options(nomem, nostack));
+        }
+
+        Ok(())
+    }
 }
