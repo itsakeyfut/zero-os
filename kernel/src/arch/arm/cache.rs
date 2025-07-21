@@ -531,9 +531,9 @@ pub fn flush_dcache_all() {
 /// Flush instruction cache (convenience function)
 pub fn flush_icache_all() {
     if let Some(manager) = cache_manager() {
-        // SAFETY: Flushing caches is safe
+        // SAFETY: Flushing instruction cache is safe
         unsafe {
-            manager.clean_invalidate_dcache_all();
+            manager.invalidate_icache_all();
         }
     }
 }
