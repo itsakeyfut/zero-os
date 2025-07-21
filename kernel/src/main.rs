@@ -9,6 +9,7 @@
 
 use core::panic::PanicInfo;
 
+mod macros;
 mod arch;
 mod memory;
 mod platform;
@@ -60,19 +61,6 @@ fn panic(info: &PanicInfo) -> ! {
                     location.line(),
                     location.column());
     }
-}
-
-#[macro_export]
-macro_rules! debug_print {
-    ($($arg:tt)*) => {
-        #[cfg(debug_assertions)]
-        {
-            use core::fmt::Write;
-            let mut debug_writer = arch::DebugWriter::new();
-            let _ = write!(debug_writer, "[KERNEL] ");
-            let _ = writeln!(debug_writer, $($arg)*);
-        }
-    };
 }
 
 #[derive(Debug, Clone, Copy)]
