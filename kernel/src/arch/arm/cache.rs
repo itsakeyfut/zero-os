@@ -483,3 +483,6 @@ impl CacheManager {
         }
     }
 }
+
+/// Global cache manager instance
+static mut CACHE_MANAGER: Option<CacheManager> = None;
