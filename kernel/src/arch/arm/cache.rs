@@ -70,46 +70,46 @@ impl CacheInfo {
         unsafe {
             // Cache Type Register
             asm!("mrc p15, 0, {}, c0, c0, 1", out(reg) info.ctr, options(nomem, nostack));
-
+            
             // Cache Level ID Register
             asm!("mrc p15, 1, {}, c0, c0, 1", out(reg) info.clidr, options(nomem, nostack));
-
+            
             // Select L1 data cache and read Cache Size ID Register
-            asm!("mcr p15, 2, {}, c0, c0, 0", in(reg) 0u32, options(nomem, nostack));
+            asm!("mcr p15, 2, {}, c0, c0, 0", in(reg) 0u32, options(nomem, nostack)); // Select L1 data cache
             asm!("isb", options(nomem, nostack));
             asm!("mrc p15, 1, {}, c0, c0, 0", out(reg) info.ccsidr, options(nomem, nostack));
         }
 
         info
     }
-
+    
     /// Get instruction cache line size
     pub fn icache_line_size(&self) -> usize {
         let line_size_bits = self.ctr & 0xF;
         4 << line_size_bits
     }
-
+    
     /// Get data cache line size
     pub fn dcache_line_size(&self) -> usize {
         let line_size_bits = (self.ctr >> 16) & 0xF;
         4 << line_size_bits
     }
-
+    
     /// Get minimum cache line size
     pub fn min_cache_line_size(&self) -> usize {
         core::cmp::min(self.icache_line_size(), self.dcache_line_size())
     }
-
+    
     /// Get number of cache sets
     pub fn cache_sets(&self) -> u32 {
         ((self.ccsidr >> 13) & 0x7FFF) + 1
     }
-
+    
     /// Get cache associativity
     pub fn cache_associativity(&self) -> u32 {
         ((self.ccsidr >> 3) & 0x3FF) + 1
     }
-
+    
     /// Get cache size in bytes
     pub fn cache_size(&self) -> usize {
         let line_size = self.dcache_line_size();
@@ -117,7 +117,7 @@ impl CacheInfo {
         let ways = self.cache_associativity();
         line_size * sets as usize * ways as usize
     }
-
+    
     /// Check if instruction and data caches are separate
     pub fn has_separate_caches(&self) -> bool {
         (self.ctr & (1 << 24)) == 0
