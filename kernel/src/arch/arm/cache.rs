@@ -205,4 +205,18 @@ impl CacheManager {
             asm!("isb", options(nomem, nostack));
         }
     }
+
+    /// Enable data cache
+    unsafe fn enable_dcache(&self) {
+        let mut sctlr: u32;
+
+        // SAFETY: We're enabling data cache
+        unsafe {
+            asm!("mrc p15, 0, {}, c1, c0, 0", out(reg) sctlr, options(nomem, nostack));
+            sctlr |= 1 << 2; // C bit
+            asm!("mcr p15, 0, {}, c1, c0, 0", in(reg) sctlr, options(nomem, nostack));
+            asm!("dsb", options(nomem, nostack));
+            asm!("isb", options(nomem, nostack));
+        }
+    }
 }
