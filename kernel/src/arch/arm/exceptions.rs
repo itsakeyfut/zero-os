@@ -46,18 +46,18 @@ use crate::syscalls::{SystemCall, SystemCallResult, SystemCallArgs, SystemCallNu
 
 /// Exception vector offsets
 pub mod vectors {
-    /// Reset vector offsets
+    /// Reset vector offset
     pub const RESET: usize = 0x00;
     /// Undefined instruction vector offset
     pub const UNDEFINED: usize = 0x04;
     /// Software interrupt vector offset
-    pub const SWI: usize = 0x00;
+    pub const SWI: usize = 0x08;
     /// Prefetch abort vector offset
     pub const PREFETCH_ABORT: usize = 0x0C;
     /// Data abort vector offset
     pub const DATA_ABORT: usize = 0x10;
     /// Reserved vector offset
-    pub const RESERVEC: usize = 0x14;
+    pub const RESERVED: usize = 0x14;
     /// IRQ vector offset
     pub const IRQ: usize = 0x18;
     /// FIQ vector offset
