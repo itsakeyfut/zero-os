@@ -216,4 +216,34 @@ impl ExceptionManager {
             initialized: false,
         }
     }
+
+    /// Install exception vector table
+    fn install_vectors(&self) -> Result<(), &'static str> {
+        unsafe extern "C" {
+            static __vectors_start: u8;
+            static __vectors_end: u8;
+        }
+
+        // SAFETY: We're installing exception vectors during initialization
+        unsafe {
+            let vectors_start = &__vectors_start as *const u8;
+            let vectors_end = &__vectors_end as *const u8;
+            let vector_size = vectors_end as usize - vectors_start as usize;
+
+            // Vectors should be exactly 32 bytes (8 vectors * 4 bytes each)
+            if vector_size != 32 {
+                return Err("Invalid vector table size");
+            }
+
+            // Copy vectors to 0x00000000 (assuming low vectors)
+            let dest = 0x00000000 as *mut u8;
+            core::ptr::copy_nonoverlapping(vectors_start, dest, vector_size);
+
+            // Ensure vectors are written
+            crate::arch::barriers::dsb();
+            crate::arch::barriers::isb();
+        }
+
+        Ok(())
+    }
 }
