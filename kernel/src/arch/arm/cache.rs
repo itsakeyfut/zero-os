@@ -196,6 +196,22 @@ impl CacheManager {
         crate::debug_print!("Caches enabled");
     }
 
+    /// Disable all caches
+    pub fn disable_caches(&mut self) {
+        // SAFETY: Disabling caches requires proper cleanup
+        unsafe {
+            // Clean and disable data cache
+            self.clean_dcache_all();
+            self.disable_dcache();
+
+            // Disable instruction cache
+            self.disable_icache();
+        }
+
+        self.enabled = false;
+        crate::debug_print!("Caches disabled");
+    }
+
     /// Enable instruction cache
     unsafe fn enable_icache(&self) {
         let mut sctlr: u32;
