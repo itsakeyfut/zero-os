@@ -404,6 +404,15 @@ impl CacheManager {
         }
     }
 
+    /// Flush entire cache hierarchy
+    pub unsafe fn flush_all_caches(&self) {
+        // SAFETY: Flushing all caches
+        unsafe {
+            self.clean_invalidate_dcache_all();
+            self.invalidate_icache_all();
+        }
+    }
+
     /// Prefetch data into cache
     pub fn prefetch(&self, addr: usize) {
         // SAFETY: Prefetching is safe and optional
