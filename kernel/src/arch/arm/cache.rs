@@ -104,4 +104,9 @@ impl CacheInfo {
     pub fn cache_sets(&self) -> u32 {
         ((self.ccsidr >> 13) & 0x7FFF) + 1
     }
+
+    /// Get cache associativity
+    pub fn cache_associativity(&self) -> u32 {
+        ((self.ccsidr >> 3) & 0x3FF) + 1
+    }
 }
