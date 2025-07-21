@@ -343,4 +343,9 @@ impl CacheManager {
             asm!("pli [{}]", in(reg) addr, options(nomem, nostack));
         }
     }
+
+    /// Get cache information
+    pub fn cache_info(&self) -> &CacheInfo {
+        &self.info
+    }
 }
