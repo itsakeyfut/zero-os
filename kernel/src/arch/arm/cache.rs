@@ -94,4 +94,9 @@ impl CacheInfo {
         let line_size_bits = (self.ctr >> 16) & 0xF;
         4 << line_size_bits
     }
+
+    /// Get minimum cache line size
+    pub fn min_cache_line_size(&self) -> usize {
+        core::cmp::min(self.icache_line_size(), self.dcache_line_size())
+    }
 }
