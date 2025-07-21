@@ -327,4 +327,12 @@ impl CacheManager {
             asm!("dsb", options(nomem, nostack));
         }
     }
+
+    /// Prefetch data into cache
+    pub fn prefetch(&self, addr: usize) {
+        // SAFETY: Prefetching is safe and optional
+        unsafe {
+            asm!("pld [{}]", in(reg) addr, options(nomem, nostack));
+        }
+    }
 }
