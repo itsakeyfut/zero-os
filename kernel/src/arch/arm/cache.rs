@@ -510,3 +510,10 @@ pub fn cache_manager() -> Option<&'static mut CacheManager> {
     // SAFETY: Cache manager is initialized once
     unsafe { CACHE_MANAGER.as_mut() }
 }
+
+/// Enable all caches (convenience function)
+pub fn enable_caches() {
+    if let Some(manager) = cache_manager() {
+        manager.enable_caches();
+    }
+}
