@@ -123,3 +123,16 @@ impl CacheInfo {
         (self.ctr & (1 << 24)) == 0
     }
 }
+
+/// Cache operation types
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CacheOp {
+    /// Clean cache (write back dirty lines)
+    Clean,
+    /// Invalidate cache (mark lines invalid)
+    Invalidate,
+    /// Clean and invalidate cache
+    CleanInvalidate,
+    /// Flush cache (implementation specific)
+    Flush,
+}
