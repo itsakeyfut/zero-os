@@ -283,4 +283,42 @@ impl ExceptionManager {
         // For now, just terminate the process
         false // Return false to indicate the process should be terminated
     }
+
+    /// Handle software interrupt (system call)
+    pub fn handle_software_interrupt(&mut self, context: &mut CpuContext) -> SystemCallResult {
+        self.stats.total_exceptions += 1;
+        self.stats.system_calls += 1;
+
+        // Extract system call information from registers
+        let syscall_number = context.registers[7]; // r7 contains syscall number
+        let args = SystemCallArgs::from_array([
+            context.registers[0] as usize, // r0
+            context.registers[1] as usize, // r1
+            context.registers[2] as usize, // r2
+            context.registers[3] as usize, // r3
+            context.registers[4] as usize, // r4
+            context.registers[5] as usize, // r5
+        ]);
+
+        // Get current process ID (simplified)
+        let caller = ProcessId::new(1); // In real implementation, get from current context
+
+        // Convert syscall number
+        let syscall_num = match SystemCallNumber::try_from(syscall_number) {
+            Ok(num) => num,
+            Err(_) => {
+                return SystemCallResult::err(crate::syscalls::SystemCallError::InvalidSystemCall);
+            }
+        };
+
+        // Create system call structure
+        let syscall = SystemCall::new(syscall_num, args, caller);
+
+        // Handle the system call
+        // In a real implementation, that would call the system call dispatcher
+        crate::debug_print!("System call: {:?} from process {:?}", syscall_num, caller);
+
+        // Return dummy result for now
+        SystemCallResult::ok(0)
+    }
 }
