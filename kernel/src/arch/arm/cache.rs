@@ -154,3 +154,27 @@ pub struct CacheManager {
     /// Whether caches are enabled
     enabled: bool,
 }
+
+impl CacheManager {
+    /// Create a new cache manager
+    pub fn new() -> Self {
+        Self {
+            info: CacheInfo::read(),
+            enabled: false,
+        }
+    }
+
+    /// Initialize cache management
+    pub fn init(&mut self) -> ArchResult<()> {
+        // Read current cache state
+        self.info = CacheInfo::read();
+
+        crate::debug_print!("Cache Info:");
+        crate::debug_print!("  I-cache line size: {} bytes", self.info.icache_line_size());
+        crate::debug_print!("  D-cache line size: {} bytes", self.info.dcache_line_size());
+        crate::debug_print!("  Cache size: {} KB", self.info.cache_size() / 1024);
+        crate::debug_print!("  Separate caches: {}", self.info.has_separate_caches());
+
+        Ok(())
+    }
+}
