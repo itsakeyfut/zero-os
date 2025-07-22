@@ -497,3 +497,6 @@ impl ExceptionManager {
         self.initialized
     }
 }
+
+/// Global exception manager instance
+static mut EXCEPTION_MANAGER: Option<ExceptionManager> = None;
