@@ -216,4 +216,32 @@ impl GicManager {
             initialized: false,
         }
     }
+
+    /// Probe GIC configuration
+    fn probe_gic_config(&mut self) -> ArchResult<()> {
+        // SAFETY: We're reading from memory-mapped GIC registers
+        unsafe {
+            let distributor = &*self.distributor;
+
+            // Read interrupt controller type register
+            let typer = ptr::read_volatile(&distributor.typer);
+
+            // Extract number of interrupt lines
+            self.num_interrupts = ((typer & 0x1F) + 1) * 32;
+
+            // Extract number of CPUs
+            self.num_cpus = ((typer >> 5) & 0x7) + 1;
+
+            // Ensure reasonable limits
+            if self.num_interrupts > MAX_INTERRUPTS {
+                self.num_interrupts = MAX_INTERRUPTS;
+            }
+
+            if self.num_cpus > 8 {
+                self.num_cpus = 8;
+            }
+        }
+
+        Ok(())
+    }
 }
