@@ -464,4 +464,13 @@ impl GicManager {
             }
         }
     }
+
+    /// End of interrupt - signal completion of interrupt handling
+    pub fn end_of_interrupt(&mut self, irq: u32) {
+        // SAFETY: We're writing to end of interrupt register
+        unsafe {
+            let cpu_interface = &mut *self.cpu_interface;
+            ptr::write_volatile(&mut cpu_interface.eoir, irq);
+        }
+    }
 }
