@@ -585,3 +585,11 @@ pub extern "C" fn exception_data_abort(context: &mut CpuContext) -> u32 {
         0 // No manager, terminate
     }
 }
+
+/// IRQ handler entry point
+#[no_mangle]
+pub extern "C" fn exception_irq() {
+    if let Some(manager) = exception_manager() {
+        manager.handle_irq();
+    }
+}
