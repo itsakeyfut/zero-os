@@ -321,4 +321,20 @@ impl ExceptionManager {
         // Return dummy result for now
         SystemCallResult::ok(0)
     }
+
+    /// Read refetch fault information
+    fn read_prefetch_fault_info(&self) -> (u32, u32) {
+        let mut ifar: u32;
+        let mut ifsr: u32;
+
+        // SAFETY: Reading fault status registers is safe
+        unsafe {
+            // Instruction Fault Address Register
+            asm!("mrc p15, 0, {}, c6, c0, 2", out(reg) ifar, options(nomem, nostack));
+            // Instruction Fault Status Register
+            asm!("mrc p15, 0, {}, c5, c0, 1", out(reg) ifsr, options(nomem, nostack));
+        }
+
+        (ifar, ifsr)
+    }
 }
