@@ -177,3 +177,16 @@ pub enum InterruptType {
     /// Shared Peripheral Interrupt
     Spi,
 }
+
+/// GIC interrupt state
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum InterruptState {
+    /// Interrupt is inactive
+    Inactive,
+    /// Interrupt is pending
+    Pending,
+    /// Interrupt is active
+    Active,
+    /// Interrupt is active and pending
+    ActivePending,
+}
