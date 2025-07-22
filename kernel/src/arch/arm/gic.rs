@@ -204,3 +204,16 @@ pub struct GicManager {
     /// Initialization state
     initialized: bool,
 }
+
+impl GicManager {
+    /// Create a new GIC manager
+    pub const fn new() -> Self {
+        Self {
+            distributor: ptr::null_mut(),
+            cpu_interface: ptr::null_mut(),
+            num_interrupts: 0,
+            num_cpus: 0,
+            initialized: false,
+        }
+    }
+}
