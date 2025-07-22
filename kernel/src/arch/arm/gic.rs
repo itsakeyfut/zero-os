@@ -429,4 +429,22 @@ impl GicManager {
 
         Ok(())
     }
+
+    /// Clear interrupt pending state
+    pub fn clear_pending(&mut self, irq: u32) -> ArchResult<()> {
+        if irq >= self.num_interrupts {
+            return Err(crate::arch::ArchError::InvalidParameter);
+        }
+
+        // SAFETY: We're setting pending for a valid interrupt
+        unsafe {
+            let distributor = &mut *self.distributor;
+            let reg_index = (irq / 32) as usize;
+            let bit_index = irq % 32;
+
+            ptr::write_volatile(&mut distributor.icpendr[reg_index], 1 << bit_index);
+        }
+
+        Ok(())
+    }
 }
