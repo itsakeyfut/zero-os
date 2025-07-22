@@ -370,4 +370,9 @@ impl ExceptionManager {
     pub fn stats(&self) -> ExceptionStats {
         self.stats
     }
+
+    /// Reset exception statistics
+    pub fn reset_stats(&mut self) {
+        self.stats = ExceptionStats::default();
+    }
 }
