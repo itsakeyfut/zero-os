@@ -352,6 +352,31 @@ impl ExceptionManager {
         self.handle_memory_fault(fault_address, fault_status, true)
     }
 
+    /// Handle IRQ interrupt
+    pub fn handle_irq(&mut self) {
+        self.stats.total_exceptions += 1;
+        self.stats.irq_count += 1;
+
+        // Track interrupt nesting
+        self.nesting_level += 1;
+        if self.nesting_level > 1 {
+            self.stats.nested_interrupts += 1;
+        }
+        if self.nesting_level > self.stats.max_nesting_level {
+            self.stats.max_nesting_level = self.nesting_level;
+        }
+
+        // Handle the interrupt
+        // In a real implementations, this would:
+        // 1. Read interrupt controller status
+        // 2. Dispatch to appropriate driver
+        // 3. Acknowledge interrupt
+
+        crate::debug_print!("IRQ interrupt (nesting level: {})", self.nesting_level);
+
+        self.nesting_level -= 1;
+    }
+
     /// Read refetch fault information
     fn read_prefetch_fault_info(&self) -> (u32, u32) {
         let mut ifar: u32;
