@@ -290,4 +290,23 @@ impl GicManager {
         
         Ok(())
     }
+
+    /// Initialize GIC CPU interface
+    fn init_cpu_interface(&mut self) -> ArchResult<()> {
+        // SAFETY: We're initializing GIC CPU interface registers
+        unsafe {
+            let cpu_interface = &mut *self.cpu_interface;
+
+            // Set priority mask to allow all interrupts
+            ptr::write_volatile(&mut cpu_interface.pmr, 0xF0);
+
+            // Set binary point to 0 (no preemption grouping)
+            ptr::write_volatile(&mut cpu_interface.bpr, 0);
+
+            // Enable CPU interface
+            ptr::write_volatile(&mut cpu_interface.ctlr, 1);
+        }
+
+        Ok(())
+    }
 }
