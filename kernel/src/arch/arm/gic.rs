@@ -489,4 +489,29 @@ impl GicManager {
         
         Ok(())
     }
+
+    /// Get interrupt state
+    pub fn get_interrupt_state(&self, irq: u32) -> ArchResult<InterruptState> {
+        if irq >= self.num_interrupts {
+            return Err(crate::arch::ArchError::InvalidParameter);
+        }
+        
+        // SAFETY: We're reading interrupt state for a valid interrupt
+        unsafe {
+            let distributor = &*self.distributor;
+            let reg_index = (irq / 32) as usize;
+            let bit_index = irq % 32;
+            let bit_mask = 1 << bit_index;
+            
+            let is_pending = (ptr::read_volatile(&distributor.ispendr[reg_index]) & bit_mask) != 0;
+            let is_active = (ptr::read_volatile(&distributor.isactiver[reg_index]) & bit_mask) != 0;
+            
+            Ok(match (is_active, is_pending) {
+                (false, false) => InterruptState::Inactive,
+                (false, true) => InterruptState::Pending,
+                (true, false) => InterruptState::Active,
+                (true, true) => InterruptState::ActivePending,
+            })
+        }
+    }
 }
