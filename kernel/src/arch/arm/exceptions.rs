@@ -375,4 +375,9 @@ impl ExceptionManager {
     pub fn reset_stats(&mut self) {
         self.stats = ExceptionStats::default();
     }
+
+    /// Check if exceptions are properly initialized
+    pub fn is_initialized(&self) -> bool {
+        self.initialized
+    }
 }
