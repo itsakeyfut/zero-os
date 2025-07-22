@@ -571,3 +571,17 @@ pub extern "C" fn exception_prefetch_abort(context: &mut CpuContext) -> u32 {
         0 // No manager, terminate
     }
 }
+
+/// Data abort handler entry point
+#[no_mangle]
+pub extern "C" fn exception_data_abort(context: &mut CpuContext) -> u32 {
+    if let Some(manager) = exception_manager() {
+        if manager.handle_data_abort(context) {
+            1 // Continue execution
+        } else {
+            0 // Terminate process
+        }
+    } else {
+        0 // No manager, terminate
+    }
+}
