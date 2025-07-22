@@ -632,3 +632,10 @@ pub fn enable_interrupt(irq: u32) -> ArchResult<()> {
         .ok_or(crate::arch::ArchError::InvalidState)?
         .enable_interrupt(irq)
 }
+
+/// Disable an interrupt (convenience function)
+pub fn disable_interrupt(irq: u32) -> ArchResult<()> {
+    gic_manager()
+        .ok_or(crate::arch::ArchError::InvalidState)?
+        .disable_interrupt(irq)
+}
