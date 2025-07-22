@@ -560,4 +560,9 @@ impl GicManager {
     pub fn num_cpus(&self) -> u32 {
         self.num_cpus
     }
+
+    /// Check if GIC is initialized
+    pub fn is_initialized(&self) -> bool {
+        self.initialized
+    }
 }
