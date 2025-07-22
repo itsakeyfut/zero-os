@@ -46,3 +46,61 @@ pub const PPI_RANGE: core::ops::Range<u32> = 16..32;
 
 /// Shared Peripheral Interrupt range
 pub const SPI_RANGE: core::ops::Range<u32> = 32..MAX_INTERRUPTS;
+
+/// GIC Distributor registers (memory-mapped)
+#[repr(C)]
+pub struct GicDistributor {
+    /// Distributor Control Register
+    pub ctlr: u32,
+    /// Interrupt Controller Type Register
+    pub typer: u32,
+    /// Distributor Implementer Identification Register
+    pub iidr: u32,
+    /// Reserved
+    _reserved1: [u32; 29],
+    
+    /// Interrupt Group Registers (1 bit per interrupt)
+    pub igroupr: [u32; 32],
+    
+    /// Interrupt Set-Enable Registers (1 bit per interrupt)
+    pub isenabler: [u32; 32],
+    /// Interrupt Clear-Enable Registers (1 bit per interrupt)
+    pub icenabler: [u32; 32],
+    /// Interrupt Set-Pending Registers (1 bit per interrupt)
+    pub ispendr: [u32; 32],
+    /// Interrupt Clear-Pending Registers (1 bit per interrupt)
+    pub icpendr: [u32; 32],
+    /// Interrupt Set-Active Registers (1 bit per interrupt)
+    pub isactiver: [u32; 32],
+    /// Interrupt Clear-Active Registers (1 bit per interrupt)
+    pub icactiver: [u32; 32],
+    
+    /// Interrupt Priority Registers (8 bits per interrupt)
+    pub ipriorityr: [u32; 255],
+    
+    /// Reserved
+    _reserved2: u32,
+    
+    /// Interrupt Processor Targets Registers (8 bits per interrupt)
+    pub itargetsr: [u32; 255],
+    
+    /// Reserved
+    _reserved3: u32,
+    
+    /// Interrupt Configuration Registers (2 bits per interrupt)
+    pub icfgr: [u32; 64],
+    
+    /// Reserved
+    _reserved4: [u32; 64],
+    
+    /// Software Generated Interrupt Register
+    pub sgir: u32,
+    
+    /// Reserved
+    _reserved5: [u32; 3],
+    
+    /// SGI Clear-Pending Registers
+    pub cpendsgir: [u32; 4],
+    /// SGI Set-Pending Registers
+    pub spendsgir: [u32; 4],
+}
