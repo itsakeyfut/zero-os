@@ -625,3 +625,10 @@ pub fn gic_manager() -> Option<&'static mut GicManager> {
     // SAFETY: GIC manager is initialized once
     unsafe { GIC_MANAGER.as_mut() }
 }
+
+/// Enable an interrupt (convenience function)
+pub fn enable_interrupt(irq: u32) -> ArchResult<()> {
+    gic_manager()
+        .ok_or(crate::arch::ArchError::InvalidState)?
+        .enable_interrupt(irq)
+}
