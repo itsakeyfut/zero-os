@@ -530,4 +530,15 @@ impl GicManager {
             (ptr::read_volatile(&distributor.isenabler[reg_index]) & (1 << bit_index)) != 0
         }
     }
+
+    /// Get interrupt type
+    pub fn get_interrupt_type(irq: u32) -> InterruptType {
+        if SGI_RANGE.contains(&irq) {
+            InterruptType::Sgi
+        } else if PPI_RANGE.contains(&irq) {
+            InterruptType::Ppi
+        } else {
+            InterruptType::Spi
+        }
+    }
 }
