@@ -354,6 +354,38 @@ impl ExceptionManager {
         (dfar, dfsr)
     }
 
+    /// Handle memory fault (common for both data and prefetch aborts)
+    fn handle_memory_fault(&self, fault_address: u32, fault_status: u32, is_data_fault: bool) -> bool {
+        let fault_type = fault_status & 0x0F;
+        
+        match fault_type {
+            dfsr_bits::TRANSLATION_L1 | dfsr_bits::TRANSLATION_L2 => {
+                crate::debug_print!("Translation fault at 0x{:08X}", fault_address);
+                // Handle page fault - could trigger demand paging
+                self.handle_page_fault(fault_address, fault_status)
+            }
+            dfsr_bits::PERMISSION_L1 | dfsr_bits::PERMISSION_L2 => {
+                crate::debug_print!("Permission fault at 0x{:08X}", fault_address);
+                // Permission violation - likely a security violation
+                false
+            }
+            dfsr_bits::ALIGNMENT => {
+                crate::debug_print!("Alignment fault at 0x{:08X}", fault_address);
+                // Alignment fault - could be handled by emulation
+                false
+            }
+            dfsr_bits::DOMAIN_L1 | dfsr_bits::DOMAIN_L2 => {
+                crate::debug_print!("Domain fault at 0x{:08X}", fault_address);
+                // Domain fault
+                false
+            }
+            _ => {
+                crate::debug_print!("Unknown fault type 0x{:02X} at 0x{:08X}", fault_type, fault_address);
+                false
+            }
+        }
+    }
+
     /// Handle page fault
     fn handle_page_fault(&self, fault_address: u32, fault_status: u32) -> bool {
         // In a real implementation, this would:
