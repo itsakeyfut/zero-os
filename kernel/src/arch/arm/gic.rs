@@ -447,4 +447,21 @@ impl GicManager {
 
         Ok(())
     }
+
+    /// Acknowledge interrupt and get interrupt ID
+    pub fn acknowledge_interrupt(&mut self) -> Option<u32> {
+        // SAFETY: We're reading interrupt acknowledge register
+        unsafe {
+            let cpu_interface = &*self.cpu_interface;
+            let iar = ptr::read_volatile(&cpu_interface.iar);
+            let irq_id = iar & 0x3FF;
+            
+            // Check for spurious interrupt
+            if irq_id >= 1020 {
+                None
+            } else {
+                Some(irq_id)
+            }
+        }
+    }
 }
