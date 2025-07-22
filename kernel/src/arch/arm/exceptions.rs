@@ -518,3 +518,9 @@ pub fn init_exception_vectors() -> Result<(), &'static str> {
 
     Ok(())
 }
+
+/// Get reference to global exception manager
+pub fn exception_manager() -> Option<&'static mut ExceptionManager> {
+    // SAFETY: Exception manager is initialized once
+    unsafe { EXCEPTION_MANAGER.as_mut() }
+}
