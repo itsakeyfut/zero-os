@@ -151,3 +151,18 @@ pub struct GicCpuInterface {
     /// Deactivate Interrupt Register
     pub dir: u32,
 }
+
+/// GIC interrupt configuration
+#[derive(Debug, Clone, Copy)]
+pub struct InterruptConfig {
+    /// Interrupt number
+    pub id: u32,
+    /// Priority (0 = highest, 255 = lowest)
+    pub priority: u8,
+    /// Target CPU mask (but per CPU)
+    pub target_cpu: u8,
+    /// Trigger type (true = edge, false = level)
+    pub edge_triggered: bool,
+    /// Security group (true = Group 1, false = Group 0)
+    pub group1: bool,
+}
