@@ -166,3 +166,14 @@ pub struct InterruptConfig {
     /// Security group (true = Group 1, false = Group 0)
     pub group1: bool,
 }
+
+/// GIC interrupt types
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum InterruptType {
+    /// Software Generated Interrupt
+    Sgi,
+    /// Private Peripheral Interrupt
+    Ppi,
+    /// Shared Peripheral Interrupt
+    Spi,
+}
