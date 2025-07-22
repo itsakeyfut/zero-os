@@ -619,3 +619,9 @@ pub fn init(distributor_base: usize, cpu_interface_base: usize) -> ArchResult<()
     
     Ok(())
 }
+
+/// Get reference to global GIC manager
+pub fn gic_manager() -> Option<&'static mut GicManager> {
+    // SAFETY: GIC manager is initialized once
+    unsafe { GIC_MANAGER.as_mut() }
+}
