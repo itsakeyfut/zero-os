@@ -353,4 +353,16 @@ impl ExceptionManager {
 
         (dfar, dfsr)
     }
+
+    /// Handle page fault
+    fn handle_page_fault(&self, fault_address: u32, fault_status: u32) -> bool {
+        // In a real implementation, this would:
+        // 1. Check if the address is in a valid VMA
+        // 2. Allocate physical memory if needed
+        // 3. Update page tables
+        // 4. Return true if handled, false if process should be terminated
+
+        crate::debug_print!("Page fault at 0x{:08X} - not implemented", fault_address);
+        false
+    }
 }
