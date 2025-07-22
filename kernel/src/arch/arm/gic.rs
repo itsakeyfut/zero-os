@@ -550,4 +550,9 @@ impl GicManager {
             ptr::write_volatile(&mut cpu_interface.pmr, mask as u32);
         }
     }
+
+    /// Get number of supported interrupts
+    pub fn num_interrupts(&self) -> u32 {
+        self.num_interrupts
+    }
 }
