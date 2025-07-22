@@ -365,4 +365,9 @@ impl ExceptionManager {
         crate::debug_print!("Page fault at 0x{:08X} - not implemented", fault_address);
         false
     }
+
+    /// Get exception statistics
+    pub fn stats(&self) -> ExceptionStats {
+        self.stats
+    }
 }
