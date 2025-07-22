@@ -190,3 +190,17 @@ pub enum InterruptState {
     /// Interrupt is active and pending
     ActivePending,
 }
+
+/// GIC manager
+pub struct GicManager {
+    /// Distributor base address
+    distributor: *mut GicDistributor,
+    /// CPU interface base address
+    cpu_interface: *mut GicCpuInterface,
+    /// Number of supported interrupts
+    num_interrupts: u32,
+    /// Number of CPUs
+    num_cpus: u32,
+    /// Initialization state
+    initialized: bool,
+}
