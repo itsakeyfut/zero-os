@@ -217,6 +217,32 @@ impl GicManager {
         }
     }
 
+    /// Initialize the GIC
+    pub fn init(&mut self, distributor_base: usize, cpu_interface_base: usize) -> ArchResult<()> {
+        if self.initialized {
+            return Ok(());
+        }
+        
+        self.distributor = distributor_base as *mut GicDistributor;
+        self.cpu_interface = cpu_interface_base as *mut GicCpuInterface;
+        
+        // Read GIC configuration
+        self.probe_gic_config()?;
+        
+        // Initialize distributor
+        self.init_distributor()?;
+        
+        // Initialize CPU interface
+        self.init_cpu_interface()?;
+        
+        self.initialized = true;
+        
+        crate::debug_print!("GIC initialized: {} interrupts, {} CPUs", 
+                           self.num_interrupts, self.num_cpus);
+        
+        Ok(())
+    }
+
     /// Probe GIC configuration
     fn probe_gic_config(&mut self) -> ArchResult<()> {
         // SAFETY: We're reading from memory-mapped GIC registers
