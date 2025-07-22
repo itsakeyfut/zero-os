@@ -514,4 +514,20 @@ impl GicManager {
             })
         }
     }
+
+    /// Check if interrupt is enabled
+    pub fn is_interrupt_enabled(&self, irq: u32) -> bool {
+        if irq >= self.num_interrupts {
+            return false;
+        }
+        
+        // SAFETY: We're reading interrupt enable state for a valid interrupt
+        unsafe {
+            let distributor = &*self.distributor;
+            let reg_index = (irq / 32) as usize;
+            let bit_index = irq % 32;
+            
+            (ptr::read_volatile(&distributor.isenabler[reg_index]) & (1 << bit_index)) != 0
+        }
+    }
 }
