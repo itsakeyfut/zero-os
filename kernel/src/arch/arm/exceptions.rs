@@ -377,6 +377,17 @@ impl ExceptionManager {
         self.nesting_level -= 1;
     }
 
+    /// Handle FIQ interrupt
+    pub fn handle_fiq(&mut self) {
+        self.stats.total_exceptions += 1;
+        self.stats.fiq_count += 1;
+
+        crate::debug_print!("FIQ interrupt");
+
+        // FIQ should be handled very quickly
+        // In a real implementation, this would handle time-critical interrupts
+    }
+
     /// Read refetch fault information
     fn read_prefetch_fault_info(&self) -> (u32, u32) {
         let mut ifar: u32;
