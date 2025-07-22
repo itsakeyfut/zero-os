@@ -337,4 +337,20 @@ impl ExceptionManager {
 
         (ifar, ifsr)
     }
+
+    /// Read data fault information
+    fn read_data_fault_info(&self) -> (u32, u32) {
+        let mut dfar: u32;
+        let mut dfsr: u32;
+
+        // SAFETY: Reading fault status registers is safe
+        unsafe {
+            // Data Fault Address Register
+            asm!("mrc p15, 0, {}, c6, c0, 0", out(reg) dfar, options(nomem, nostack));
+            // Data Fault Status Register
+            asm!("mrc p15, 0, {}, c5, c0, 0", out(reg) dfsr, options(nomem, nostack));
+        }
+
+        (dfar, dfsr)
+    }
 }
