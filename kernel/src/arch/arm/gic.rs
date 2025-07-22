@@ -541,4 +541,13 @@ impl GicManager {
             InterruptType::Spi
         }
     }
+
+    /// Set priority mask
+    pub fn set_priority_mask(&mut self, mask: u8) {
+        // SAFETY: We're setting priority mask
+        unsafe {
+            let cpu_interface = &mut *self.cpu_interface;
+            ptr::write_volatile(&mut cpu_interface.pmr, mask as u32);
+        }
+    }
 }
