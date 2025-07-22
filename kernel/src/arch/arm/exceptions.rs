@@ -524,3 +524,20 @@ pub fn exception_manager() -> Option<&'static mut ExceptionManager> {
     // SAFETY: Exception manager is initialized once
     unsafe { EXCEPTION_MANAGER.as_mut() }
 }
+
+// Exception handler entry points called from assembly
+// These are called from the vector table assembly stubs
+
+/// Undefined instruction handler entry point
+#[no_mangle]
+pub extern "C" fn exception_undefined_instruction(context: &mut CpuContext) -> u32 {
+    if let Some(manager) = exception_manager() {
+        if manager.handle_undefined_instruction(context) {
+            1 // Continue execution
+        } else {
+            0 // Terminate process
+        }
+    } else {
+        0 // No manager, terminate
+    }
+}
