@@ -29,6 +29,7 @@
 #![warn(clippy::panic)]
 #![warn(clippy::unwrap_used)]
 
+pub mod macros;
 pub mod arch;
 pub mod memory;
 pub mod process;
