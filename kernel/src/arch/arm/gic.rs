@@ -566,3 +566,9 @@ impl GicManager {
         self.initialized
     }
 }
+
+// SAFETY: GIC manager can be safely sent between threads as it manages hardware registers
+unsafe impl Send for GicManager {}
+
+// SAFETY: GIC manager can be safely shared between threads with proper synchronization
+unsafe impl Sync for GicManager {}
