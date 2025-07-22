@@ -644,3 +644,10 @@ pub fn disable_interrupt(irq: u32) -> ArchResult<()> {
 pub fn acknowledge_interrupt() -> Option<u32> {
     gic_manager()?.acknowledge_interrupt()
 }
+
+/// End of interrupt (convenience function)
+pub fn end_of_interrupt(irq: u32) {
+    if let Some(manager) = gic_manager() {
+        manager.end_of_interrupt(irq);
+    }
+}
