@@ -601,3 +601,21 @@ unsafe impl Sync for GicManager {}
 
 /// Global GIC manager instance
 static mut GIC_MANAGER: Option<GicManager> = None;
+
+/// Initialize global GIC manager
+pub fn init(distributor_base: usize, cpu_interface_base: usize) -> ArchResult<()> {
+    // SAFETY: This is called once during system initialization
+    unsafe {
+        if GIC_MANAGER.is_some() {
+            return Ok(());
+        }
+        
+        GIC_MANAGER = Some(GicManager::new());
+        
+        if let Some(manager) = GIC_MANAGER.as_mut() {
+            manager.init(distributor_base, cpu_interface_base)?;
+        }
+    }
+    
+    Ok(())
+}
