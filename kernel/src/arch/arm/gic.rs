@@ -555,4 +555,9 @@ impl GicManager {
     pub fn num_interrupts(&self) -> u32 {
         self.num_interrupts
     }
+
+    /// Get number of CPUs
+    pub fn num_cpus(&self) -> u32 {
+        self.num_cpus
+    }
 }
