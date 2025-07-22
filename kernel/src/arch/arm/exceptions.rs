@@ -593,3 +593,11 @@ pub extern "C" fn exception_irq() {
         manager.handle_irq();
     }
 }
+
+/// FIQ handler entry point
+#[no_mangle]
+pub extern "C" fn exception_fiq() {
+    if let Some(manager) = exception_manager() {
+        manager.handle_fiq();
+    }
+}
