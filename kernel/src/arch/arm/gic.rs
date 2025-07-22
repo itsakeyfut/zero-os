@@ -345,4 +345,25 @@ impl GicManager {
 
         Ok(())
     }
+
+    /// Set interrupt priority
+    pub fn set_interrupt_priority(&mut self, irq: u32, priority: u8) -> ArchResult<()> {
+        if irq >= self.num_interrupts {
+            return Err(crate::arch::ArchError::InvalidParameter);
+        }
+        
+        // SAFETY: We're setting priority for a valid interrupt
+        unsafe {
+            let distributor = &mut *self.distributor;
+            let reg_index = (irq / 4) as usize;
+            let byte_index = (irq % 4) * 8;
+            
+            let mut reg_value = ptr::read_volatile(&distributor.ipriorityr[reg_index]);
+            reg_value &= !(0xFF << byte_index);
+            reg_value |= (priority as u32) << byte_index;
+            ptr::write_volatile(&mut distributor.ipriorityr[reg_index], reg_value);
+        }
+        
+        Ok(())
+    }
 }
