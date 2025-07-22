@@ -337,6 +337,21 @@ impl ExceptionManager {
         self.handle_memory_fault(fault_address, fault_status, false)
     }
 
+    /// Handle data abort exception
+    pub fn handle_data_abort(&mut self, context: &mut CpuContext) -> bool {
+        self.stats.total_exceptions += 1;
+        self.stats.data_aborts += 1;
+        
+        // Read fault address and status
+        let (fault_address, fault_status) = self.read_data_fault_info();
+        
+        crate::debug_print!("Data abort at PC: 0x{:08X}, fault addr: 0x{:08X}, status: 0x{:08X}",
+                           context.program_counter, fault_address, fault_status);
+        
+        // Handle the fault
+        self.handle_memory_fault(fault_address, fault_status, true)
+    }
+
     /// Read refetch fault information
     fn read_prefetch_fault_info(&self) -> (u32, u32) {
         let mut ifar: u32;
