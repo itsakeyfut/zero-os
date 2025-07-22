@@ -244,4 +244,50 @@ impl GicManager {
 
         Ok(())
     }
+
+    /// Initialize GIC distributor
+    fn init_distributor(&mut self) -> ArchResult<()> {
+        // SAFETY: We're initializing GIC distributor registers
+        unsafe {
+            let distributor = &mut *self.distributor;
+            
+            // Disable distributor
+            ptr::write_volatile(&mut distributor.ctlr, 0);
+            
+            // Disable all interrupts
+            for i in 0..(self.num_interrupts / 32) {
+                ptr::write_volatile(&mut distributor.icenabler[i as usize], 0xFFFFFFFF);
+            }
+            
+            // Clear all pending interrupts
+            for i in 0..(self.num_interrupts / 32) {
+                ptr::write_volatile(&mut distributor.icpendr[i as usize], 0xFFFFFFFF);
+            }
+            
+            // Set all interrupts to Group 1 (non-secure)
+            for i in 0..(self.num_interrupts / 32) {
+                ptr::write_volatile(&mut distributor.igroupr[i as usize], 0xFFFFFFFF);
+            }
+            
+            // Set default priorities (lower priority for all)
+            for i in 0..(self.num_interrupts / 4) {
+                ptr::write_volatile(&mut distributor.ipriorityr[i as usize], 0xA0A0A0A0);
+            }
+            
+            // Set all SPI interrupts to target CPU 0
+            for i in 8..(self.num_interrupts / 4) {
+                ptr::write_volatile(&mut distributor.itargetsr[i as usize], 0x01010101);
+            }
+            
+            // Configure all interrupts as level-triggered
+            for i in 2..(self.num_interrupts / 16) {
+                ptr::write_volatile(&mut distributor.icfgr[i as usize], 0x00000000);
+            }
+            
+            // Enable distributor
+            ptr::write_volatile(&mut distributor.ctlr, 1);
+        }
+        
+        Ok(())
+    }
 }
