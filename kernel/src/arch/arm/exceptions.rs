@@ -217,6 +217,24 @@ impl ExceptionManager {
         }
     }
 
+    /// Initialize exception handling
+    pub fn init(&mut self) -> Result<(), &'static str> {
+        if self.initialized {
+            return Ok(());
+        }
+
+        // Install exception vectors
+        self.install_vectors()?;
+
+        // Configure exception handling
+        self.configure_exceptions()?;
+
+        self.initialized = true;
+        crate::debug_print!("Exception handling initialized");
+
+        Ok(())
+    }
+
     /// Install exception vector table
     fn install_vectors(&self) -> Result<(), &'static str> {
         unsafe extern "C" {
