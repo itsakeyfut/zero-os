@@ -387,4 +387,28 @@ impl GicManager {
         
         Ok(())
     }
+
+    /// Configure interrupt trigger type
+    pub fn configure_interrupt(&mut self, irq: u32, edge_triggered: bool) -> ArchResult<()> {
+        if irq >= self.num_interrupts || irq < 16 {
+            return Err(crate::arch::ArchError::InvalidParameter);
+        }
+        
+        // SAFETY: We're configuring a valid PPI/SPI interrupt
+        unsafe {
+            let distributor = &mut *self.distributor;
+            let reg_index = (irq / 16) as usize;
+            let bit_index = ((irq % 16) * 2) + 1;
+            
+            let mut reg_value = ptr::read_volatile(&distributor.icfgr[reg_index]);
+            if edge_triggered {
+                reg_value |= 1 << bit_index;
+            } else {
+                reg_value &= !(1 << bit_index);
+            }
+            ptr::write_volatile(&mut distributor.icfgr[reg_index], reg_value);
+        }
+        
+        Ok(())
+    }
 }
