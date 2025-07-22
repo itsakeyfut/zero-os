@@ -500,3 +500,21 @@ impl ExceptionManager {
 
 /// Global exception manager instance
 static mut EXCEPTION_MANAGER: Option<ExceptionManager> = None;
+
+/// Initialize global exception manager
+pub fn init_exception_vectors() -> Result<(), &'static str> {
+    // SAFETY: This is called once during system initialization
+    unsafe {
+        if EXCEPTION_MANAGER.is_some() {
+            return Ok(());
+        }
+
+        EXCEPTION_MANAGER = Some(ExceptionManager::new());
+
+        if let Some(manager) = EXCEPTION_MANAGER.as_mut() {
+            manager.init()?;
+        }
+    }
+
+    Ok(())
+}
