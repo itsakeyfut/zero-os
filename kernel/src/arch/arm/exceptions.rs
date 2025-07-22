@@ -541,3 +541,19 @@ pub extern "C" fn exception_undefined_instruction(context: &mut CpuContext) -> u
         0 // No manager, terminate
     }
 }
+
+/// Software interrupt handler entry point
+#[no_mangle]
+pub extern "C" fn exception_software_interrupt(context: &mut CpuContext) -> u32 {
+    if let Some(manager) = exception_manager() {
+        let result = manager.handle_software_interrupt(context);
+
+        // Store result in context registers
+        context.registers[0] = result.value as u32;
+        context.registers[1] = result.value2 as u32;
+
+        1 // Always continue after system call
+    } else {
+        0 // No manager
+    }
+}
