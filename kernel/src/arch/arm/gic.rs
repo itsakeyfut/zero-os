@@ -473,4 +473,20 @@ impl GicManager {
             ptr::write_volatile(&mut cpu_interface.eoir, irq);
         }
     }
+
+    /// Send Software Generated Interrupt
+    pub fn send_sgi(&mut self, irq: u32, target_cpu_mask: u8) -> ArchResult<()> {
+        if !SGI_RANGE.contains(&irq) {
+            return Err(crate::arch::ArchError::InvalidParameter);
+        }
+        
+        // SAFETY: We're sending a valid SGI
+        unsafe {
+            let distributor = &mut *self.distributor;
+            let sgir_value = (target_cpu_mask as u32) << 16 | irq;
+            ptr::write_volatile(&mut distributor.sgir, sgir_value);
+        }
+        
+        Ok(())
+    }
 }
