@@ -104,3 +104,50 @@ pub struct GicDistributor {
     /// SGI Set-Pending Registers
     pub spendsgir: [u32; 4],
 }
+
+/// GIC CPU Interface registers (memory-mapped)
+#[repr(C)]
+pub struct GicCpuInterface {
+    /// CPU Interface Control Register
+    pub ctlr: u32,
+    /// Interrupt Priority Mask Register
+    pub pmr: u32,
+    /// Binary Point Register
+    pub bpr: u32,
+    /// Interrupt Acknowledge Register
+    pub iar: u32,
+    /// End of Interrupt Register
+    pub eoir: u32,
+    /// Running Priority Register
+    pub rpr: u32,
+    /// Highest Priority Pending Interrupt Register
+    pub hppir: u32,
+    /// Aliased Binary Point Register
+    pub abpr: u32,
+    /// Aliased Interrupt Acknowledge Register
+    pub aiar: u32,
+    /// Aliased End of Interrupt Register
+    pub aeoir: u32,
+    /// Aliased Highest Priority Pending Interrupt Register
+    pub ahppir: u32,
+    
+    /// Reserved
+    _reserved1: [u32; 41],
+    
+    /// Active Priorities Registers
+    pub apr: [u32; 4],
+    /// Non-secure Active Priorities Registers
+    pub nsapr: [u32; 4],
+    
+    /// Reserved
+    _reserved2: [u32; 3],
+    
+    /// CPU Interface Identification Register
+    pub iidr: u32,
+    
+    /// Reserved
+    _reserved3: [u32; 960],
+    
+    /// Deactivate Interrupt Register
+    pub dir: u32,
+}
