@@ -366,4 +366,25 @@ impl GicManager {
         
         Ok(())
     }
+
+    /// Set interrupt target CPU
+    pub fn set_interrupt_target(&mut self, irq: u32, cpu_mask: u8) -> ArchResult<()> {
+        if irq >= self.num_interrupts || irq < 32 {
+            return Err(crate::arch::ArchError::InvalidParameter);
+        }
+        
+        // SAFETY: We're setting target for a valid SPI interrupt
+        unsafe {
+            let distributor = &mut *self.distributor;
+            let reg_index = (irq / 4) as usize;
+            let byte_index = (irq % 4) * 8;
+            
+            let mut reg_value = ptr::read_volatile(&distributor.itargetsr[reg_index]);
+            reg_value &= !(0xFF << byte_index);
+            reg_value |= (cpu_mask as u32) << byte_index;
+            ptr::write_volatile(&mut distributor.itargetsr[reg_index], reg_value);
+        }
+        
+        Ok(())
+    }
 }
