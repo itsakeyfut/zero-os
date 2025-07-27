@@ -53,3 +53,9 @@ pub const L1_TABLE_SIZE: usize = 4096; // 4KB
 pub const L2_TABLE_SIZE: usize = 1024; // 1KB
 pub const L1_ENTRIES: usize = 4096;
 pub const L2_ENTRIES: usize = 256;
+
+/// Page table entry types
+pub const L1_TYPE_FAULT: u32 = 0b00;
+pub const L1_TYPE_PAGE_TABLE: u32 = 0b01;
+pub const L1_TYPE_SECTION: u32 = 0b10;
+pub const L1_TYPE_RESERVED: u32 = 0b11;
