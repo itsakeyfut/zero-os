@@ -81,3 +81,15 @@ pub const DOMAIN_USER: u32 = 1;
 pub const CACHE_WRITE_THROUGH: u32 = 0b1000;
 pub const CACHE_WRITE_BACK: u32 = 0b1100;
 pub const BUFFERABLE: u32 = 0b0100;
+
+/// Level 1 page table entry
+#[derive(Debug, Clone, Copy)]
+#[repr(transparent)]
+pub struct L1Entry(pub u32);
+
+impl L1Entry {
+    /// Create a fault entry
+    pub const fn fault() -> Self {
+        Self(L1_TYPE_FAULT)
+    }
+}
