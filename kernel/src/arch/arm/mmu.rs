@@ -153,4 +153,18 @@ impl L1Entry {
     pub fn is_section(self) -> bool {
         (self.0 & 0x3) == L1_TYPE_SECTION
     }
+
+    /// Check if entry is a page table
+    pub fn is_page_table(self) -> bool {
+        (self.0 & 0x3) == L1_TYPE_PAGE_TABLE
+    }
+
+    /// Get physical address for section
+    pub fn section_address(self) -> Option<PhysicalAddress> {
+        if self.is_section() {
+            Some(PhysicalAddress::new((self.0 & 0xFFF00000) as usize))
+        } else {
+            None
+        }
+    }
 }
