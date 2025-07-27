@@ -76,3 +76,8 @@ pub const AP_READ_ONLY: u32 = 0b110;    // Read-only
 /// Domain numbers
 pub const DOMAIN_KERNEL: u32 = 0;
 pub const DOMAIN_USER: u32 = 1;
+
+/// Cache and buffer bits
+pub const CACHE_WRITE_THROUGH: u32 = 0b1000;
+pub const CACHE_WRITE_BACK: u32 = 0b1100;
+pub const BUFFERABLE: u32 = 0b0100;
