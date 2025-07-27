@@ -132,4 +132,15 @@ impl L1Entry {
 
         Self(entry)
     }
+
+    /// Create a page table entry
+    pub fn page_table(
+        page_table_addr: PhysicalAddress,
+        domain: u32,
+    ) -> Self {
+        let mut entry = (page_table_addr.as_usize() & 0xFFFFFC00) as u32;
+        entry |= L1_TYPE_PAGE_TABLE;
+        entry |= (domain & 0xF) << 5;
+        Self(entry)
+    }
 }
