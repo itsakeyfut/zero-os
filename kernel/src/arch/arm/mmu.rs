@@ -64,3 +64,11 @@ pub const L2_TYPE_FAULT: u32 = 0b00;
 pub const L2_TYPE_LARGE_PAGE: u32 = 0b01;
 pub const L2_TYPE_SMALL_PAGE: u32 = 0b10;
 pub const L2_TYPE_RESERVED: u32 = 0b11;
+
+/// Access permission bits (AP[2:0])
+pub const AP_NO_ACCESS: u32 = 0b000;
+pub const AP_PRIV_RW: u32 = 0b001;      // Privileged read-write
+pub const AP_PRIV_RW_USER_RO: u32 = 0b010; // Privileged RW, user read-only
+pub const AP_FULL_ACCESS: u32 = 0b011;  // Full access
+pub const AP_PRIV_RO: u32 = 0b101;      // Privileged read-only
+pub const AP_READ_ONLY: u32 = 0b110;    // Read-only
