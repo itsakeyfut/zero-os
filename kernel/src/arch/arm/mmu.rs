@@ -167,4 +167,13 @@ impl L1Entry {
             None
         }
     }
+
+    /// Get page table address
+    pub fn page_table_address(self) -> Option<PhysicalAddress> {
+        if self.is_page_table() {
+            Some(PhysicalAddress::new((self.0 & 0xFFFFFC00) as usize))
+        } else {
+            None
+        }
+    }
 }
