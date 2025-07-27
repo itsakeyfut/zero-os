@@ -143,4 +143,9 @@ impl L1Entry {
         entry |= (domain & 0xF) << 5;
         Self(entry)
     }
+
+    /// Check if entry is valid (not fault)
+    pub fn is_valid(self) -> bool {
+        (self.0 & 0x3) != L1_TYPE_FAULT
+    }
 }
