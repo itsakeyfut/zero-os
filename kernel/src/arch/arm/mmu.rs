@@ -148,4 +148,9 @@ impl L1Entry {
     pub fn is_valid(self) -> bool {
         (self.0 & 0x3) != L1_TYPE_FAULT
     }
+
+    /// Check if entry is a section
+    pub fn is_section(self) -> bool {
+        (self.0 & 0x3) == L1_TYPE_SECTION
+    }
 }
