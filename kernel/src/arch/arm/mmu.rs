@@ -72,3 +72,7 @@ pub const AP_PRIV_RW_USER_RO: u32 = 0b010; // Privileged RW, user read-only
 pub const AP_FULL_ACCESS: u32 = 0b011;  // Full access
 pub const AP_PRIV_RO: u32 = 0b101;      // Privileged read-only
 pub const AP_READ_ONLY: u32 = 0b110;    // Read-only
+
+/// Domain numbers
+pub const DOMAIN_KERNEL: u32 = 0;
+pub const DOMAIN_USER: u32 = 1;
