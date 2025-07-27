@@ -59,3 +59,8 @@ pub const L1_TYPE_FAULT: u32 = 0b00;
 pub const L1_TYPE_PAGE_TABLE: u32 = 0b01;
 pub const L1_TYPE_SECTION: u32 = 0b10;
 pub const L1_TYPE_RESERVED: u32 = 0b11;
+
+pub const L2_TYPE_FAULT: u32 = 0b00;
+pub const L2_TYPE_LARGE_PAGE: u32 = 0b01;
+pub const L2_TYPE_SMALL_PAGE: u32 = 0b10;
+pub const L2_TYPE_RESERVED: u32 = 0b11;
