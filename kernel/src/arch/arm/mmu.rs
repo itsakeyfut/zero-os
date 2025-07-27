@@ -92,4 +92,44 @@ impl L1Entry {
     pub const fn fault() -> Self {
         Self(L1_TYPE_FAULT)
     }
+
+    /// Create a section entry
+    pub fn section(
+        physical_addr: PhysicalAddress,
+        flags: MemoryFlags,
+        domain: u32,
+    ) -> Self {
+        let mut entry = (physical_addr.as_usize() & 0xFFF00000) as u32;
+        entry |= L1_TYPE_SECTION;
+
+        // Set domain
+        entry |= (domain & 0xF) << 5;
+
+        // Set access permissions
+        let ap = if flags.user {
+            if flags.write {
+                AP_FULL_ACCESS
+            } else {
+                AP_READ_ONLY
+            }
+        } else {
+            if flags.write {
+                AP_PRIV_RW
+            } else {
+                AP_PRIV_RO
+            }
+        };
+        entry |= (ap & 0x3) << 10;
+        entry |= ((ap >> 2) & 0x1) << 15;
+
+        // Set cache attributes
+        if flags.cacheable {
+            entry |= CACHE_WRITE_BACK;
+        }
+        if flags.bufferable {
+            entry |= BUFFERABLE;
+        }
+
+        Self(entry)
+    }
 }
