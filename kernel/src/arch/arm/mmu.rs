@@ -47,3 +47,9 @@ pub const PAGE_SIZE: usize = 4096;
 pub const PAGE_SHIFT: usize = 12;
 pub const SECTION_SIZE: usize = 1024 * 1024; // 1MB
 pub const SECTION_SHIFT: usize = 20;
+
+/// Page table constants
+pub const L1_TABLE_SIZE: usize = 4096; // 4KB
+pub const L2_TABLE_SIZE: usize = 1024; // 1KB
+pub const L1_ENTRIES: usize = 4096;
+pub const L2_ENTRIES: usize = 256;
