@@ -250,3 +250,10 @@ pub struct PageTableWalker {
     /// L1 page table base address
     l1_table: PhysicalAddress,
 }
+
+impl PageTableWalker {
+    /// Create a new page table walker
+    pub fn new(l1_table: PhysicalAddress) -> Self {
+        Self { l1_table }
+    }
+}
