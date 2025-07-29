@@ -318,3 +318,16 @@ pub struct MmuManager {
     /// Next available L2 table address
     next_l2_table: PhysicalAddress,
 }
+
+impl MmuManager {
+    /// Create a new MMU manager
+    pub fn new(l1_table_phys: PhysicalAddress, l1_table_virt: VirtualAddress) -> Self {
+        Self {
+            l1_table: l1_table_phys,
+            l1_table_virt,
+            walker: PageTableWalker::new(l1_table_phys),
+            enabled: false,
+            next_l2_table: PhysicalAddress::new(l1_table_phys.as_usize() + L1_TABLE_SIZE),
+        }
+    }
+}
