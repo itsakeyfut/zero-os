@@ -188,4 +188,40 @@ impl L2Entry {
     pub const fn fault() -> Self {
         Self(L2_TYPE_FAULT)
     }
+
+    /// Create a small page entry
+    pub fn small_page(
+        physical_addr: PhysicalAddress,
+        flags: MemoryFlags,
+    ) -> Self {
+        let mut entry = (physical_addr.as_usize() & 0xFFFFF000) as u32;
+        entry |= L2_TYPE_SMALL_PAGE;
+
+        // Set access permissions
+        let ap = if flags.user {
+            if flags.write {
+                AP_FULL_ACCESS
+            } else {
+                AP_READ_ONLY
+            }
+        } else {
+            if flags.write {
+                AP_PRIV_RW
+            } else {
+                AP_PRIV_RO
+            }
+        };
+        entry |= (ap & 0x3) << 4;
+        entry |= ((ap >> 2) & 0x1) << 9;
+
+        // Set cache attributes
+        if flags.cacheable {
+            entry |= 0x8; // C bit
+        }
+        if flags.bufferable {
+            entry |= 0x4; // B bit
+        }
+
+        Self(entry)
+    }
 }
