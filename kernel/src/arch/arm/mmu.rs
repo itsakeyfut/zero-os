@@ -330,4 +330,63 @@ impl MmuManager {
             next_l2_table: PhysicalAddress::new(l1_table_phys.as_usize() + L1_TABLE_SIZE),
         }
     }
+
+    /// Initialize MMU with identity mapping
+    pub fn init(&mut self) -> ArchResult<()> {
+        // Clear L1 page table
+        // SAFETY: We're initializing page table memory
+        unsafe {
+            let l1_table_ptr = self.l1_table_virt.as_usize() as *mut L1Entry;
+            for i in 0..L1_ENTRIES {
+                ptr::write_volatile(l1_table_ptr.add(i), L1Entry::fault());
+            }
+        }
+
+        // Create identity mapping for first 128MB (RAM)
+        for section in 0..128 {
+            let virtual_addr = VirtualAddress::new(section * SECTION_SIZE);
+            let physical_addr = PhysicalAddress::new(section * SECTION_SIZE);
+            let flags = MemoryFlags::kernel_data();
+
+            self.map_section(virtual_addr, physical_addr, flags, DOMAIN_KERNEL)?;
+        }
+
+        // Create kernel mapping at 3GB virtual -> 0GB physical
+        for section in 0..128 {
+            let virtual_addr = VirtualAddress::new(0xC0000000 + section * SECTION_SIZE);
+            let physical_addr = PhysicalAddress::new(section * SECTION_SIZE);
+            let flags = MemoryFlags::kernel_code();
+            
+            self.map_section(virtual_addr, physical_addr, flags, DOMAIN_KERNEL)?;
+        }
+
+        crate::debug_print!("MMU page tables initialized");
+        Ok(())
+    }
+
+    /// Map a 1MB section
+    pub fn map_section(
+        &mut self,
+        virtual_addr: VirtualAddress,
+        physical_addr: PhysicalAddress,
+        flags: MemoryFlags,
+        domain: u32,
+    ) -> ArchResult<()> {
+        let vaddr = virtual_addr.as_usize();
+
+        if vaddr & (SECTION_SIZE - 1) != 0 {
+            return Err(crate::arch::ArchError::AlignmentError);
+        }
+
+        let l1_index = (vaddr >> SECTION_SHIFT) & 0xFFF;
+        let entry = L1Entry::section(physical_addr, flags, domain);
+
+        // SAFETY: We're writing to page table memory
+        unsafe {
+            let l1_table_ptr = self.l1_table_virt.as_usize() as *mut L1Entry;
+            ptr::write_volatile(l1_table_ptr.add(l1_index), entry);
+        }
+
+        Ok(())
+    }
 }
