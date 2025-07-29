@@ -224,4 +224,9 @@ impl L2Entry {
 
         Self(entry)
     }
+
+    /// Check if entry is valid (not fault)
+    pub fn is_valid(self) -> bool {
+        (self.0 & 0x3) != L2_TYPE_FAULT
+    }
 }
