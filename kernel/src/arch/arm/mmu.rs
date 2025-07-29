@@ -244,3 +244,9 @@ impl L2Entry {
         }
     }
 }
+
+/// Page table walker for address translation
+pub struct PageTableWalker {
+    /// L1 page table base address
+    l1_table: PhysicalAddress,
+}
