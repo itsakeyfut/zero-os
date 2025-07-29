@@ -304,3 +304,17 @@ impl PageTableWalker {
         None
     }
 }
+
+/// MMU manager
+pub struct MmuManager {
+    /// L1 page table physical address
+    l1_table: PhysicalAddress,
+    /// L1 page table virtual address
+    l1_table_virt: VirtualAddress,
+    /// Page table walker
+    walker: PageTableWalker,
+    /// MMU enabled state
+    enabled: bool,
+    /// Next available L2 table address
+    next_l2_table: PhysicalAddress,
+}
