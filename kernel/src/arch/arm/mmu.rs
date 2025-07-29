@@ -256,4 +256,51 @@ impl PageTableWalker {
     pub fn new(l1_table: PhysicalAddress) -> Self {
         Self { l1_table }
     }
+
+    /// Translate virtual address to physical address
+    pub fn translate(&self, virtual_addr: VirtualAddress) -> Option<PhysicalAddress> {
+        let vaddr = virtual_addr.as_usize();
+
+        // Extract L1 index
+        let l1_index = (vaddr >> SECTION_SHIFT) & 0xFFF;
+
+        // Read L1 entry
+        // SAFETY: We're reading from page table memory
+        let l1_entry = unsafe {
+            let l1_table_ptr = self.l1_table.as_usize() as *const L1Entry;
+            ptr::read_volatile(l1_table_ptr.add(l1_index))
+        };
+
+        if !l1_entry.is_valid() {
+            return None;
+        }
+
+        if l1_entry.is_section() {
+            // 1MB section mapping
+            let section_base = l1_entry.section_address()?;
+            let offset = vaddr & (SECTION_SIZE - 1);
+            return Some(PhysicalAddress::new(section_base.as_usize() + offset));
+        }
+
+        if l1_entry.is_page_table() {
+            // Page table mapping
+            let l2_table = l1_entry.page_table_address()?;
+            let l2_index = (vaddr >> PAGE_SHIFT) & 0xFF;
+
+            // Read L2 entry
+            // SAFETY: We're reading from page table memory
+            let l2_entry = unsafe {
+                let l2_table_ptr = l2_table.as_usize() as *const L2Entry;
+                ptr::read_volatile(l2_table_ptr.add(l2_index))
+            };
+
+            if l2_entry.is_valid() && l2_entry.is_small_page() {
+                let page_base = l2_entry.page_address()?;
+                let offset = vaddr & (PAGE_SIZE - 1);
+                return Some(PhysicalAddress::new(page_base.as_usize() + offset));
+            }
+        }
+
+        None
+    }
 }
