@@ -182,3 +182,10 @@ impl L1Entry {
 #[derive(Debug, Clone, Copy)]
 #[repr(transparent)]
 pub struct L2Entry(pub u32);
+
+impl L2Entry {
+    /// Create a fault entry
+    pub const fn fault() -> Self {
+        Self(L2_TYPE_FAULT)
+    }
+}
