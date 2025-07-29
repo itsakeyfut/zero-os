@@ -229,4 +229,18 @@ impl L2Entry {
     pub fn is_valid(self) -> bool {
         (self.0 & 0x3) != L2_TYPE_FAULT
     }
+
+    /// Check if entry is a small page
+    pub fn is_small_page(self) -> bool {
+        (self.0 & 0x3) == L2_TYPE_SMALL_PAGE
+    }
+
+    /// Get physical address for small page
+    pub fn page_address(self) -> Option<PhysicalAddress> {
+        if self.is_small_page() {
+            Some(PhysicalAddress::new((self.0 & 0xFFFFF000) as usize))
+        } else {
+            None
+        }
+    }
 }
