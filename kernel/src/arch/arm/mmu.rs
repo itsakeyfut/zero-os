@@ -177,3 +177,8 @@ impl L1Entry {
         }
     }
 }
+
+/// Level 2 page table entry
+#[derive(Debug, Clone, Copy)]
+#[repr(transparent)]
+pub struct L2Entry(pub u32);
