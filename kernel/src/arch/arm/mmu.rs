@@ -611,4 +611,28 @@ impl MmuManager {
         crate::debug_print!("MMU enabled");
         Ok(())
     }
+
+    /// Disable MMU
+    pub fn disable(&mut self) -> ArchResult<()> {
+        if !self.enabled {
+            return Ok(());
+        }
+
+        // SAFETY: We're disabling MMU
+        unsafe {
+            // Disable MMU in SCTLR
+            let mut sctlr: u32;
+            asm!("mrc p15, 0, {}, c1, c0, 0", out(reg) sctlr, options(nomem, nostack));
+            sctlr &= !1; // Clear M bit
+            asm!("mcr p15, 0, {}, c1, c0, 0", in(reg) sctlr, options(nomem, nostack));
+
+            // Memory barriers
+            asm!("dsb", options(nomem, nostack));
+            asm!("isb", options(nomem, nostack));
+
+            self.enabled = false;
+            crate::debug_print!("MMU disabled");
+            Ok(())
+        }
+    }
 }
