@@ -673,4 +673,9 @@ impl MmuManager {
     pub fn is_enabled(&self) -> bool {
         self.enabled
     }
+
+    /// Get L1 page table address
+    pub fn l1_table_address(&self) -> PhysicalAddress {
+        self.l1_table
+    }
 }
