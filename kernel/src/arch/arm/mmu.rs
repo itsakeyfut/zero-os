@@ -649,4 +649,18 @@ impl MmuManager {
             asm!("isb", options(nomem, nostack));
         }
     }
+
+    /// Invalidate TLB for specific address
+    pub fn invalidate_tlb_addr(&self, addr: VirtualAddress) {
+        // SAFETY: TLB invalidation is safe
+        unsafe {
+            asm!(
+                "mcr p15, 0, {}, c8, c7, 1", // TLBIMVA
+                in(reg) addr.as_usize(),
+                options(nomem, nostack)
+            );
+            asm!("dsb", options(nomem, nostack));
+            asm!("isb", options(nomem, nostack));
+        }
+    }
 }
