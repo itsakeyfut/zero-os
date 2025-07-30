@@ -528,4 +528,49 @@ impl MmuManager {
 
         Ok(())
     }
+
+    /// Unmap a memory region
+    pub fn unmap_region(&mut self, virtual_addr: VirtualAddress, size: usize) -> ArchResult<()> {
+        let start = virtual_addr.as_usize();
+        let end = start + size;
+
+        // Unmap by setting entries to fault
+        let mut addr = start;
+        while addr < end {
+            if addr & (SECTION_SIZE - 1) == 0 && (end - addr) >= SECTION_SIZE {
+                // Unmap section
+                let l1_index = (addr >> SECTION_SHIFT) & 0xFFF;
+
+                // SAFETY: We're writing to page table memory
+                unsafe {
+                    let l1_table_ptr = self.l1_table_virt.as_usize() as *mut L1Entry;
+                    ptr::write_volatile(l1_table_ptr.add(l1_index), L1Entry::fault());
+                }
+
+                addr += SECTION_SIZE
+            } else {
+                // Unmap page
+                let l1_index = (addr >> SECTION_SHIFT) & 0xFFF;
+                let l2_index = (addr >> PAGE_SHIFT) & 0xFF;
+
+                // SAFETY: We're reading from page table memory
+                let l1_entry = unsafe {
+                    let l1_table_ptr = self.l1_table_virt.as_usize() as *const L1Entry;
+                    ptr::read_volatile(l1_table_ptr.add(l1_index))
+                };
+
+                if let Some(l2_table) = l1_entry.page_table_address() {
+                    // SAFETY: We're writing to page table memory
+                    unsafe {
+                        let l2_table_ptr = l2_table.as_usize() as *mut L2Entry;
+                        ptr::write_volatile(l2_table_ptr.add(l2_index), L2Entry::fault());
+                    }
+                }
+
+                addr += PAGE_SIZE;
+            }
+        }
+
+        Ok(())
+    }
 }
