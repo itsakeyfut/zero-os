@@ -127,6 +127,8 @@ pub enum ArchError {
     InvalidRegister,
     /// Privilege violation
     PrivilegeViolation,
+    /// Invalid state
+    InvalidState,
 }
 
 /// Result type for architecture operations

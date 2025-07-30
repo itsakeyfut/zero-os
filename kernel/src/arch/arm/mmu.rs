@@ -715,3 +715,17 @@ pub fn mmu_manager() -> Option<&'static mut MmuManager> {
     // SAFETY: MMU manager is initialized once 
     unsafe { MMU_MANAGER.as_mut() }
 }
+
+/// Map a memory region (convenience function)
+pub fn map_region(region: &MemoryRegion) -> ArchResult<()> {
+    mmu_manager()
+        .ok_or(crate::arch::ArchError::InvalidState)?
+        .map_region(region)
+}
+
+/// Unmap a memory region(convenience function)
+pub fn unmap_region(virtual_addr: VirtualAddress, size: usize) -> ArchResult<()> {
+    mmu_manager()
+        .ok_or(crate::arch::ArchError::InvalidState)?
+        .unmap_region(virtual_addr, size)
+}
