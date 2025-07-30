@@ -709,3 +709,9 @@ pub fn init() -> ArchResult<()> {
 
     Ok(())
 }
+
+/// Get reference to global MMU manager
+pub fn mmu_manager() -> Option<&'static mut MmuManager> {
+    // SAFETY: MMU manager is initialized once 
+    unsafe { MMU_MANAGER.as_mut() }
+}
