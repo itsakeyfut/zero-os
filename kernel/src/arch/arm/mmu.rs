@@ -389,4 +389,83 @@ impl MmuManager {
 
         Ok(())
     }
+
+    /// Map a 4KB page
+    pub fn map_page(
+        &mut self,
+        virtual_addr: VirtualAddress,
+        physical_addr: PhysicalAddress,
+        flags: MemoryFlags,
+        domain: u32,
+    ) -> ArchResult<()> {
+        let vaddr = virtual_addr.as_usize();
+
+        if vaddr & (PAGE_SIZE - 1) != 0 {
+            return Err(crate::arch::ArchError::AlignmentError);
+        }
+
+        let l1_index = (vaddr >> SECTION_SHIFT) & 0xFFF;
+        let l2_index = (vaddr >> PAGE_SHIFT) & 0xFF;
+
+        // Get or create L2 page table
+        let l2_table = self.get_or_create_l2_table(l1_index, domain)?;
+
+        // Create L2 entry
+        let entry = L2Entry::small_page(physical_addr, flags);
+
+        // SAFETY: We're writing to page table memory
+        unsafe {
+            let l2_table_ptr = l2_table.as_usize() as *mut L2Entry;
+            ptr::write_volatile(l2_table_ptr.add(l2_index), entry);
+        }
+
+        Ok(())
+    }
+
+    /// Get or create L2 page table
+    fn get_or_create_l2_table(
+        &mut self,
+        l1_index: usize,
+        domain: u32,
+    ) -> ArchResult<PhysicalAddress> {
+        // SAFETY: We're reading from page table memory
+        let l1_entry = unsafe {
+            let l1_table_ptr = self.l1_table_virt.as_usize() as *const L1Entry;
+            ptr::read_volatile(l1_table_ptr.add(l1_index))
+        };
+
+        if l1_entry.is_page_table() {
+            // L2 table already exists
+            return Ok(l1_entry.page_table_address().unwrap());
+        }
+
+        if l1_entry.is_valid() {
+            // Entry is a section, cannot convert to page table
+            return Err(crate::arch::ArchError::InvalidAddress);
+        }
+
+        // Create new L2 table
+        let l2_table_phys = self.next_l2_table;
+        self.next_l2_table = PhysicalAddress::new(self.next_l2_table.as_usize() + L2_TABLE_SIZE);
+
+        // Clear L2 table
+        // SAFETY: We're initializing new page table memory
+        unsafe {
+            let l2_table_ptr = l2_table_phys.as_usize() as *mut L2Entry;
+            for i in 0..L2_ENTRIES {
+                ptr::write_volatile(l2_table_ptr.add(i), L2Entry::fault());
+            }
+        }
+
+        // Create L1 entry pointing to L2 table
+        let l1_entry = L1Entry::page_table(l2_table_phys, domain);
+
+        // SAFETY: We're writing to page table memory
+        unsafe {
+            let l1_table_ptr = self.l1_table_virt.as_usize() as *mut L1Entry;
+            ptr::write_volatile(l1_table_ptr.add(l1_index), l1_entry);
+        }
+
+        Ok(l2_table_phys)
+    }
 }
