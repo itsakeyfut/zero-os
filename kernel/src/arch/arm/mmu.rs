@@ -635,4 +635,18 @@ impl MmuManager {
             Ok(())
         }
     }
+
+    /// Invalidate TLB
+    pub fn invalidate_tlb(&self) {
+        // SAFETY: TLB invalidation in safe
+        unsafe {
+            asm!(
+                "mcr P15, 0, {}, c8, c7, 0", // TLBALL
+                in(reg) 0u32,
+                options(nomem, nostack)
+            );
+            asm!("dsb", options(nomem, nostack));
+            asm!("isb", options(nomem, nostack));
+        }
+    }
 }
