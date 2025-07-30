@@ -679,3 +679,6 @@ impl MmuManager {
         self.l1_table
     }
 }
+
+/// Global MMU manager instance
+static mut MMU_MANAGER: Option<MmuManager> = None;
