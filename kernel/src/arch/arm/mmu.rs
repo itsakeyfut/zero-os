@@ -663,4 +663,9 @@ impl MmuManager {
             asm!("isb", options(nomem, nostack));
         }
     }
+
+    /// Translate virtual address to physical address
+    pub fn translate(&self, virtual_addr: VirtualAddress) -> Option<PhysicalAddress> {
+        self.walker.translate(virtual_addr)
+    }
 }
