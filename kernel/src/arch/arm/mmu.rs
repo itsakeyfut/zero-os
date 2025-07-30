@@ -573,4 +573,42 @@ impl MmuManager {
 
         Ok(())
     }
+
+    /// Enable MMU
+    pub fn enable(&mut self) -> ArchResult<()> {
+        if self.enabled {
+            return Ok(());
+        }
+
+        // Set Translation Table Base Register
+        // SAFETY: We're configuring MMU registers
+        unsafe {
+            asm!(
+                "mcr p15, 0, {}, c2, c0, 0",
+                in(reg) self.l1_table.as_usize(),
+                options(nomem, nostack)
+            );
+
+            // Set Domain Access Control Register (all domains = client)
+            asm!(
+                "mcr p15, 0, {}, c3, c0, 0",
+                in(reg) 0x55555555u32, // All domains set to client (01)
+                options(nomem, nostack)
+            );
+
+            // Enable MMU in SCTLR
+            let mut sctlr: u32;
+            asm!("mrc p15, 0, {}, c1, c0, 0", out(reg) sctlr, options(nomem, nostack));
+            sctlr |= 1; // M bit
+            asm!("mcr p15, 0, {}, c1, c0, 0", in(reg) sctlr, options(nomem, nostack));
+
+            // Memory barriers
+            asm!("dsb", options(nomem, nostack));
+            asm!("isb", options(nomem, nostack));
+        }
+
+        self.enabled = true;
+        crate::debug_print!("MMU enabled");
+        Ok(())
+    }
 }
