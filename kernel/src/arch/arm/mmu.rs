@@ -729,3 +729,8 @@ pub fn unmap_region(virtual_addr: VirtualAddress, size: usize) -> ArchResult<()>
         .ok_or(crate::arch::ArchError::InvalidState)?
         .unmap_region(virtual_addr, size)
 }
+
+/// Translate virtual address (convenience function)
+pub fn translate_address(virtual_addr: VirtualAddress) -> Option<PhysicalAddress> {
+    mmu_manager()?.translate(virtual_addr)
+}
