@@ -682,3 +682,30 @@ impl MmuManager {
 
 /// Global MMU manager instance
 static mut MMU_MANAGER: Option<MmuManager> = None;
+
+/// Initialize MMU
+pub fn init() -> ArchResult<()> {
+    // SAFETY: This is called once during system initialization
+    unsafe {
+        if MMU_MANAGER.is_some() {
+            return Ok(());
+        }
+
+        // Get page table location from linker
+        unsafe extern "C" {
+            static __page_table_start: u8;
+        }
+
+        let l1_table_phys = PhysicalAddress::new(&__page_table_start as *const u8 as usize);
+        let l1_table_virt = VirtualAddress::new(&__page_table_start as *const u8 as usize);
+
+        MMU_MANAGER = Some(MmuManager::new(l1_table_phys, l1_table_virt));
+
+        if let Some(mmu) = MMU_MANAGER.as_mut() {
+            mmu.init()?;
+            mmu.enable()?;
+        }
+    }
+
+    Ok(())
+}
