@@ -734,3 +734,10 @@ pub fn unmap_region(virtual_addr: VirtualAddress, size: usize) -> ArchResult<()>
 pub fn translate_address(virtual_addr: VirtualAddress) -> Option<PhysicalAddress> {
     mmu_manager()?.translate(virtual_addr)
 }
+
+/// Invalidate TLB (convenience function)
+pub fn invalidate_tlb() {
+    if let Some(mmu) = mmu_manager() {
+        mmu.invalidate_tlb();
+    }
+}
