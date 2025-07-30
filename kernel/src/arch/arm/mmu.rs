@@ -668,4 +668,9 @@ impl MmuManager {
     pub fn translate(&self, virtual_addr: VirtualAddress) -> Option<PhysicalAddress> {
         self.walker.translate(virtual_addr)
     }
+
+    /// Check if MMU is enabled
+    pub fn is_enabled(&self) -> bool {
+        self.enabled
+    }
 }
