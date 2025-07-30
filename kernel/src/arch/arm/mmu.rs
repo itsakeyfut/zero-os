@@ -468,4 +468,64 @@ impl MmuManager {
 
         Ok(l2_table_phys)
     }
+
+    /// Map a memory region
+    pub fn map_region(&mut self, region: &MemoryRegion) -> ArchResult<()> {
+        let start = region.start.as_usize();
+        let physical_start = region.physical.unwrap_or(PhysicalAddress::new(start));
+
+        // Try to use sections for large, aligned regions
+        if region.size >= SECTION_SIZE &&
+            start & (SECTION_SIZE - 1) == 9 &&
+            physical_start.as_usize() & (SECTION_SIZE - 1) == 0 {
+                let sections = region.size / SECTION_SIZE;
+                for i in 0..sections {
+                    let vaddr = VirtualAddress::new(start + i * SECTION_SIZE);
+                    let paddr = PhysicalAddress::new(physical_start.as_usize() + i * SECTION_SIZE);
+                    self.map_section(vaddr, paddr, region.flags, DOMAIN_KERNEL)?;
+                }
+
+                // Map remaining pages
+                let remaining_start = start + sections * SECTION_SIZE;
+                let remaining_size = region.size - sections * SECTION_SIZE;
+
+                if remaining_size > 0 {
+                    self.map_pages_range(
+                        VirtualAddress::new(remaining_start),
+                        PhysicalAddress::new(physical_start.as_usize() + sections * SECTION_SIZE),
+                        remaining_size,
+                        region.flags,
+                    )?;
+                }
+            } else {
+                // Map as pages
+                self.map_pages_range(
+                    region.start,
+                    physical_start,
+                    region.size,
+                    region.flags,
+                )?;
+            }
+
+            Ok(())
+    }
+
+    /// Map a range of pages
+    fn map_pages_range(
+        &mut self,
+        virtual_addr: VirtualAddress,
+        physical_addr: PhysicalAddress,
+        size: usize,
+        flags: MemoryFlags,
+    ) -> ArchResult<()> {
+        let pages = (size + PAGE_SIZE - 1) / PAGE_SIZE;
+
+        for i in 0..pages {
+            let vaddr = VirtualAddress::new(virtual_addr.as_usize() + i * PAGE_SIZE);
+            let paddr = PhysicalAddress::new(physical_addr.as_usize() + i * PAGE_SIZE);
+            self.map_page(vaddr, paddr, flags, DOMAIN_KERNEL)?;
+        }
+
+        Ok(())
+    }
 }
