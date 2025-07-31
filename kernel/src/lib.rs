@@ -172,3 +172,18 @@ pub struct KernelConfig {
     /// Scheduler quantum in microseconds
     pub scheduler_quantum_us: u64,
 }
+
+impl Default for KernelConfig {
+    fn default() -> Self {
+        Self {
+            max_processes: 64,
+            kernel_heap_size: 64 * 1024 * 1024, // 64MB
+            timer_frequency: 1000, // 1kHz
+            debug_enabled: cfg!(debug_assertions),
+            safety_checks_enabled: true,
+            kernel_stack_size: 64 * 1024, // 64KB
+            priority_levels: 32,
+            scheduler_quantum_us: 10_000, // 10ms
+        }
+    }
+}
