@@ -104,6 +104,17 @@ impl KernelError {
     pub fn to_syscall_error(self) -> u32 {
         self as u32
     }
+
+    /// Check if error is recoverable
+    pub fn is_recoverable(self) -> bool {
+        match self {
+            KernelError::OutOfMemory => false,
+            KernelError::HardwareError => false,
+            KernelError::SafetyViolation => false,
+            KernelError::InvalidState => false,
+            _ => true,
+        }
+    }
 }
 
 /// Result type for kernel operations
