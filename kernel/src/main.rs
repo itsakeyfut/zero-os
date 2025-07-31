@@ -1,11 +1,15 @@
-//! Zero OS - Tactical Support Kernel
+//! Zero OS - Safety-Critical Real-time Kernel
 //! 
-//! Kernel entry point for Zero OS, a tactical support operating system
-//! Microkernel design inspired by Tock OS architecture
+//! Main kernel entry point and initialization sequence.
+//! This module handles the complete system initialization from hardware
+//! reset to a fully operational kernel state.
 
 #![no_std]
 #![no_main]
 #![feature(panic_info_message)]
+#![deny(unsafe_op_in_unsafe_fn)]
+#![deny(missing_docs)]
+#![warn(clippy::undocumented_unsafe_blocks)]
 
 use core::panic::PanicInfo;
 
