@@ -187,3 +187,30 @@ impl Default for KernelConfig {
         }
     }
 }
+
+/// Kernel statistics for monitoring and debugging
+#[derive(Debug, Default, Clone, Copy)]
+pub struct KernelStats {
+    /// Total system calls handled
+    pub total_syscalls: u64,
+    /// Total interrupts handled
+    pub total_interrupts: u64,
+    /// Total context switches
+    pub total_context_switches: u64,
+    /// Total page faults
+    pub total_page_faults: u64,
+    /// Current memory usage
+    pub memory_used_bytes: usize,
+    /// Peak memory usage
+    pub memory_peak_bytes: usize,
+    /// Number of active processes
+    pub active_processes: u32,
+    /// CPU utilization (0-100)
+    pub cpu_utilization: u8,
+    /// System uptime in microseconds
+    pub uptime_us: u64,
+    /// Number of kernel errors
+    pub kernel_errors: u32,
+    /// Number of safety violations
+    pub safety_violations: u32,
+}
