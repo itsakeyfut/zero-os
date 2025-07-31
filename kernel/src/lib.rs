@@ -115,6 +115,38 @@ impl KernelError {
             _ => true,
         }
     }
+
+    /// Get error severity level
+    pub fn severity(self) -> ErrorSeverity {
+        match self {
+            KernelError::OutOfMemory |
+            KernelError::HardwareError |
+            KernelError::SafetyViolation => ErrorSeverity::Critical,
+
+            KernelError::ProcessNotFound |
+            KernelError::PermissionDenied |
+            KernelError::InvalidState => ErrorSeverity::Major,
+            
+            KernelError::ResourceUnavailable |
+            KernelError::Timeout |
+            KernelError::Interrupted => ErrorSeverity::Minor,
+            
+            _ => ErrorSeverity::Warning,
+        }
+    }
+}
+
+/// Error severity levels for kernel errors
+#[derive(Debug, Clonem, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum ErrorSeverity {
+    /// Critical error - system may be unstable
+    Critical = 0,
+    /// Major error - significant functionality impacted
+    Major = 1,
+    /// Minor error - limited impact
+    Minor = 2,
+    /// Warning - potential issue
+    Warning = 3,
 }
 
 /// Result type for kernel operations
