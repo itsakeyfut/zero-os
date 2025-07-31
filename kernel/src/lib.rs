@@ -214,3 +214,22 @@ pub struct KernelStats {
     /// Number of safety violations
     pub safety_violations: u32,
 }
+
+impl KernelStats {
+    /// Create a new kernel statistics
+    pub const fn new() -> Self {
+        Self {
+            total_syscalls: 0,
+            total_interrupts: 0,
+            total_context_switches: 0,
+            total_page_faults: 0,
+            memory_used_bytes: 0,
+            memory_peak_bytes: 0,
+            active_processes: 0,
+            cpu_utilization: 0,
+            uptime_us: 0,
+            kernel_errors: 0,
+            safety_violations: 0,
+        }
+    }
+}
