@@ -35,6 +35,13 @@
 #![feature(alloc_error_handler)]
 #![feature(core_intrinsics)]
 
+// External crate imports
+extern crate alloc;
+
+// Re-export commonly used types and traits
+pub use alloc::{boxed::Box, string::String, vec::Vec};
+
+// Module declarations
 pub mod macros;
 pub mod arch;
 pub mod memory;
@@ -42,6 +49,15 @@ pub mod process;
 pub mod syscalls;
 pub mod platform;
 pub mod grants;
+pub mod drivers;
+pub mod safety;
+
+// Public exports for kernel users
+pub use arch::{Architecture, CpuContext, InterruptType, MemoryRegion};
+pub use memory::{MemoryManager, VirtualAddress, PhysicalAddress, MemoryFlags};
+pub use process::{ProcessManager, ProcessId, Process, Priority};
+pub use platform::{Platform, HardwareCapabilities};
+pub use grants::{Grant, GrantId, GrantPermissions, GrantCapability};
 
 /// Core kernel error types
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
