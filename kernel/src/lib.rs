@@ -1,7 +1,7 @@
 //! Zero OS Kernel Library
 //! 
 //! Core kernel functionality and public interfaces for the Zero OS.
-//! This library provides the foundational aabstractions for process management,
+//! This library provides the foundational abstractions for process management,
 //! memory management, inter-process communication, and real-time scheduling.
 //! 
 //! # Architecture
@@ -11,6 +11,7 @@
 //! - User space applications isolated through memory protection
 //! - Capsule-based driver architecture for hardware abstraction
 //! - Real-time scheduling with priority inheritance
+//! - Capability-based security for safe resource access
 //! 
 //! # Safety
 //! 
@@ -19,7 +20,7 @@
 //! - Rust's type system for compile-time guarantees
 //! - Runtime bounds checking where necessary
 //! - Process isolation with hardware memory protection
-//! - Capability-based access control
+//! - Capability-based access control for system resources
 
 #![no_std]
 #![no_main]
@@ -28,6 +29,11 @@
 #![warn(clippy::undocumented_unsafe_blocks)]
 #![warn(clippy::panic)]
 #![warn(clippy::unwrap_used)]
+
+// Enable required unstable features
+#![feature(panic_info_message)]
+#![feature(alloc_error_handler)]
+#![feature(core_intrinsics)]
 
 pub mod macros;
 pub mod arch;
