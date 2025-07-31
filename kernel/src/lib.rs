@@ -151,3 +151,24 @@ pub enum ErrorSeverity {
 
 /// Result type for kernel operations
 pub type KernelResult<T> = Result<T, KernelError>;
+
+/// Kernel configuration parameters
+#[derive(Debug, Clone)]
+pub struct KernelConfig {
+    /// Maximum number of processes
+    pub max_processes: usize,
+    /// Kernel heap size
+    pub kernel_heap_size: usize,
+    /// Timer frequency in Hz
+    pub timer_frequency: u32,
+    /// Enable debug output
+    pub debug_enabled: bool,
+    /// Enable safety checks
+    pub safety_checks_enabled: bool,
+    /// Stack size for kernel threads
+    pub kernel_stack_size: usize,
+    /// Priority levels
+    pub priority_levels: u8,
+    /// Scheduler quantum in microseconds
+    pub scheduler_quantum_us: u64,
+}
