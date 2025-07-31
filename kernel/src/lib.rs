@@ -61,23 +61,49 @@ pub use grants::{Grant, GrantId, GrantPermissions, GrantCapability};
 
 /// Core kernel error types
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u32)]
 pub enum KernelError {
     /// Out of memory
-    OutOfMemory,
+    OutOfMemory = 1,
     /// Invalid parameter provided
-    InvalidParameter,
+    InvalidParameter = 2,
     /// Process not found
-    ProcessNotFound,
+    ProcessNotFound = 3,
     /// Resource is currently unavailable
-    ResourceUnavailable,
+    ResourceUnavailable = 4,
     /// Permission denied
-    PermissionDenied,
+    PermissionDenied = 5,
     /// Hardware error occurred
-    HardwareError,
+    HardwareError = 6,
     /// IPC communication error
-    IpcError,
+    IpcError = 7,
     /// System in invalid state
-    InvalidState,
+    InvalidState = 8,
+    /// Timeout occurred
+    Timeout = 9,
+    /// Operation interrupted
+    Interrupted = 10,
+    /// Resource limit exceeded
+    ResourceLimitExceeded = 11,
+    /// Unsupported operation
+    UnsupportedOperation = 12,
+    /// System call error
+    SystemCallError = 13,
+    /// Scheduler error
+    SchedulerError = 14,
+    /// Memory management error
+    MemoryError = 15,
+    /// Driver error
+    DriverError = 16,
+    /// Safety violation
+    SafetyViolation = 17,
+}
+
+impl KernelError {
+    /// Convert kernel error to system call error code
+    pub fn to_syscall_error(self) -> u32 {
+        self as u32
+    }
 }
 
 /// Result type for kernel operations
