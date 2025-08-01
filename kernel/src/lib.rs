@@ -435,3 +435,7 @@ pub use crate::main::{kernel_main, get_kernel_info, KernelInfo};
 
 /// Export main module for kernel entry point
 pub mod main;
+
+// Static assertions for kernel configuration
+static_assertions::const_assert!(core::mem::size_of::<KernelError>() == 4);
+static_assertions::const_assert!(core::mem::align_of::<KernelError>() == 4);
