@@ -240,4 +240,9 @@ impl KernelStats {
             self.memory_peak_bytes = used_bytes;
         }
     }
+
+    /// Record a system call
+    pub fn record_syscall(&mut self) {
+        self.total_syscalls = self.total_syscalls.saturating_add(1);
+    }
 }
