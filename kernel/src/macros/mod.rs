@@ -139,6 +139,15 @@ macro_rules! kernel_assert {
     };
 }
 
+/// Debug assertion that's only active in debug builds
+#[macro_export]
+macro_rules! debug_assert_kernel {
+    ($($arg:tt)*) => {
+        #[cfg(debug_assertions)]
+        $crate::kernel_assert!($($arg)*);
+    };
+}
+
 #[macro_export]
 macro_rules! debug_print {
     ($($arg:tt)*) => {
