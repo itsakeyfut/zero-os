@@ -8,6 +8,22 @@
 
 use core::fmt::Write;
 
+/// Debug output levels
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[repr(u8)]
+pub enum DebugLevel {
+    /// Error messages - always shown
+    Error = 0,
+    /// Warning messages
+    Warning = 1,
+    /// Information messages
+    Info = 2,
+    /// Debug messages
+    Debug = 3,
+    /// Trace messages - most verbose
+    Trace = 4,
+}
+
 #[macro_export]
 macro_rules! debug_print {
     ($($arg:tt)*) => {
