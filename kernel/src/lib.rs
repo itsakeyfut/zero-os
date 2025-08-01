@@ -454,3 +454,23 @@ compile_error!("Unsupported target architecture. Zero OS supports ARM only.");
 // Ensure no_std environment
 #[cfg(feature = "std")]
 compile_error!("Zero OS kernel must be built in no_std environment");
+
+/// Test module for kernel library
+#[cfg(test)]
+mod tests {
+    use super::*;
+    
+    #[test]
+    fn test_kernel_error_codes() {
+        assert_eq!(KernelError::OutOfMemory.to_syscall_error(), 1);
+        assert_eq!(KernelError::InvalidParameter.to_syscall_error(), 2);
+        assert_eq!(KernelError::ProcessNotFound.to_syscall_error(), 3);
+    }
+    
+    #[test]
+    fn test_error_severity() {
+        assert_eq!(KernelError::SafetyViolation.severity(), ErrorSeverity::Critical);
+        assert_eq!(KernelError::PermissionDenied.severity(), ErrorSeverity::Major);
+        assert_eq!(KernelError::Timeout.severity(), ErrorSeverity::Minor);
+    }
+}
