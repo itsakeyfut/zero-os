@@ -330,3 +330,23 @@ pub mod version {
         version
     }
 }
+
+/// Kernel assertions for safety-critical code
+pub mod assertions {
+    use super::KernelError;
+
+    /// Assert condition with kernel error
+    #[macro_export]
+    macro_rules! kernel_assert {
+        ($cond:expr) => {
+            if !($cond) {
+                panic!("Kernel assertion failed: {}", stringify!($cond));
+            }
+        };
+        ($cond:expr, $msg:expr) => {
+            if !($cond) {
+                panic!("Kernel assertion failed: {}: {}", stringify!($cond), $msg);
+            }
+        };
+    }
+}
