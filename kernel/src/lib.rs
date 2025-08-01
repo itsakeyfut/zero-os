@@ -349,4 +349,14 @@ pub mod assertions {
             }
         };
     }
+
+    /// Assert condition and return error if false
+    #[macro_export]
+    macro_rules! kernel_ensure {
+        ($cond:expr. $error:expr) => {
+            if !($cond) {
+                return Err($error);
+            }
+        };
+    }
 }
