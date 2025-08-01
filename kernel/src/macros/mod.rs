@@ -124,6 +124,21 @@ macro_rules! kernel_panic {
     };
 }
 
+/// Assert macro with custom panic message
+#[macro_export]
+macro_rules! kernel_assert {
+    ($cond:expr) => {
+        if !($cond) {
+            $crate::kernel_panic!("Assertion failed: {}", stringify!($cond));
+        }
+    };
+    ($cond:expr, $($arg:tt)*) => {
+        if !($cond) {
+            $crate::kernel_panic!("Assertion failed: {}: {}", stringify!($cond), format_args!($($arg)*));
+        }
+    };
+}
+
 #[macro_export]
 macro_rules! debug_print {
     ($($arg:tt)*) => {
