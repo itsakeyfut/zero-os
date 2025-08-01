@@ -391,3 +391,11 @@ pub mod assertions {
         }
     }
 }
+
+/// Utility functions for kernel development
+pub mod utils {
+    /// Align value up to the next multiple of alignment
+    pub const fn align_up(value: usize, alignment: usize) -> usize {
+        (value + alignment - 1) & !(alignment - 1)
+    }
+}
