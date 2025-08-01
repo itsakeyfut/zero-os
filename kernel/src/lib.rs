@@ -381,4 +381,13 @@ pub mod assertions {
             Ok(())
         }
     }
+
+    /// Null pointer checking
+    pub fn check_null_ptr<T>(ptr: *const T) -> Result<(), KernelError> {
+        if ptr.is_null() {
+            Err(KernelError::InvalidParameter)
+        } else {
+            Ok(())
+        }
+    }
 }
