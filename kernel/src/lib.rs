@@ -260,4 +260,13 @@ impl KernelStats {
     pub fn record_page_fault(&mut self) {
         self.total_page_faults = self.total_page_faults.saturating_add(1);
     }
+
+    /// Record a kernel error
+    pub fn record_error(&mut self, error: KernelError) {
+        self.kernel_errors = self.kernel_errors.saturating_add(1);
+
+        if error == KernelError::SafetyViolation {
+            self.safety_violations = self.safety_violations.saturating_add(1);
+        }
+    }
 }
