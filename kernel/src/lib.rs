@@ -269,4 +269,9 @@ impl KernelStats {
             self.safety_violations = self.safety_violations.saturating_add(1);
         }
     }
+
+    /// Update CPU utilization
+    pub fn update_cpu_utilization(&mut self, utilization: u8) {
+        self.cpu_utilization = utilization.min(100);
+    }
 }
