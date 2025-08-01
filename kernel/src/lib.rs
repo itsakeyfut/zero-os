@@ -423,4 +423,9 @@ pub mod utils {
     pub const fn us_to_ms(us: u64) -> u64 {
         us / 1000
     }
+
+    /// Convert microseconds to seconds
+    pub const fn us_to_s(us: u64) -> u64 {
+        us / 1_000_000
+    }
 }
