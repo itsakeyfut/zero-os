@@ -429,3 +429,9 @@ pub mod utils {
         us / 1_000_000
     }
 }
+
+/// Kernel initialization and main entry point
+pub use crate::main::{kernel_main, get_kernel_info, KernelInfo};
+
+/// Export main module for kernel entry point
+pub mod main;
