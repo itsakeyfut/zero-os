@@ -283,3 +283,14 @@ impl KernelStats {
 
 /// Global kernel statistics
 static mut KERNEL_STATS: KernelStats = KernelStats::new();
+
+/// Get reference to global kernel statistics
+/// 
+/// # Safety
+/// 
+/// This function should only be called from kernel code with appropriate
+/// synchrinization.
+pub unsafe fn kernel_stats() -> &'static mut KernelStats {
+    // SAFETY: Caller guarantees proper synchronization
+    unsafe { &mut KERNEL_STATS }
+}
