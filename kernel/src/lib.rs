@@ -250,4 +250,9 @@ impl KernelStats {
     pub fn record_interrupt(&mut self) {
         self.total_interrupts = self.total_interrupts.saturating_add(1);
     }
+
+    /// Record a context switch
+    pub fn record_context_switch(&mut self) {
+        self.total_context_switches = self.total_context_switches.saturating_add(1);
+    }
 }
