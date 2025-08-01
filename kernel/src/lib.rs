@@ -274,4 +274,9 @@ impl KernelStats {
     pub fn update_cpu_utilization(&mut self, utilization: u8) {
         self.cpu_utilization = utilization.min(100);
     }
+
+    /// Update uptime
+    pub fn update_uptime(&mut self, uptime_us: u64) {
+        self.uptime_us = uptime_us;
+    }
 }
