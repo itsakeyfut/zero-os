@@ -368,4 +368,17 @@ pub mod assertions {
             Ok(())
         }
     }
+
+    /// Alignment checking
+    pub fn check_alignment(addr: usize, align: usize) -> Result<(), KernelError> {
+        if align == 0 || !align.is_power_of_two() {
+            return Err(KernelError::InvalidParameter);
+        }
+
+        if addr & align != 0 {
+            Err(KernelError::InvalidParameter)
+        } else {
+            Ok(())
+        }
+    }
 }
