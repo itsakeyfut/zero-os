@@ -232,4 +232,12 @@ impl KernelStats {
             safety_violations: 0,
         }
     }
+
+    /// Update memory usage statistics
+    pub fn update_memory_usage(&mut self, used_bytes: usize) {
+        self.memory_used_bytes = used_bytes;
+        if used_bytes > self.memory_peak_bytes {
+            self.memory_peak_bytes = used_bytes;
+        }
+    }
 }
