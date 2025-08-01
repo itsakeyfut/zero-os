@@ -439,3 +439,18 @@ pub mod main;
 // Static assertions for kernel configuration
 static_assertions::const_assert!(core::mem::size_of::<KernelError>() == 4);
 static_assertions::const_assert!(core::mem::align_of::<KernelError>() == 4);
+
+// Compile-time feature checks
+#[cfg(not(target_pointer_width = "32"))]
+compile_error!("Zero OS currently only supports 32-bit architectures");
+
+#[cfg(not(target_endian = "little"))]
+compile_error!("Zero OS currently only supports little-endian architectures");
+
+// Ensure we're building for a supported architecture
+#[cfg(not(any(target_arch = "arm", target_arch = "aarch64")))]
+compile_error!("Unsupported target architecture. Zero OS supports ARM only.");
+
+// Ensure no_std environment
+#[cfg(feature = "std")]
+compile_error!("Zero OS kernel must be built in no_std environment");
