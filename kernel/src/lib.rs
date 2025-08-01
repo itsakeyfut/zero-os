@@ -398,4 +398,9 @@ pub mod utils {
     pub const fn align_up(value: usize, alignment: usize) -> usize {
         (value + alignment - 1) & !(alignment - 1)
     }
+
+    /// Align value down to the previous multiple of alignment
+    pub const fn align_down(value: usize, alignment: usize) -> usize {
+        value & !(alignment - 1)
+    }
 }
