@@ -148,6 +148,25 @@ macro_rules! debug_assert_kernel {
     };
 }
 
+/// Ensure condition or return error
+#[macro_export]
+macro_rules! kernel_ensure {
+    ($cond:expr, $error:expr) => {
+        if !($cond) {
+            $crate::debug_print!(ERROR, "Ensure failed: {} at {}:{}", 
+                                stringify!($cond), file!(), line!());
+            return Err($error);
+        }
+    };
+    ($cond:expr, $error:expr, $($arg:tt)*) => {
+        if !($cond) {
+            $crate::debug_print!(ERROR, "Ensure failed: {}: {} at {}:{}", 
+                                stringify!($cond), format_args!($($arg)*), file!(), line!());
+            return Err($error);
+        }
+    };
+}
+
 #[macro_export]
 macro_rules! debug_print {
     ($($arg:tt)*) => {
