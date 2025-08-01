@@ -312,4 +312,21 @@ pub mod version {
     pub fn version_string() -> &'static str {
         env!("CARGO_PKG_VERSION")
     }
+
+    /// Get full version with metadata
+    pub fn full_version() -> alloc::string::String {
+        let mut version = alloc::format!("{}.{}.{}", MAJOR, MINOR, PATCH);
+
+        if let Some(pre) = PRE_RELEASE {
+            version.push('-');
+            version.push_str(pre);
+        }
+
+        if let Some(build) = BUILD_METADATA {
+            version.push('+');
+            version.push_str(build);
+        }
+
+        version
+    }
 }
