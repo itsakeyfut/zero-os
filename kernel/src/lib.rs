@@ -418,4 +418,9 @@ pub mod utils {
     pub const fn bytes_to_mb(bytes: usize) -> usize {
         bytes / (1024 * 1024)
     }
+
+    /// Convert microseconds to milliseconds
+    pub const fn us_to_ms(us: u64) -> u64 {
+        us / 1000
+    }
 }
