@@ -280,3 +280,6 @@ impl KernelStats {
         self.uptime_us = uptime_us;
     }
 }
+
+/// Global kernel statistics
+static mut KERNEL_STATS: KernelStats = KernelStats::new();
