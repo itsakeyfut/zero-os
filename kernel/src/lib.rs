@@ -307,4 +307,9 @@ pub mod version {
     pub const PRE_RELEASE: Option<&str> = Some("alpha");
     /// Build metadata
     pub const BUILD_METADATA: Option<&str> = Some(env!("GIT_HASH"));
+
+    /// Get a version string
+    pub fn version_string() -> &'static str {
+        env!("CARGO_PKG_VERSION")
+    }
 }
