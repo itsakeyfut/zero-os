@@ -255,4 +255,9 @@ impl KernelStats {
     pub fn record_context_switch(&mut self) {
         self.total_context_switches = self.total_context_switches.saturating_add(1);
     }
+
+    /// Record a page fault
+    pub fn record_page_fault(&mut self) {
+        self.total_page_faults = self.total_page_faults.saturating_add(1);
+    }
 }
