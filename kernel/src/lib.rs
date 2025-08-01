@@ -408,4 +408,9 @@ pub mod utils {
     pub const fn is_aligned(value: usize, alignment: usize) -> bool {
         value & (alignment - 1) == 0
     }
+
+    /// Convert bytes to kilobytes
+    pub const fn bytes_to_kb(bytes: usize) -> usize {
+        bytes / 1024
+    }
 }
