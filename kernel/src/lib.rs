@@ -245,4 +245,9 @@ impl KernelStats {
     pub fn record_syscall(&mut self) {
         self.total_syscalls = self.total_syscalls.saturating_add(1);
     }
+
+    /// Record an interrupt
+    pub fn record_interrupt(&mut self) {
+        self.total_interrupts = self.total_interrupts.saturating_add(1);
+    }
 }
