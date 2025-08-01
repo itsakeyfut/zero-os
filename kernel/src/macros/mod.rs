@@ -64,6 +64,58 @@ macro_rules! debug_print {
     };
 }
 
+/// Implementation of debug print with level checking
+pub fn debug_print_impl(level: DebugLevel, arg: core::fmt::Arguments) {
+    // Only print if the message level is at or above the current debug level
+    if level <= DEBUG_LEVEL {
+        print_with_metadata(level, args);
+    }
+}
+
+/// Print message with metadata (timestamp, level, etc.)
+fn print_with_metadata(level: DebugLevel, args: core::fmt::Arguments) {
+    #[cfg(debug_assertions)]
+    {
+        // Get current time for timestamp
+        let timestamp = crate::arch::target::Architecture::current_time_us();
+
+        // Get level string
+        let level_str = match level {
+            DebugLevel::Error => "ERROR",
+            DebugLevel::Warning => "WARNING",
+            DebugLevel::Info => "INFO",
+            DebugLevel::Debug => "DEBUG",
+            DebugLevel::Trace => "TRACE",
+        };
+
+        // Try to get debug writer
+        if let Ok(mut debug_writer) = crate::arch::DebugWriter::new() {
+            // Print with timestamp and level
+            let _ = write!(debug_writer, "[{:>10}.{:03}] [{}] ",
+                        timestamp / 1000,
+                        timestamp % 1000,
+                        level_str);
+            let _ = writeln!(debug_writer, "{}", args);
+        }
+    }
+
+    #[cfg(not(debug_assertions))]
+    {
+        // In release builds, only show errors and warnings
+        if level <= DebugLevel::Warning {
+            if let Ok(mut debug_writer) = crate::arch::DebugWriter::new() {
+                let level_str = match level {
+                    DebugLevel::Error => "ERROR",
+                    DebugLevel::Warning => "WARN ",
+                    _ => "INFO ",
+                };
+                let _ = write!(debug_writer, "[{}] ", level_str);
+                let _ = writeln!(debug_writer, "{}", args);
+            }
+        }
+    }
+}
+
 #[macro_export]
 macro_rules! debug_print {
     ($($arg:tt)*) => {
