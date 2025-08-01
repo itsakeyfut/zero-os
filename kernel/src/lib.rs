@@ -403,4 +403,9 @@ pub mod utils {
     pub const fn align_down(value: usize, alignment: usize) -> usize {
         value & !(alignment - 1)
     }
+
+    /// Check if value is aligned to alignment
+    pub const fn is_aligned(value: usize, alignment: usize) -> bool {
+        value & (alignment - 1) == 0
+    }
 }
