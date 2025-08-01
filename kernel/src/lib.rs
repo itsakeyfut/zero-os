@@ -413,4 +413,9 @@ pub mod utils {
     pub const fn bytes_to_kb(bytes: usize) -> usize {
         bytes / 1024
     }
+
+    /// Convert bytes to megabytes
+    pub const fn bytes_to_mb(bytes: usize) -> usize {
+        bytes / (1024 * 1024)
+    }
 }
