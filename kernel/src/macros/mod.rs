@@ -31,6 +31,39 @@ pub const DEBUG_LEVEL: DebugLevel = DebugLevel::Debug;
 #[cfg(not(debug_assertions))]
 pub const DEBUG_LEVEL: DebugLevel = DebugLevel::Warning;
 
+/// Enhanced debug print macro with levels and timestamps
+macro_rules! debug_print {
+    // Error level (always printed)
+    (ERROR, $($arg:tt)*) => {
+        $crate::macros::debug_print_impl($crate::macros::DebugLevel::Error, format_args!($($arg)*))
+    };
+    
+    // Warning level
+    (WARN, $($arg:tt)*) => {
+        $crate::macros::debug_print_impl($crate::macros::DebugLevel::Warning, format_args!($($arg)*))
+    };
+    
+    // Info level
+    (INFO, $($arg:tt)*) => {
+        $crate::macros::debug_print_impl($crate::macros::DebugLevel::Info, format_args!($($arg)*))
+    };
+    
+    // Debug level
+    (DEBUG, $($arg:tt)*) => {
+        $crate::macros::debug_print_impl($crate::macros::DebugLevel::Debug, format_args!($($arg)*))
+    };
+    
+    // Trace level
+    (TRACE, $($arg:tt)*) => {
+        $crate::macros::debug_print_impl($crate::macros::DebugLevel::Trace, format_args!($($arg)*))
+    };
+    
+    // Default to info level if no level specified
+    ($($arg:tt)*) => {
+        $crate::macros::debug_print_impl($crate::macros::DebugLevel::Info, format_args!($($arg)*))
+    };
+}
+
 #[macro_export]
 macro_rules! debug_print {
     ($($arg:tt)*) => {
