@@ -24,6 +24,13 @@ pub enum DebugLevel {
     Trace = 4,
 }
 
+/// Current debug level (can be configured at compile time)
+#[cfg(debug_assertions)]
+pub const DEBUG_LEVEL: DebugLevel = DebugLevel::Debug;
+
+#[cfg(not(debug_assertions))]
+pub const DEBUG_LEVEL: DebugLevel = DebugLevel::Warning;
+
 #[macro_export]
 macro_rules! debug_print {
     ($($arg:tt)*) => {
