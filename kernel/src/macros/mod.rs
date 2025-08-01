@@ -116,6 +116,14 @@ fn print_with_metadata(level: DebugLevel, args: core::fmt::Arguments) {
     }
 }
 
+/// Panic with formatted message and location info
+#[macro_export]
+macro_rules! kernel_panic {
+    ($($arg:tt)*) => {
+        panic!("KERNEL PANIC at {}:{}: {}", file!(), line!(), format_args!($($arg)*))
+    };
+}
+
 #[macro_export]
 macro_rules! debug_print {
     ($($arg:tt)*) => {
