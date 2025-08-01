@@ -359,4 +359,13 @@ pub mod assertions {
             }
         };
     }
+
+    /// Bounds checking for array access
+    pub fn check_bounds(index: usize, len: usize) -> Result<(), KernelError> {
+        if index >= len {
+            Err(KernelError::InvalidParameter)
+        } else {
+            Ok(())
+        }
+    }
 }
