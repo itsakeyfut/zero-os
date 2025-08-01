@@ -294,3 +294,17 @@ pub unsafe fn kernel_stats() -> &'static mut KernelStats {
     // SAFETY: Caller guarantees proper synchronization
     unsafe { &mut KERNEL_STATS }
 }
+
+/// Kernel version information
+pub mod version {
+    /// Major version number
+    pub const MAJOR: u32 = 0;
+    /// Minor version number
+    pub const MINOR: u32 = 1;
+    /// Patch version number
+    pub const PATCH: u32 = 0;
+    /// Pre-release identifier
+    pub const PRE_RELEASE: Option<&str> = Some("alpha");
+    /// Build metadata
+    pub const BUILD_METADATA: Option<&str> = Some(env!("GIT_HASH"));
+}
