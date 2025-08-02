@@ -61,6 +61,20 @@ struct KernelState {
     initialized: bool,
 }
 
+impl KernelState {
+    /// Create a new kernel state
+    const fn new() -> Self {
+        Self {
+            current_phase: InitPhase::Hardware,
+            boot_time: 0,
+            memory_manager: None,
+            process_manager: None,
+            platform: None,
+            initialized: false,
+        }
+    }
+}
+
 pub struct Kernel {
     process_manager: ProcessManager,
     memory_manager: MemoryManager,
