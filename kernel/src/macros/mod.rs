@@ -231,3 +231,15 @@ macro_rules! if_debug {
         }
     };
 }
+
+/// Static string formatting for const contexts
+#[macro_export]
+macro_rules! const_format {
+    ($fmt:expr) => {
+        $fmt
+    };
+    ($fmt:expr, $($arg:tt)*) => {
+        // This is a simplified const format - full implementation would need const_format crate
+        $fmt
+    };
+}
