@@ -78,6 +78,11 @@ impl KernelState {
     pub fn current_phase(&self) -> InitPhase {
         self.current_phase
     }
+
+    /// Check if kernel is fully initialized
+    pub fn is_initialized(&self) -> bool {
+        self.initialized
+    }
 }
 
 pub struct Kernel {
