@@ -274,3 +274,12 @@ macro_rules! likely {
         $expr
     };
 }
+
+#[macro_export]
+macro_rules! unlikely {
+    ($expr:expr) => {
+        // On stable Rust, we can't use intrinsics, so this is a no-op
+        // In the future, this could use core::intrinsics::unlikely  
+        $expr
+    };
+}
