@@ -186,7 +186,7 @@ macro_rules! memory_barrier {
 macro_rules! critical_section {
     ($body:block) => {{
         let was_enabled = $crate::arch::target::Architecture::interrupts_enabled();
-        $crate::arch::target::Architecture::disabled_interrupts();
+        $crate::arch::target::Architecture::disable_interrupts();
 
         let result = $body;
 
