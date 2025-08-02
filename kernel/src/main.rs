@@ -292,3 +292,56 @@ pub fn emergency_shutdown(reason: &str) -> ! {
     // Halt the system
     arch::target::Architecture::halt_system()
 }
+
+/// Kernel panic handler
+/// 
+/// This is called when a panic occurs in kernel space. It attempts to
+/// provide diagnostic information and perform a safe system shutdown.
+#[panic_handler]
+fn panic(info: &PanicInfo) -> ! {
+    // Disable interrupts immediately to prevent further issues
+    arch::target::Architecture::disable_interrupts();
+    
+    debug_print!("==========================================");
+    debug_print!("           KERNEL PANIC");
+    debug_print!("==========================================");
+    
+    // Print panic message
+    if let Some(message) = info.message() {
+        debug_print!("Panic message: {}", message);
+    } else {
+        debug_print!("Panic occurred (no message)");
+    }
+    
+    // Print location information
+    if let Some(location) = info.location() {
+        debug_print!("Location: {}:{}:{}", 
+                    location.file(), 
+                    location.line(), 
+                    location.column());
+    } else {
+        debug_print!("Location: unknown");
+    }
+    
+    // Print system state
+    // SAFETY: Panic context, we need to access system state
+    let kernel_state = unsafe { kernel_state() };
+    debug_print!("System state at panic:");
+    debug_print!("  Initialization phase: {:?}", kernel_state.current_phase);
+    debug_print!("  Kernel initialized: {}", kernel_state.initialized);
+    debug_print!("  Time since boot: {} µs", 
+                arch::target::Architecture::current_time_us().saturating_sub(kernel_state.boot_time));
+    
+    // TODO: Collect additional diagnostic information:
+    // - Stack trace (if available)
+    // - Memory usage statistics
+    // - Process state
+    // - Hardware state
+    
+    debug_print!("==========================================");
+    debug_print!("Attempting emergency shutdown...");
+    
+    // Attempt graceful shutdown
+    // Note: We call emergency_shutdown which will halt the system
+    emergency_shutdown("Kernel panic occurred");
+}
