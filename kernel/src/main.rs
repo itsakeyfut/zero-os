@@ -214,3 +214,39 @@ fn initialize_kernel() -> KernelResult<()> {
     
     Ok(())
 }
+
+/// Main kernel execution loop
+fn run_kernel() -> ! {
+    debug_print!("Entering main kernel loop");
+
+    // Enable interrupts now that system is ready
+    arch::target::Architecture::enable_interrupts();
+
+    loop {
+        // Main kernel execution loop
+        // TODO: Implement proper kernel main loop with scheduling
+
+        // For now, just wait for interrupts
+        arch::target::Architecture::wait_for_interrupt();
+
+        // Handle any pending work
+        handle_kernel_work();
+    }
+}
+
+/// Handle kernel housekeeping tasks
+fn handle_kernel_work() {
+    // SAFETY: We're in kernel context
+    let kernel_state = unsafe { kernel_state() };
+    
+    if !kernel_state.is_initialized() {
+        return;
+    }
+    
+    // TODO: Implement kernel housekeeping tasks:
+    // - Memory cleanup
+    // - Process scheduling decisions
+    // - Timer management
+    // - I/O completion
+    // - Safety monitoring
+}
