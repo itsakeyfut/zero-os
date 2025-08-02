@@ -171,4 +171,9 @@ impl FaultRecord {
     pub fn duration_us(&self) -> Option<u64> {
         self.resolved_at.map(|resolved| resolved - self.timestamp)
     }
+
+    /// Check if fault is critical or higher
+    pub fn is_critical(&self) -> bool {
+        self.severity >= FaultSeverity::Critical
+    }
 }
