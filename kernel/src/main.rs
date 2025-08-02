@@ -264,3 +264,31 @@ fn load_init_process() -> KernelResult<()> {
     debug_print!("Init process loaded and started");
     Ok(())
 }
+
+/// Emergency system shutdown
+/// 
+/// This function performs an emergency system shutdown with minimal
+/// cleanup when a critical error occurs.
+pub fn emergency_shutdown(reason: &str) -> ! {
+    // Disable interrupts immediately
+    arch::target::Architecture::disable_interrupts();
+    
+    debug_print!("EMERGENCY SHUTDOWN: {}", reason);
+    debug_print!("System state dump:");
+    
+    // SAFETY: Emergency context, single-threaded access
+    let kernel_state = unsafe { kernel_state() };
+    debug_print!("  Phase: {:?}", kernel_state.current_phase);
+    debug_print!("  Initialized: {}", kernel_state.initialized);
+    debug_print!("  Boot time: {} µs", kernel_state.boot_time);
+    
+    // TODO: Implement emergency procedures:
+    // - Save critical data
+    // - Notify external systems
+    // - Execute safe shutdown procedures
+    
+    debug_print!("Emergency shutdown complete - system halted");
+    
+    // Halt the system
+    arch::target::Architecture::halt_system()
+}
