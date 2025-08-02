@@ -12,17 +12,15 @@
 #![warn(clippy::undocumented_unsafe_blocks)]
 
 use core::panic::PanicInfo;
-
-mod macros;
-mod arch;
-mod memory;
-mod platform;
-mod process;
-mod syscalls;
-
-use platform::Platform;
-use process::ProcessManager;
-use memory::MemoryManager;
+use crate::{
+    arch,
+    memory::MemoryManager,
+    platform::Platform,
+    process::ProcessManager,
+    syscalls,
+    KernelResult,
+    KernelError,
+};
 
 pub struct Kernel {
     process_manager: ProcessManager,
