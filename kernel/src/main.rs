@@ -401,3 +401,20 @@ pub struct KernelInfo {
     /// Current initialization phase
     pub current_phase: InitPhase,
 }
+
+impl KernelInfo {
+    /// Get uptime in microseconds
+    pub fn uptime_us(&self) -> u64 {
+        self.current_time.saturating_sub(self.boot_time)
+    }
+    
+    /// Get uptime in milliseconds
+    pub fn uptime_ms(&self) -> u64 {
+        self.uptime_us() / 1000
+    }
+    
+    /// Get uptime in seconds
+    pub fn uptime_s(&self) -> u64 {
+        self.uptime_ms() / 1000
+    }
+}
