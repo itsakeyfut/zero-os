@@ -299,3 +299,14 @@ macro_rules! assert_align {
         const _: [u8; $align] = [0; core::mem::align_of::<$type>()];
     };
 }
+
+/// Zero-cost wrapper for debug-only code
+#[macro_export]
+macro_rules! debug_only {
+    ($code:stmt) => {
+        #[cfg(debug_assertions)]
+        {
+            $code
+        }
+    };
+}
