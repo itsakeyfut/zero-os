@@ -283,3 +283,11 @@ macro_rules! unlikely {
         $expr
     };
 }
+
+/// Compile-time size assertions
+#[macro_export]
+macro_rules! assert_size {
+    ($type:ty, $size:expr) => {
+        const _: [u8; $size] = [0; core::mem::size_of::<$type>()];
+    };
+}
