@@ -336,3 +336,32 @@ macro_rules! modify_reg {
         $crate::write_reg!($addr, new_val);
     }};
 }
+
+/// Bitmap manipulation macros
+#[macro_export]
+macro_rules! bit_set {
+    ($value:expr, $bit:expr) => {
+        $value | (1 << $bit)
+    };
+}
+
+#[macro_export]
+macro_rules! bit_clear {
+    ($value:expr, $bit:expr) => {
+        $value & !(1 << $bit)
+    };
+}
+
+#[macro_export]
+macro_rules! bit_toggle {
+    ($value:expr, $bit:expr) => {
+        $value ^ (1 << $bit)
+    };
+}
+
+#[macro_export]
+macro_rules! bit_test {
+    ($value:expr, $bit:expr) => {
+        ($value & (1 << $bit)) != 0
+    };
+}
