@@ -427,3 +427,36 @@ pub mod build_info {
         cfg!(debug_assertions)
     }
 }
+
+/// Unit tests for macros
+#[cfg(test)]
+mod tests {
+    use super::*;
+    
+    #[test]
+    fn test_bit_manipulation() {
+        let value = 0b1010_1010u8;
+        
+        assert_eq!(bit_set!(value, 0), 0b1010_1011);
+        assert_eq!(bit_clear!(value, 1), 0b1010_1000);
+        assert_eq!(bit_toggle!(value, 2), 0b1010_1110);
+        assert!(bit_test!(value, 1));
+        assert!(!bit_test!(value, 0));
+    }
+    
+    #[test]
+    fn test_alignment() {
+        assert_eq!(align_up!(7, 4), 8);
+        assert_eq!(align_down!(7, 4), 4);
+        assert!(is_aligned!(8, 4));
+        assert!(!is_aligned!(7, 4));
+    }
+    
+    #[test]
+    fn test_debug_levels() {
+        assert!(DebugLevel::Error < DebugLevel::Warning);
+        assert!(DebugLevel::Warning < DebugLevel::Info);
+        assert!(DebugLevel::Info < DebugLevel::Debug);
+        assert!(DebugLevel::Debug < DebugLevel::Trace);
+    }
+}
