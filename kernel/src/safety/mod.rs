@@ -73,3 +73,21 @@ pub enum AutomotiveSafetyLevel {
     /// ASIL D - Highest safety level
     AsilD = 4,
 }
+
+/// Fault severity levels
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[repr(u8)]
+pub enum FaultSeverity {
+    /// Informational - no immediate impact
+    Info = 0,
+    /// Warning - potential future impact
+    Warning = 1,
+    /// Minor - limited functionality impact
+    Minor = 2,
+    /// Major - significant functionality impact
+    Major = 3,
+    /// Critical - system safety at risk
+    Critical = 4,
+    /// Catastrophic - immediate danger
+    Catastrophic = 5,
+}
