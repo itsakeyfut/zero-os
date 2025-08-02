@@ -327,3 +327,12 @@ macro_rules! write_reg {
         unsafe { core::ptr::write_volatile($addr as *mut u32, $value) }
     }};
 }
+
+#[macro_export]
+macro_rules! modify_reg {
+    ($addr:expr, |$val:ident| $body:expr) => {{
+        let $val = $crate::read_reg!($addr);
+        let new_val = $body;
+        $crate::write_reg!($addr, new_val);
+    }};
+}
