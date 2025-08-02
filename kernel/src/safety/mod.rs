@@ -134,3 +134,29 @@ pub struct FaultRecord {
     /// Resolution timestamp
     pub resolved_at: Option<u64>,
 }
+
+impl FaultRecord {
+    /// Create a new fault record
+    pub fn new(
+        id: u32,
+        category: FaultCategory,
+        severity: FaultSeverity,
+        source: &'static str,
+        description: &str,
+    ) -> Self {
+        let mut desc = heapless::String::new();
+        let _ = desc.push_str(description);
+
+        Self {
+            id,
+            category,
+            severity,
+            timestamp: crate::arch::target::Architecture::current_time_us(),
+            source,
+            description: desc,
+            recovery_action: None,
+            resolved: false,
+            resolved_at: None,
+        }
+    }
+}
