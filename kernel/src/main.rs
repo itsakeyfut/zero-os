@@ -22,6 +22,11 @@ use crate::{
     KernelError,
 };
 
+/// Kernel version information
+pub const KERNEL_VERSION: &str = env!("CARGO_PKG_VERSION");
+pub const KERNEL_NAME: &str = "Zero OS";
+pub const BUILD_TARGET: &str = env!("TARGET");
+
 pub struct Kernel {
     process_manager: ProcessManager,
     memory_manager: MemoryManager,
