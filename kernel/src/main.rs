@@ -73,6 +73,11 @@ impl KernelState {
             initialized: false,
         }
     }
+
+    /// Get current initialization phase
+    pub fn current_phase(&self) -> InitPhase {
+        self.current_phase
+    }
 }
 
 pub struct Kernel {
