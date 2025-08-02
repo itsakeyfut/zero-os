@@ -286,6 +286,7 @@ fn configure_optimization(profile: &str) {
 
 /// Generate build information
 fn generate_build_info(out_dir: &str) {
+    // Generate build info file
     let build_info_path = Path::new(out_dir).join("build_info.rs");
 
     // Get build timestamp
@@ -296,7 +297,7 @@ fn generate_build_info(out_dir: &str) {
     
     // Get git information if available
     let git_hash = Command::new("git")
-        .args(&["rev-parse", "HEAD"])
+        .args(&["rev-parse", "--short", "HEAD"])
         .output()
         .ok()
         .and_then(|output| {
@@ -324,13 +325,15 @@ fn generate_build_info(out_dir: &str) {
     // Generate build info file
     let build_info_content = format!(
         r#"
-            // Generated build information
+            // Generated build information - DO NOT EDIT
             pub const BUILD_TIME: u64 = {};
             pub const GIT_HASH: &str = "{}";
             pub const GIT_BRANCH: &str = "{}";
             pub const KERNEL_VERSION: &str = "{}";
             pub const TARGET: &str = "{}";
             pub const PROFILE: &str = "{}";
+            pub const FEATURES: &str = "{}";
+            pub const RUSTC_VERSION: &str = "{}";
         "#,
         build_time,
         git_hash,
@@ -338,10 +341,17 @@ fn generate_build_info(out_dir: &str) {
         env::var("CARGO_PKG_VERSION").unwrap_or_else(|_| "unknown".to_string()),
         env::var("TARGET").unwrap_or_else(|_| "unknown".to_string()),
         env::var("PROFILE").unwrap_or_else(|_| "debug".to_string()),
+        env::var("CARGO_CFG_TARGET_FEATURE").unwrap_or_else(|_| "none".to_string()),
+        env::var("RUSTC_VERSION").unwrap_or_else(|_| "unknown".to_string()),
     );
 
     fs::write(build_info_path, build_info_content)
         .expect("Failed to write build information");
+
+    // Set environment variables for macros
+    println!("cargo:rustc-env=BUILD_TIME={}", build_time);
+    println!("cargo:rustc-env=GIT_HASH={}", git_hash);
+    println!("cargo:rustc-env=GIT_BRANCH={}", git_branch);
 
     println!("cargo:warning=Generated build information");
 }
