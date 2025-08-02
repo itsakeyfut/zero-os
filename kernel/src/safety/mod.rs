@@ -166,4 +166,9 @@ impl FaultRecord {
         self.resolved_at = Some(crate::arch::target::Architecture::current_time_us());
         self.recovery_action = Some(recovery_action);
     }
+
+    /// Get fault duration in microseconds
+    pub fn duration_us(&self) -> Option<u64> {
+        self.resolved_at.map(|resolved| resolved - self.timestamp)
+    }
 }
