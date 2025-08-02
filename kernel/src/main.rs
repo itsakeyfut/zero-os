@@ -90,6 +90,20 @@ impl KernelState {
     }
 }
 
+/// Global kernel state
+static mut KERNEL_STATE: KernelState = KernelState::new();
+
+/// Get reference to global kernel state
+/// 
+/// # Safety
+/// 
+/// This function should only be called from kernel code in single-threaded
+/// context during initialization, or from interrupt handlers.
+pub unsafe fn kernel_state() -> &'static mut KernelState {
+    // SAFETY: Caller guarantees single-threaded access
+    unsafe { &mut KERNEL_STATE }
+}
+
 pub struct Kernel {
     process_manager: ProcessManager,
     memory_manager: MemoryManager,
