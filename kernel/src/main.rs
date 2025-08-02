@@ -104,6 +104,31 @@ pub unsafe fn kernel_state() -> &'static mut KernelState {
     unsafe { &mut KERNEL_STATE }
 }
 
+/// Kernel main entry point
+/// 
+/// This is called from the architecture-specific boot code after basic
+/// hardware initialization is complete.
+#[no_mangle]
+pub extern "C" fn kernel_main() -> ! {
+    // Initialize early debug output
+    arch::early_debug_init();
+
+    // Print boot banner
+    print_boot_banner();
+
+    // Initialize kernel
+    match initialize_kernel() {
+        Ok(()) => {
+            debug_print!("Kernel initialization completed successfully");
+            run_kernel()
+        }
+        Err(error) => {
+            debug_print!("FATAL: Kernel initialization failed: {:?}", error);
+            panic!("Kernel initialization failed: {:?}", error);
+        }
+    }
+}
+
 pub struct Kernel {
     process_manager: ProcessManager,
     memory_manager: MemoryManager,
