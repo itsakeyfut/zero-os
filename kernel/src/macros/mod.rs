@@ -210,3 +210,24 @@ macro_rules! time_block {
         result
     }};
 }
+
+/// Conditional compilation for different build profiles
+#[macro_export]
+macro_rules! if_debug {
+    ($debug_code:block) => {
+        #[cfg(debug_assertions)]
+        {
+            $debug_code
+        }
+    };
+    ($debug_code:block, else $release_code:block) => {
+        #[cfg(debug_assertions)]
+        {
+            $debug_code
+        }
+        #[cfg(not(debug_assertions))]
+        {
+            $release_code
+        }
+    };
+}
