@@ -291,3 +291,11 @@ macro_rules! assert_size {
         const _: [u8; $size] = [0; core::mem::size_of::<$type>()];
     };
 }
+
+/// Compile-time alignment assertions
+#[macro_export]
+macro_rules! assert_align {
+    ($type:ty, $align:expr) => {
+        const _: [u8; $align] = [0; core::mem::align_of::<$type>()];
+    };
+}
