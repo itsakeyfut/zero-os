@@ -365,3 +365,25 @@ macro_rules! bit_test {
         ($value & (1 << $bit)) != 0
     };
 }
+
+/// Alignment and size calculation macros
+#[macro_export]
+macro_rules! align_up {
+    ($value:expr, $align:expr) => {
+        (($value) + ($align) - 1) & !(($align) - 1)
+    };
+}
+
+#[macro_export]
+macro_rules! align_down {
+    ($value:expr, $align:expr) => {
+        ($value) & !(($align) - 1)
+    };
+}
+
+#[macro_export]
+macro_rules! is_aligned {
+    ($value:expr, $align:expr) => {
+        (($value) & (($align) - 1)) == 0
+    };
+}
