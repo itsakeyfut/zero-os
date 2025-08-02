@@ -243,3 +243,24 @@ macro_rules! const_format {
         $fmt
     };
 }
+
+/// Kernel module initialization macro
+#[macro_export]
+macro_rules! kernel_module {
+    ($name:ident, init: $init_fn:ident) => {
+        #[link_section = ".kernel_modules"]
+        #[used]
+        static $name: KernelModule = KernelModule {
+            name: stringify!($name),
+            init_fn: $init_fn,
+        };
+    };
+}
+
+/// Kernel module descriptor
+pub struct KernelModule {
+    /// Module name
+    pub name: &'static str,
+    /// Initialization function
+    pub init_fn: fn() -> crate::KernelResult<()>,
+}
