@@ -128,3 +128,89 @@ pub extern "C" fn kernel_main() -> ! {
         }
     }
 }
+
+/// Print system boot banner
+fn print_boot_banner() {
+    debug_print!("=====================================");
+    debug_print!("    {} v{}", KERNEL_NAME, KERNEL_VERSION);
+    debug_print!("    Safety-Critical Real-time OS");
+    debug_print!("    Target: {}", BUILD_TARGET);
+    debug_print!("=====================================");
+    debug_print!("");
+    debug_print!("Starting system initialization...");
+}
+
+/// Initialize the kernel subsystems
+fn initialize_kernel() -> KernelResult<()> {
+    // SAFETY: We're in single-threaded initialization context
+    let kernel_state = unsafe { kernel_state() };
+    
+    debug_print!("Phase 1: Hardware Architecture Initialization");
+    kernel_state.current_phase = InitPhase::Hardware;
+    
+    // Initialize architecture-specific components
+    arch::target::Architecture::init()
+        .map_err(|_| KernelError::HardwareError)?;
+    
+    // Record boot time
+    kernel_state.boot_time = arch::target::Architecture::current_time_us();
+    debug_print!("Boot time recorded: {} µs", kernel_state.boot_time);
+    
+    debug_print!("Phase 2: Platform Initialization");
+    // Initialize platform abstraction
+    let mut platform = Platform::new();
+    platform.early_init()
+        .map_err(|_| KernelError::HardwareError)?;
+    
+    debug_print!("Phase 3: Memory Management Initialization");
+    kernel_state.current_phase = InitPhase::Memory;
+    
+    // Initialize memory management
+    let memory_manager = MemoryManager::new();
+    // TODO: Implement memory manager initialization
+    // memory_manager.init()?;
+    
+    kernel_state.memory_manager = Some(memory_manager);
+    debug_print!("Memory management initialized");
+    
+    debug_print!("Phase 4: Process Management Initialization");
+    kernel_state.current_phase = InitPhase::Process;
+    
+    // Initialize process management
+    let process_manager = ProcessManager::new();
+    // TODO: Implement process manager initialization
+    // process_manager.init()?;
+    
+    kernel_state.process_manager = Some(process_manager);
+    debug_print!("Process management initialized");
+    
+    debug_print!("Phase 5: System Services Initialization");
+    kernel_state.current_phase = InitPhase::Services;
+    
+    // Initialize system call interface
+    // TODO: Implement system call initialization
+    // syscalls::init()?;
+    debug_print!("System services initialized");
+    
+    // Complete platform initialization
+    platform.late_init()
+        .map_err(|_| KernelError::HardwareError)?;
+    
+    kernel_state.platform = Some(platform);
+    
+    debug_print!("Phase 6: User Space Preparation");
+    kernel_state.current_phase = InitPhase::UserSpace;
+    
+    // TODO: Load and start init process
+    // load_init_process()?;
+    debug_print!("User space preparation completed");
+    
+    // Mark system as ready
+    kernel_state.current_phase = InitPhase::Ready;
+    kernel_state.initialized = true;
+    
+    debug_print!("Kernel initialization completed in {} µs", 
+                arch::target::Architecture::current_time_us() - kernel_state.boot_time);
+    
+    Ok(())
+}
