@@ -45,3 +45,17 @@ pub const MAX_FAULT_RECORDS: usize = 256;
 
 /// Maximum number of safety monitors
 pub const MAX_SAFETY_MONITORS: usize = 64;
+
+/// Safety integrity levels (SIL) as defined by IEC 61508
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[repr(u8)]
+pub enum SafetyIntegrityLevel {
+    /// SIL 1 - Low safety integrity
+    Sil1 = 1,
+    /// SIL 2 - Medium safety integrity
+    Sil2 = 2,
+    /// SIL 3 - High safety integrity
+    Sil3 = 3,
+    /// SIL 4 - Very high safety integrity
+    Sil4 = 4,
+}
