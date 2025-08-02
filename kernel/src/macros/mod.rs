@@ -166,3 +166,17 @@ macro_rules! kernel_ensure {
         }
     };
 }
+
+/// Memory barrier macro for synchronization
+#[macro_export]
+macro_rules! memory_barrier {
+    () => {
+        core::sync::atomic::compiler_fence(core::sync::atomic::Ordering::SeqCst);
+    };
+    (acquire) => {
+        core::sync::atomic::compiler_fence(core::sync::atomic::Ordering::Acquire);
+    };
+    (release) => {
+        core::sync::atomic::compiler_fence(core::sync::atomic::Ordering::Release);
+    };
+}
