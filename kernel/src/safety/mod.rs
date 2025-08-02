@@ -226,3 +226,19 @@ pub struct SafetyManager {
     /// Initialization status
     initialized: bool,
 }
+
+/// System safety state
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u8)]
+pub enum SafetyState {
+    /// Normal operation
+    Normal = 0,
+    /// Warning state - monitoring increased
+    Warning = 1,
+    /// Degraded state - reduced functionality
+    Degraded = 2,
+    /// Emergency state - safety-critical operation only
+    Emergency = 3,
+    /// Failed state - system shutdown required
+    Failed = 4,
+}
