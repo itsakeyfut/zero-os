@@ -206,3 +206,23 @@ pub enum RecoveryAction {
     /// Manual intervention required
     Manual = 8,
 }
+
+/// Safety manager for the kernel
+pub struct SafetyManager {
+    /// Fault records
+    fault_records: Vec<FaultRecord, MAX_FAULT_RECORDS>,
+    /// Safety monitors
+    monitors: FnvIndexMap<u32, Box<dyn SafetyMonitor>, MAX_SAFETY_MONITORS>,
+    /// Next fault ID
+    next_fault_id: AtomicU32,
+    /// Total faults detected
+    total_faults: AtomicU64,
+    /// Critical faults count
+    critical_faults: AtomicU32,
+    /// System safety state
+    safety_state: SafetyState,
+    /// Emergency stop flag
+    emergency_stop: AtomicU32,
+    /// Initialization status
+    initialized: bool,
+}
