@@ -197,3 +197,16 @@ macro_rules! critical_section {
         result
     }};
 }
+
+/// Measure execution time of a code block
+#[macro_export]
+macro_rules! time_block {
+    ($name:expr, $body:block) => {{
+        let start_time = $crate::arch::target::Architecture::current_time_us();
+        let result = $body;
+        let end_time = $crate::arch::target::Architecture::current_time_us();
+
+        $crate::debug_print!(DEBUG, "{} took {} µs", $name, end_time - start_time);
+        result
+    }};
+}
