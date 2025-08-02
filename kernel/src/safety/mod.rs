@@ -182,3 +182,27 @@ impl FaultRecord {
         matches!(self.severity, FaultSeverity::Critical | FaultSeverity::Catastrophic)
     }
 }
+
+/// Recovery actions that can be taken for faults
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u8)]
+pub enum RecoveryAction {
+    /// No action required
+    None = 0,
+    /// Retry the operation
+    Retry = 1,
+    /// Reset the component
+    Reset = 2,
+    /// Switch to backup/redundant component
+    Switchover = 3,
+    /// Degrade system functionality
+    Degrade = 4,
+    /// Isolate faulty component
+    Isolate = 5,
+    /// Emergency stop
+    EmergencyStop = 6,
+    /// System restart
+    Restart = 7,
+    /// Manual intervention required
+    Manual = 8,
+}
