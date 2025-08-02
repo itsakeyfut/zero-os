@@ -91,3 +91,23 @@ pub enum FaultSeverity {
     /// Catastrophic - immediate danger
     Catastrophic = 5,
 }
+
+/// Fault categories for classification
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u8)]
+pub enum FaultCategory {
+    /// Hardware fault (sensor, actuator, processor)
+    Hardware = 1,
+    /// Software fault (bug, assertion failure, exception)
+    Software = 2,
+    /// Timing fault (deadline miss, jitter violation)
+    Timing = 3,
+    /// Resource fault (memory exhaustion, overload)
+    Resource = 4,
+    /// Communication fault (message loss, corruption)
+    Communication = 5,
+    /// Environmental fault (temperature, vibration, EMI)
+    Environmental = 6,
+    /// Human factor fault (operator error, maintenance)
+    Human = 7,
+}
