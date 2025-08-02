@@ -264,3 +264,13 @@ pub struct KernelModule {
     /// Initialization function
     pub init_fn: fn() -> crate::KernelResult<()>,
 }
+
+/// Likely/unlikely hints for branch prediction
+#[macro_export]
+macro_rules! likely {
+    ($expr:expr) => {
+        // On stable Rust, we can't use intrinsics, so this is a no-op
+        // In the future, this could use core::intrinsics::likely
+        $expr
+    };
+}
