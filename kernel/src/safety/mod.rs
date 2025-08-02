@@ -59,3 +59,17 @@ pub enum SafetyIntegrityLevel {
     /// SIL 4 - Very high safety integrity
     Sil4 = 4,
 }
+
+/// ASIL (Automotive Safety Integrity Level) as defined by ISO 26262
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[repr(u8)]
+pub enum AutomotiveSafetyLevel {
+    /// ASIL A - Lowest safety level
+    AsilA = 1,
+    /// ASIL B - Low safety level
+    AsilB = 2,
+    /// ASIL C - Medium safety level
+    AsilC = 3,
+    /// ASIL D - Highest safety level
+    AsilD = 4,
+}
