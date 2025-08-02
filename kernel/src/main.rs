@@ -27,6 +27,23 @@ pub const KERNEL_VERSION: &str = env!("CARGO_PKG_VERSION");
 pub const KERNEL_NAME: &str = "Zero OS";
 pub const BUILD_TARGET: &str = env!("TARGET");
 
+/// Kernel initialization phases
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum InitPhase {
+    /// Hardware initialization
+    Hardware,
+    /// Memory management setup
+    Memory,
+    /// Process management setup
+    Process,
+    /// System services startup
+    Services,
+    /// User space initialization
+    UserSpace,
+    /// System ready
+    Ready,
+}
+
 pub struct Kernel {
     process_manager: ProcessManager,
     memory_manager: MemoryManager,
