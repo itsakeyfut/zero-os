@@ -111,3 +111,26 @@ pub enum FaultCategory {
     /// Human factor fault (operator error, maintenance)
     Human = 7,
 }
+
+/// Fault record for tracking system failures
+#[derive(Debug, Clone)]
+pub struct FaultRecord {
+    /// Unique fault identifier
+    pub id: u32,
+    /// Fault category
+    pub category: FaultCategory,
+    /// Fault severity
+    pub severity: FaultSeverity,
+    /// Timestamp when fault occurred
+    pub timestamp: u64,
+    /// Source component or subsystem
+    pub source: &'static str,
+    /// Detailed fault description
+    pub description: heapless::String<128>,
+    /// Recovery action taken
+    pub recovery_action: Option<RecoveryAction>,
+    /// Whether fault has been resolved
+    pub resolved: bool,
+    /// Resolution timestamp
+    pub resolved_at: Option<u64>,
+}
