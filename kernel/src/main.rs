@@ -83,6 +83,11 @@ impl KernelState {
     pub fn is_initialized(&self) -> bool {
         self.initialized
     }
+
+    /// Get boot time
+    pub fn boot_time(&self) -> u64 {
+        self.boot_time
+    }
 }
 
 pub struct Kernel {
