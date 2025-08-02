@@ -176,4 +176,9 @@ impl FaultRecord {
     pub fn is_critical(&self) -> bool {
         self.severity >= FaultSeverity::Critical
     }
+
+    /// Check if fault requires immediate action
+    pub fn requires_immediate_action(&self) -> bool {
+        matches!(self.severity, FaultSeverity::Critical | FaultSeverity::Catastrophic)
+    }
 }
