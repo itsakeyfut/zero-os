@@ -310,3 +310,12 @@ macro_rules! debug_only {
         }
     };
 }
+
+/// Hardware register access macros
+#[macro_export]
+macro_rules! read_reg {
+    ($addr:expr) => {
+        // SAFETY: Caller must ensure address is valid for register access
+        unsafe { core::ptr::read_volatile($addr as *const u32) }
+    };
+}
