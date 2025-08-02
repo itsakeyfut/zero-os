@@ -345,3 +345,22 @@ fn panic(info: &PanicInfo) -> ! {
     // Note: We call emergency_shutdown which will halt the system
     emergency_shutdown("Kernel panic occurred");
 }
+
+/// Out of memory handler
+/// 
+/// This is called when the kernel runs out of memory. It attempts to
+/// free up memory and recover, or triggers an emergency shutdown.
+#[alloc_error_handler]
+fn alloc_error_handler(layout: core::alloc::Layout) -> ! {
+    debug_print!("OUT OF MEMORY: Failed to allocate {} bytes (align: {})", 
+                layout.size(), layout.align());
+    
+    // TODO: Implement memory recovery strategies:
+    // - Free unused memory pools
+    // - Kill non-critical processes
+    // - Compact memory
+    // - Request garbage collection
+    
+    // If we can't recover, shutdown the system
+    emergency_shutdown("Out of memory - unable to recover");
+}
