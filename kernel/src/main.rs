@@ -44,6 +44,23 @@ enum InitPhase {
     Ready,
 }
 
+/// Kernel state management
+#[derive(Debug)]
+struct KernelState {
+    /// Current initialization phase
+    current_phase: InitPhase,
+    /// Boot timestamp
+    boot_time: u64,
+    /// Memory manager
+    memory_manager: Option<MemoryManager>,
+    /// Process manager
+    process_manager: Option<ProcessManager>,
+    /// Platform abstraction
+    platform: Option<Platform>,
+    /// Initialization completed successfully
+    initialized: bool,
+}
+
 pub struct Kernel {
     process_manager: ProcessManager,
     memory_manager: MemoryManager,
