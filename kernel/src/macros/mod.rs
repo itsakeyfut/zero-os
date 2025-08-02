@@ -180,3 +180,20 @@ macro_rules! memory_barrier {
         core::sync::atomic::compiler_fence(core::sync::atomic::Ordering::Release);
     };
 }
+
+/// Critical section macro (disables interrupts)
+#[macro_export]
+macro_rules! critical_section {
+    ($body:block) => {{
+        let was_enabled = $crate::arch::target::Architecture::interrupts_enabled();
+        $crate::arch::target::Architecture::disabled_interrupts();
+
+        let result = $body;
+
+        if was_enabled {
+            $crate::arch::target::Architecture::enable_interrupts();
+        }
+
+        result
+    }};
+}
