@@ -242,3 +242,21 @@ pub enum SafetyState {
     /// Failed state - system shutdown required
     Failed = 4,
 }
+
+/// Safety monitor trait for implementing custom monitors
+pub trait SafetyMonitor {
+    /// Monitor name
+    fn name(&self) -> &'static str;
+    
+    /// Check safety conditions
+    fn check(&mut self) -> Result<(), FaultRecord>;
+    
+    /// Get monitor priority (lower values = higher priority)
+    fn priority(&self) -> u8;
+    
+    /// Check if monitor is enabled
+    fn is_enabled(&self) -> bool;
+    
+    /// Enable/disable monitor
+    fn set_enabled(&mut self, enabled: bool);
+}
