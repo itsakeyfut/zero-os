@@ -399,3 +399,31 @@ macro_rules! container_of {
         }
     }};
 }
+
+/// Kernel version and build information
+pub mod build_info {
+    /// Get kernel version string
+    pub const fn version() -> &'static str {
+        env!("CARGO_PKG_VERSION")
+    }
+
+    /// Get build timestamp
+    pub const fn build_time() -> &'static str {
+        env!("BUILD_TIME")
+    }
+
+    /// Get git commit hash
+    pub const fn git_hash() -> &'static str {
+        env!("GIT_HASH")
+    }
+
+    /// Get target triple
+    pub const fn target() -> &'static str {
+        env!("TARGET")
+    }
+
+    /// Check if this is a debug build
+    pub const fn is_debug() -> bool {
+        cfg!(debug_assertions)
+    }
+}
