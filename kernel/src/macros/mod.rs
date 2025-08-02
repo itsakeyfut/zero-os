@@ -387,3 +387,15 @@ macro_rules! is_aligned {
         (($value) & (($align) - 1)) == 0
     };
 }
+
+/// Container of macro for getting parent struct from member
+#[macro_export]
+macro_rules! container_of {
+    ($ptr:expr, $container:ident, $field:ident) => {{
+        let member_offset = memoffset::offset_of!($container, $field);
+        // SAFETY: Caller must ensure ptr points to the specified field
+        unsafe {
+            (($ptr as *const u8).sub(member_offset) as *const $container)
+        }
+    }};
+}
