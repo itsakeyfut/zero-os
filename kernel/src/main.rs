@@ -364,3 +364,21 @@ fn alloc_error_handler(layout: core::alloc::Layout) -> ! {
     // If we can't recover, shutdown the system
     emergency_shutdown("Out of memory - unable to recover");
 }
+
+/// System call to get kernel information
+/// 
+/// This provides basic kernel information to user space processes.
+pub fn get_kernel_info() -> KernelInfo {
+    // SAFETY: Reading kernel state
+    let kernel_state = unsafe { kernel_state() };
+    
+    KernelInfo {
+        version: KERNEL_VERSION,
+        name: KERNEL_NAME,
+        target: BUILD_TARGET,
+        boot_time: kernel_state.boot_time,
+        current_time: arch::target::Architecture::current_time_us(),
+        initialized: kernel_state.initialized,
+        current_phase: kernel_state.current_phase,
+    }
+}
