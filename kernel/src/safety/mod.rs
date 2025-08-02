@@ -159,4 +159,11 @@ impl FaultRecord {
             resolved_at: None,
         }
     }
+
+    /// Mark fault as resolved
+    pub fn resolve(&mut self, recovery_action: RecoveryAction) {
+        self.resolved = true;
+        self.resolved_at = Some(crate::arch::target::Architecture::current_time_us());
+        self.recovery_action = Some(recovery_action);
+    }
 }
