@@ -319,3 +319,11 @@ macro_rules! read_reg {
         unsafe { core::ptr::read_volatile($addr as *const u32) }
     };
 }
+
+#[macro_export]
+macro_rules! write_reg {
+    ($addr:expr, $value:expr) => {{
+        // SAFETY: Caller must ensure address is valid for register access
+        unsafe { core::ptr::write_volatile($addr as *mut u32, $value) }
+    }};
+}
