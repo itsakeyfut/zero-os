@@ -382,3 +382,22 @@ pub fn get_kernel_info() -> KernelInfo {
         current_phase: kernel_state.current_phase,
     }
 }
+
+/// Kernel information structure
+#[derive(Debug, Clone)]
+pub struct KernelInfo {
+    /// Kernel version string
+    pub version: &'static str,
+    /// Kernel name
+    pub name: &'static str,
+    /// Build target
+    pub target: &'static str,
+    /// Boot timestamp
+    pub boot_time: u64,
+    /// Current timestamp
+    pub current_time: u64,
+    /// Initialization status
+    pub initialized: bool,
+    /// Current initialization phase
+    pub current_phase: InitPhase,
+}
