@@ -41,3 +41,17 @@ pub const MAX_ZONES: usize = 4;
 
 /// Maximum number of reserved regions
 pub const MAX_RESERVED_REGIONS: usize = 16;
+
+/// Memory zone types for different usage patterns
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u8)]
+pub enum MemoryZone {
+    /// DMA-accessible memory (typically first 16MB)
+    Dma = 0,
+    /// Normal memory for general allocation
+    Normal = 1,
+    /// High memory (above 896MB on 32-bit systems)
+    High = 2,
+    /// Device memory (memory-mapped I/O)
+    Device = 3,
+}
