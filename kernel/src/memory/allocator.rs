@@ -79,4 +79,9 @@ impl FreeBlock {
             zone,
         }
     }
+
+    /// Get the size of this block in bytes
+    fn size(&self) -> usize {
+        PAGE_SIZE << self.order
+    }
 }
