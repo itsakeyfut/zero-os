@@ -695,3 +695,50 @@ impl MemoryUsageMonitor {
         self.threshold = threshold.min(100);
     }
 }
+
+impl SafetyMonitor for MemoryUsageMonitor {
+    fn name(&self) -> &'static str {
+        "Memory Usage Monitor"
+    }
+
+    fn check(&mut self) -> Result<(), FaultRecord> {
+        let current_time = crate::arch::target::Architecture::current_time_us();
+
+        // Check every 100ms
+        if current_time - self.last_check < 100_000 {
+            return Ok(());
+        }
+
+        self.last_check = current_time;
+
+        // TODO: Get actual memory usage from memory manager
+        // For now, simulate with a placeholder
+        let memory_usage_percent = 75; // Placeholder
+
+        if memory_usage_percent > self.threshold {
+            let fault = FaultRecord::new(
+                0, // Will be assigned by safety manager
+                FaultCategory::Resource,
+                FaultSeverity::Warning,
+                "MemoryUsageMonitor",
+                &format!("Memory usage {}% exceeds threshold {}%", 
+                        memory_usage_percent, self.threshold),
+            );
+            return Err(fault);
+        }
+
+        Ok(())
+    }
+
+    fn priority(&self) -> u8 {
+        10 // Medium priority
+    }
+
+    fn is_enabled(&self) -> bool {
+        self.enabled
+    }
+
+    fn set_enabled(&mut self, enabled: bool) {
+        self.enabled = enabled;
+    }
+}
