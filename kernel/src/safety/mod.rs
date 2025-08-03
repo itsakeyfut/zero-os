@@ -836,3 +836,6 @@ impl SafetyMonitor for TimingViolationMonitor {
         self.enabled = enabled;
     }
 }
+
+/// Global safety manager instance
+static mut SAFETY_MANAGER: Option<SafetyManager> = None;
