@@ -84,4 +84,9 @@ impl FreeBlock {
     fn size(&self) -> usize {
         PAGE_SIZE << self.order
     }
+
+    /// Get the physical address of this block
+    fn physical_address(&self) -> PhysicalAddress {
+        PhysicalAddress::new(self as *const Self as usize)
+    }
 }
