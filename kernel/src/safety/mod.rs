@@ -669,3 +669,13 @@ impl FaultFilter {
         true
     }
 }
+
+/// Memory usage monitor
+pub struct MemoryUsageMonitor {
+    /// Memory usage threshold (percentage)
+    threshold: u8,
+    /// Enabled status
+    enabled: bool,
+    /// Last check timestamp
+    last_check: u64,
+}
