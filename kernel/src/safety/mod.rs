@@ -884,3 +884,12 @@ pub fn emergency_stop() {
         manager.trigger_emergency_stop();
     }
 }
+
+/// Check if system is in safe state
+pub fn is_system_safe() -> bool {
+    if let Some(manager) = safety_manager() {
+        matches!(manager.safety_state(), SafetyState::Normal | SafetyState::Warning)
+    } else {
+        false
+    }
+}
