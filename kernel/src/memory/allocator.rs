@@ -55,3 +55,16 @@ pub enum MemoryZone {
     /// Device memory (memory-mapped I/O)
     Device = 3,
 }
+
+/// Free block header in the buddy system
+#[repr(C)]
+struct FreeBlock {
+    /// Next free block in the same order
+    next: Option<NonNull<FreeBlock>>,
+    /// Previous free block in the same order
+    prev: Option<NonNull<FreeBlock>>,
+    /// Order of this block
+    order: u8,
+    /// Zone this block belongs to
+    zone: MemoryZone,
+}
