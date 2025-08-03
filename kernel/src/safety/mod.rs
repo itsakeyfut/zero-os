@@ -500,4 +500,9 @@ impl SafetyManager {
             monitor.set_enabled(false);
         }
     }
+
+    /// Check if emergency stop is active
+    pub fn is_emergency_stop_active(&self) -> bool {
+        self.emergency_stop.load(Ordering::Relaxed) != 0
+    }
 }
