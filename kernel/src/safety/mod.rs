@@ -633,4 +633,39 @@ impl FaultFilter {
         self.time_end = Some(end);
         self
     }
+
+    /// Check if fault matches this filter
+    pub fn matches(&self, fault: &FaultRecord) -> bool {
+        if let Some(category) = self.category {
+            if fault.category != category {
+                return false;
+            }
+        }
+
+        if let Some(min_severity) = self.min_severity {
+            if fault.severity < min_severity {
+                return false;
+            }
+        }
+
+        if let Some(resolved) = self.resolved {
+            if fault.resolved != resolved {
+                return false;
+            }
+        }
+
+        if let Some(start) = self.time_start {
+            if fault.timestamp < start {
+                return false;
+            }
+        }
+
+        if let Some(end) = self.time_send {
+            if fault.timestamp > end {
+                return false;
+            }
+        }
+
+        true
+    }
 }
