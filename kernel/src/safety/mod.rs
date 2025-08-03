@@ -461,4 +461,27 @@ impl SafetyManager {
             }
         }
     }
+
+    /// Update system safety state based on current faults
+    fn update_safety_state(&mut self) {
+        let critical_count = self.critical_faults.load(Ordering::Relaxed);
+        let total_count = self.total_faults.load(Ordering::Relaxed);
+
+        let new_state = if self.emergency_stop.load(Ordering::Relaxed) != 0 {
+            SafetyState::Failed
+        } else if critical_count > 0 {
+            SafetyState::Emergency
+        } else if total_count > 10 {
+            SafetyState::Degraded
+        } else if total_count > 5 {
+            SafetyState::Warning
+        } else {
+            SafetyState::Normal
+        };
+
+        if new_state != self.safety_state {
+            debug_print!(WARN, "Safety state changed: {:?} -> {:?}", self.safety_state, new_state);
+            self.safety_state = new_state;
+        }
+    }
 }
