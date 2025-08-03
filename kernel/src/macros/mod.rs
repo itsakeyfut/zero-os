@@ -1,13 +1,463 @@
+//! Zero OS Kernel Macros
+//!
+//! This module provides various macros for kernel development including
+//! debug output, assertions, logging, and safety checks. All macros are
+//! designed to be zero-cost in release builds when not needed.
+
+#![deny(missing_docs)]
+
+use core::fmt::Write;
+
+/// Debug output levels
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[repr(u8)]
+pub enum DebugLevel {
+    /// Error messages - always shown
+    Error = 0,
+    /// Warning messages
+    Warning = 1,
+    /// Information messages
+    Info = 2,
+    /// Debug messages
+    Debug = 3,
+    /// Trace messages - most verbose
+    Trace = 4,
+}
+
+/// Current debug level (can be configured at compile time)
+#[cfg(debug_assertions)]
+pub const DEBUG_LEVEL: DebugLevel = DebugLevel::Debug;
+
+#[cfg(not(debug_assertions))]
+pub const DEBUG_LEVEL: DebugLevel = DebugLevel::Warning;
+
+/// Enhanced debug print macro with levels and timestamps
 #[macro_export]
 macro_rules! debug_print {
+    // Error level (always printed)
+    (ERROR, $($arg:tt)*) => {
+        $crate::macros::debug_print_impl($crate::macros::DebugLevel::Error, format_args!($($arg)*))
+    };
+    
+    // Warning level
+    (WARN, $($arg:tt)*) => {
+        $crate::macros::debug_print_impl($crate::macros::DebugLevel::Warning, format_args!($($arg)*))
+    };
+    
+    // Info level
+    (INFO, $($arg:tt)*) => {
+        $crate::macros::debug_print_impl($crate::macros::DebugLevel::Info, format_args!($($arg)*))
+    };
+    
+    // Debug level
+    (DEBUG, $($arg:tt)*) => {
+        $crate::macros::debug_print_impl($crate::macros::DebugLevel::Debug, format_args!($($arg)*))
+    };
+    
+    // Trace level
+    (TRACE, $($arg:tt)*) => {
+        $crate::macros::debug_print_impl($crate::macros::DebugLevel::Trace, format_args!($($arg)*))
+    };
+    
+    // Default to info level if no level specified
     ($($arg:tt)*) => {
-        #[cfg(debug_assertions)]
-        {
-            use core::fmt::Write;
-            if let Ok(mut debug_writer) = $crate::arch::DebugWriter::new() {
-                let _ = write!(debug_writer, "[KERNEL] ");
-                let _ = writeln!(debug_writer, $($arg)*);
+        $crate::macros::debug_print_impl($crate::macros::DebugLevel::Info, format_args!($($arg)*))
+    };
+}
+
+/// Implementation of debug print with level checking
+pub fn debug_print_impl(level: DebugLevel, args: core::fmt::Arguments) {
+    // Only print if the message level is at or above the current debug level
+    if level <= DEBUG_LEVEL {
+        print_with_metadata(level, args);
+    }
+}
+
+/// Print message with metadata (timestamp, level, etc.)
+fn print_with_metadata(level: DebugLevel, args: core::fmt::Arguments) {
+    #[cfg(debug_assertions)]
+    {
+        // Get current time for timestamp
+        let timestamp = crate::arch::target::Architecture::current_time_us();
+        
+        // Get level string
+        let level_str = match level {
+            DebugLevel::Error => "ERROR",
+            DebugLevel::Warning => "WARN ",
+            DebugLevel::Info => "INFO ",
+            DebugLevel::Debug => "DEBUG",
+            DebugLevel::Trace => "TRACE",
+        };
+        
+        // Try to get debug writer
+        if let Ok(mut debug_writer) = crate::arch::DebugWriter::new() {
+            // Print with timestamp and level
+            let _ = write!(debug_writer, "[{:>10}.{:03}] [{}] ", 
+                         timestamp / 1000, 
+                         timestamp % 1000,
+                         level_str);
+            let _ = writeln!(debug_writer, "{}", args);
+        }
+    }
+    
+    #[cfg(not(debug_assertions))]
+    {
+        // In release builds, only show errors and warnings
+        if level <= DebugLevel::Warning {
+            if let Ok(mut debug_writer) = crate::arch::DebugWriter::new() {
+                let level_str = match level {
+                    DebugLevel::Error => "ERROR",
+                    DebugLevel::Warning => "WARN ",
+                    _ => "INFO ",
+                };
+                let _ = write!(debug_writer, "[{}] ", level_str);
+                let _ = writeln!(debug_writer, "{}", args);
             }
         }
+    }
+}
+
+/// Panic with formatted message and location info
+#[macro_export]
+macro_rules! kernel_panic {
+    ($($arg:tt)*) => {
+        panic!("KERNEL PANIC at {}:{}: {}", file!(), line!(), format_args!($($arg)*))
     };
+}
+
+/// Assert macro with custom panic message
+#[macro_export]
+macro_rules! kernel_assert {
+    ($cond:expr) => {
+        if !($cond) {
+            $crate::kernel_panic!("Assertion failed: {}", stringify!($cond));
+        }
+    };
+    ($cond:expr, $($arg:tt)*) => {
+        if !($cond) {
+            $crate::kernel_panic!("Assertion failed: {}: {}", stringify!($cond), format_args!($($arg)*));
+        }
+    };
+}
+
+/// Debug assertion that's only active in debug builds
+#[macro_export]
+macro_rules! debug_assert_kernel {
+    ($($arg:tt)*) => {
+        #[cfg(debug_assertions)]
+        $crate::kernel_assert!($($arg)*);
+    };
+}
+
+/// Ensure condition or return error
+#[macro_export]
+macro_rules! kernel_ensure {
+    ($cond:expr, $error:expr) => {
+        if !($cond) {
+            $crate::debug_print!(ERROR, "Ensure failed: {} at {}:{}", 
+                               stringify!($cond), file!(), line!());
+            return Err($error);
+        }
+    };
+    ($cond:expr, $error:expr, $($arg:tt)*) => {
+        if !($cond) {
+            $crate::debug_print!(ERROR, "Ensure failed: {}: {} at {}:{}", 
+                               stringify!($cond), format_args!($($arg)*), file!(), line!());
+            return Err($error);
+        }
+    };
+}
+
+/// Memory barrier macro for synchronization
+#[macro_export]
+macro_rules! memory_barrier {
+    () => {
+        core::sync::atomic::compiler_fence(core::sync::atomic::Ordering::SeqCst);
+    };
+    (acquire) => {
+        core::sync::atomic::compiler_fence(core::sync::atomic::Ordering::Acquire);
+    };
+    (release) => {
+        core::sync::atomic::compiler_fence(core::sync::atomic::Ordering::Release);
+    };
+}
+
+/// Critical section macro (disables interrupts)
+#[macro_export]
+macro_rules! critical_section {
+    ($body:block) => {{
+        let was_enabled = $crate::arch::target::Architecture::interrupts_enabled();
+        $crate::arch::target::Architecture::disable_interrupts();
+        
+        let result = $body;
+        
+        if was_enabled {
+            $crate::arch::target::Architecture::enable_interrupts();
+        }
+        
+        result
+    }};
+}
+
+/// Measure execution time of a code block
+#[macro_export]
+macro_rules! time_block {
+    ($name:expr, $body:block) => {{
+        let start_time = $crate::arch::target::Architecture::current_time_us();
+        let result = $body;
+        let end_time = $crate::arch::target::Architecture::current_time_us();
+        
+        $crate::debug_print!(DEBUG, "{} took {} µs", $name, end_time - start_time);
+        result
+    }};
+}
+
+/// Conditional compilation for different build profiles
+#[macro_export]
+macro_rules! if_debug {
+    ($debug_code:block) => {
+        #[cfg(debug_assertions)]
+        {
+            $debug_code
+        }
+    };
+    ($debug_code:block, else $release_code:block) => {
+        #[cfg(debug_assertions)]
+        {
+            $debug_code
+        }
+        #[cfg(not(debug_assertions))]
+        {
+            $release_code
+        }
+    };
+}
+
+/// Static string formatting for const contexts
+#[macro_export]
+macro_rules! const_format {
+    ($fmt:expr) => {
+        $fmt
+    };
+    ($fmt:expr, $($arg:tt)*) => {
+        // This is a simplified const format - full implementation would need const_format crate
+        $fmt
+    };
+}
+
+/// Kernel module initialization macro
+#[macro_export]
+macro_rules! kernel_module {
+    ($name:ident, init: $init_fn:ident) => {
+        #[link_section = ".kernel_modules"]
+        #[used]
+        static $name: KernelModule = KernelModule {
+            name: stringify!($name),
+            init_fn: $init_fn,
+        };
+    };
+}
+
+/// Kernel module descriptor
+pub struct KernelModule {
+    /// Module name
+    pub name: &'static str,
+    /// Initialization function
+    pub init_fn: fn() -> crate::KernelResult<()>,
+}
+
+/// Likely/unlikely hints for branch prediction
+#[macro_export]
+macro_rules! likely {
+    ($expr:expr) => {
+        // On stable Rust, we can't use intrinsics, so this is a no-op
+        // In the future, this could use core::intrinsics::likely
+        $expr
+    };
+}
+
+#[macro_export]
+macro_rules! unlikely {
+    ($expr:expr) => {
+        // On stable Rust, we can't use intrinsics, so this is a no-op
+        // In the future, this could use core::intrinsics::unlikely  
+        $expr
+    };
+}
+
+/// Compile-time size assertions
+#[macro_export]
+macro_rules! assert_size {
+    ($type:ty, $size:expr) => {
+        const _: [u8; $size] = [0; core::mem::size_of::<$type>()];
+    };
+}
+
+/// Compile-time alignment assertions
+#[macro_export]
+macro_rules! assert_align {
+    ($type:ty, $align:expr) => {
+        const _: [u8; $align] = [0; core::mem::align_of::<$type>()];
+    };
+}
+
+/// Zero-cost wrapper for debug-only code
+#[macro_export]
+macro_rules! debug_only {
+    ($code:stmt) => {
+        #[cfg(debug_assertions)]
+        {
+            $code
+        }
+    };
+}
+
+/// Hardware register access macros
+#[macro_export]
+macro_rules! read_reg {
+    ($addr:expr) => {{
+        // SAFETY: Caller must ensure address is valid for register access
+        unsafe { core::ptr::read_volatile($addr as *const u32) }
+    }};
+}
+
+#[macro_export]
+macro_rules! write_reg {
+    ($addr:expr, $value:expr) => {{
+        // SAFETY: Caller must ensure address is valid for register access
+        unsafe { core::ptr::write_volatile($addr as *mut u32, $value) }
+    }};
+}
+
+#[macro_export]
+macro_rules! modify_reg {
+    ($addr:expr, |$val:ident| $body:expr) => {{
+        let $val = $crate::read_reg!($addr);
+        let new_val = $body;
+        $crate::write_reg!($addr, new_val);
+    }};
+}
+
+/// Bitmap manipulation macros
+#[macro_export]
+macro_rules! bit_set {
+    ($value:expr, $bit:expr) => {
+        $value | (1 << $bit)
+    };
+}
+
+#[macro_export]
+macro_rules! bit_clear {
+    ($value:expr, $bit:expr) => {
+        $value & !(1 << $bit)
+    };
+}
+
+#[macro_export]
+macro_rules! bit_toggle {
+    ($value:expr, $bit:expr) => {
+        $value ^ (1 << $bit)
+    };
+}
+
+#[macro_export]
+macro_rules! bit_test {
+    ($value:expr, $bit:expr) => {
+        ($value & (1 << $bit)) != 0
+    };
+}
+
+/// Alignment and size calculation macros
+#[macro_export]
+macro_rules! align_up {
+    ($value:expr, $align:expr) => {
+        (($value) + ($align) - 1) & !(($align) - 1)
+    };
+}
+
+#[macro_export]
+macro_rules! align_down {
+    ($value:expr, $align:expr) => {
+        ($value) & !(($align) - 1)
+    };
+}
+
+#[macro_export]
+macro_rules! is_aligned {
+    ($value:expr, $align:expr) => {
+        (($value) & (($align) - 1)) == 0
+    };
+}
+
+/// Container of macro for getting parent struct from member
+#[macro_export]
+macro_rules! container_of {
+    ($ptr:expr, $container:ident, $field:ident) => {{
+        let member_offset = memoffset::offset_of!($container, $field);
+        // SAFETY: Caller must ensure ptr points to the specified field
+        unsafe {
+            (($ptr as *const u8).sub(member_offset) as *const $container)
+        }
+    }};
+}
+
+/// Kernel version and build information
+pub mod build_info {
+    /// Get kernel version string
+    pub const fn version() -> &'static str {
+        env!("CARGO_PKG_VERSION")
+    }
+    
+    /// Get build timestamp
+    pub const fn build_time() -> &'static str {
+        env!("BUILD_TIME")
+    }
+    
+    /// Get git commit hash
+    pub const fn git_hash() -> &'static str {
+        env!("GIT_HASH")
+    }
+    
+    /// Get target triple
+    pub const fn target() -> &'static str {
+        env!("TARGET")
+    }
+    
+    /// Check if this is a debug build
+    pub const fn is_debug() -> bool {
+        cfg!(debug_assertions)
+    }
+}
+
+/// Unit tests for macros
+#[cfg(test)]
+mod tests {
+    use super::*;
+    
+    #[test]
+    fn test_bit_manipulation() {
+        let value = 0b1010_1010u8;
+        
+        assert_eq!(bit_set!(value, 0), 0b1010_1011);
+        assert_eq!(bit_clear!(value, 1), 0b1010_1000);
+        assert_eq!(bit_toggle!(value, 2), 0b1010_1110);
+        assert!(bit_test!(value, 1));
+        assert!(!bit_test!(value, 0));
+    }
+    
+    #[test]
+    fn test_alignment() {
+        assert_eq!(align_up!(7, 4), 8);
+        assert_eq!(align_down!(7, 4), 4);
+        assert!(is_aligned!(8, 4));
+        assert!(!is_aligned!(7, 4));
+    }
+    
+    #[test]
+    fn test_debug_levels() {
+        assert!(DebugLevel::Error < DebugLevel::Warning);
+        assert!(DebugLevel::Warning < DebugLevel::Info);
+        assert!(DebugLevel::Info < DebugLevel::Debug);
+        assert!(DebugLevel::Debug < DebugLevel::Trace);
+    }
 }
