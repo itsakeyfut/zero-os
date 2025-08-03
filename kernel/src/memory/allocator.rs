@@ -123,4 +123,12 @@ impl Zone {
             allocated_pages: 0,
         }
     }
+
+    /// Check if an address belongs to this zone
+    fn contains(&self, addr: PhysicalAddress) -> bool {
+        let start = self.start_addr.as_usize();
+        let end = start + self.size;
+        let addr_val = addr.as_usize();
+        addr_val >= start && addr_val < end
+    }
 }
