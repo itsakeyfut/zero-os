@@ -25,7 +25,7 @@
 
 use core::sync::atomic::{AtomicU32, AtomicU64, Ordering};
 use heapless::{Vec, FnvIndexMap};
-use crate::{KernelResult, KernelError};
+use crate::{debug_print, KernelError, KernelResult};
 
 pub mod watchdog;
 pub mod fault_detection;
@@ -274,5 +274,22 @@ impl SafetyManager {
             emergency_stop: AtomicU32::new(0),
             initialized: false,
         }
+    }
+
+    /// Initialize the safety manager
+    pub fn init(&mut self) -> KernelResult<()> {
+        if self.initialized {
+            return Ok(());
+        }
+
+        debug_print!(INFO, "Initializing safety manager");
+
+        // Initialize built-in safety monitors
+        self.init_builtin_monitors()?;
+
+        self.initialized = true;
+        debug_print!(INFO, "Safety manager initialized with {} monitors", self.monitors.len());
+
+        Ok(())
     }
 }
