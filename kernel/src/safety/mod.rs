@@ -679,3 +679,19 @@ pub struct MemoryUsageMonitor {
     /// Last check timestamp
     last_check: u64,
 }
+
+impl MemoryUsageMonitor {
+    /// Create a new memory usage monitor
+    pub fn new() -> Self {
+        Self {
+            threshold: 90, // 90% threshold
+            enabled: true,
+            last_check: 0,
+        }
+    }
+
+    /// Set memory usage threshold
+    pub fn set_threshold(&mut self, threshold: u8) {
+        self.threshold = threshold.min(100);
+    }
+}
