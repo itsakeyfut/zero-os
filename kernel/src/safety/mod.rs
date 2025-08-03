@@ -505,4 +505,26 @@ impl SafetyManager {
     pub fn is_emergency_stop_active(&self) -> bool {
         self.emergency_stop.load(Ordering::Relaxed) != 0
     }
+
+    /// Clear emergency stop (only after monual verification)
+    pub fn clear_emergency_stop(&mut self) -> KernelResult<()> {
+        if !self.is_emergency_stop_active() {
+            return Err(KernelError::InvalidState);
+        }
+
+        debug_print!(WARN, "Clearing emergency stop - manual verification required");
+
+        // TODO: Implement safety checkList verification
+
+        self.emergency_stop.store(0, Ordering::SeqCst);
+        self.safety_state = SafetyState::Normal;
+
+        // Re-enable safety monitors
+        for monitor in self.monitors.values_mut() {
+            monitor.set_enabled(true);
+        }
+
+        debug_print!(INFO, "Emergency stop cleared - system returning to normal operation");
+        Ok(())
+    }
 }
