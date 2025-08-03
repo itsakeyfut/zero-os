@@ -581,3 +581,18 @@ pub struct SafetyStatistics {
     /// Unresolved faults count
     pub unresolved_faults: u32,
 }
+
+/// Fault filter for querying fault records
+#[derive(Debug, Clone, Copy)]
+pub struct FaultFilter {
+    /// Filter by category
+    pub category: Option<FaultCategory>,
+    /// Filter by minimum severity
+    pub min_severity: Option<FaultSeverity>,
+    /// Filter by resolved status
+    pub resolved: Option<bool>,
+    /// Filter by time range (start timestamp)
+    pub time_start: Option<u64>,
+    /// Filter by time range (end timestamp)
+    pub time_end: Option<u64>,
+}
