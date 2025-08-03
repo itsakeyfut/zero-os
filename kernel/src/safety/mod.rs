@@ -596,3 +596,16 @@ pub struct FaultFilter {
     /// Filter by time range (end timestamp)
     pub time_end: Option<u64>,
 }
+
+impl FaultFilter {
+    /// Create a new fault filter
+    pub const fn new() -> Self {
+        Self {
+            category: None,
+            min_severity: None,
+            resolved: None,
+            time_start: None,
+            time_end: None,
+        }
+    }
+}
