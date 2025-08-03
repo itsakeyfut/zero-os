@@ -145,3 +145,14 @@ impl Zone {
         self.buddy_address(addr1, order) == addr2
     }
 }
+
+/// Reserved memory region
+#[derive(Debug, Clone, Copy)]
+pub struct ReservedAddress {
+    /// Start address
+    pub start: PhysicalAddress,
+    /// Size in bytes
+    pub size: usize,
+    /// Description of what this region is used for
+    pub description: &'static str,
+}
