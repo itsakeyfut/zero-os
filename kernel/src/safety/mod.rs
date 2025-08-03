@@ -750,3 +750,13 @@ pub struct StackOverflowMonitor {
     /// Enabled status
     enabled: bool,
 }
+
+impl StackOverflowMonitor {
+    /// Create new stack overflow monitor
+    pub fn new() -> Self {
+        Self {
+            threshold: 80, // 80% threshold
+            enabled: true,
+        }
+    }
+}
