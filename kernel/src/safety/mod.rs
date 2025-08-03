@@ -293,6 +293,23 @@ impl SafetyManager {
         Ok(())
     }
 
+    /// Initialize built-in safety monitors
+    fn init_builtin_monitors(&mut self) -> KernelResult<()> {
+        // Memory usage monitor
+        let memory_monitor = Box::new(MemoryUsageMonitor::new());
+        self.register_monitor(1, memory_monitor)?;
+
+        // Stack overflow monitor
+        let stack_monitor = Box::new(StackOverflowMonitor::new());
+        self.register_monitor(2, stack_monitor)?;
+
+        // Timing monitor
+        let timing_monitor = Box::new(TimingViolationMonitor::new());
+        self.register_monitor(3, timing_monitor)?;
+
+        Ok(())
+    }
+
     /// Register a safety monitor
     pub fn register_monitor(
         &mut self,
