@@ -564,3 +564,20 @@ impl SafetyManager {
         }
     }
 }
+
+/// Safety statistics for monitoring
+#[derive(Debug, Clone, Copy)]
+pub struct SafetyStatistics {
+    /// Total faults detected
+    pub total_faults: u64,
+    /// Critical faults count
+    pub critical_faults: u32,
+    /// Number of active monitors
+    pub active_monitors: u32,
+    /// Current safety state
+    pub safety_state: SafetyState,
+    /// Emergency stop status
+    pub emergency_stop_active: bool,
+    /// Unresolved faults count
+    pub unresolved_faults: u32,
+}
