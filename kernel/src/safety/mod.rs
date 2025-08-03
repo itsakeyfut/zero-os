@@ -393,4 +393,22 @@ impl SafetyManager {
         // Update safety state
         self.update_safety_state();
     }
+
+    /// Determine appropriate recovery action for a fault
+    fn determine_recovery_action(&self, fault: &FaultRecord) -> RecoveryAction {
+        match fault.severity {
+            FaultSeverity::Catastrophic => RecoveryAction::EmergencyStop,
+            FaultSeverity::Critical => {
+                match fault_category {
+                    FaultCategory::Hardware => RecoveryAction::Switchover,
+                    FaultCategory::Software => RecoveryAction::Reset,
+                    FaultCategory::Timing => RecoveryAction::Degrade,
+                    _ => RecoveryAction::Isolate,
+                }
+            }
+            FaultSeverity::Major => RecoveryAction::Reset,
+            FaultSeverity::Minor => RecoveryAction::Retry,
+            _ => RecoveryAction::None,
+        }
+    }
 }
