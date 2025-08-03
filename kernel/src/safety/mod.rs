@@ -614,4 +614,16 @@ impl FaultFilter {
         self.category = Some(category);
         self
     }
+
+    /// Filter by minimum severity
+    pub const fn min_severity(mut self, severity: FaultSeverity) -> Self {
+        self.min_severity = Some(severity);
+        self
+    }
+
+    /// Filter by resolved status
+    pub const fn resolved(mut self, resolved: bool) -> Self {
+        self.resolved = Some(resolved);
+        self
+    }
 }
