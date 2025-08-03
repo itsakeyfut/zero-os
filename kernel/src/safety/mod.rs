@@ -552,4 +552,15 @@ impl SafetyManager {
             .filter(|fault| filter.matches(fault))
             .collect()
     }
+
+    /// Resolve a fault by ID
+    pub fn resolve_fault(&mut self, fault_id: u32, recovery_action: RecoveryAction) -> KernelResult<()> {
+        if let Some(fault) = self.fault_records.iter_mut().find(|f| f.id == fault_id) {
+            fault.resolve(recovery_action);
+            debug_print!(INFO, "Fault {} resolved with action: {:?}", fault_id, recovery_action);
+            Ok(())
+        } else {
+            Err(KernelError::ProcessNotFound)
+        }
+    }
 }
