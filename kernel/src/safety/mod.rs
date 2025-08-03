@@ -544,4 +544,12 @@ impl SafetyManager {
             unresolved_faults: self.fault_records.iter().filter(|f| !f.resolved).count() as u32,
         }
     }
+
+    /// Get fault records matching criteria
+    pub fn get_fault_records(&self, filter: FaultFilter) -> Vec<&FaultRecord, MAX_FAULT_RECORDS> {
+        self.fault_records
+            .iter()
+            .filter(|fault| filter.matches(fault))
+            .collect()
+    }
 }
