@@ -327,4 +327,14 @@ impl SafetyManager {
 
         Ok(())
     }
+
+    /// Unregister a safety monitor
+    pub fn unregister_monitor(&mut self, id: u32) -> KernelResult<()> {
+        if let Some(monitor) = self.monitors.remove(&id) {
+            debug_print!(DEBUG, "Unregistered safety monitor: {}", monitor.name());
+            Ok(())
+        } else {
+            Err(KernelError::ProcessNotFound)
+        }
+    }
 }
