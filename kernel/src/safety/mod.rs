@@ -484,4 +484,20 @@ impl SafetyManager {
             self.safety_state = new_state;
         }
     }
+
+    /// Trigger emergency stop
+    pub fn trigger_emergency_stop(&mut self) {
+        debug_print!(ERROR, "EMERGENCY STOP ACTIVATED");
+
+        self.emergency_stop.store(1, Ordering::SeqCst);
+        self.safety_state = SafetyState::Failed;
+
+        // Disable all non-essential systems
+        // TODO: Implement emergency stop procedures
+
+        // Notify all safety monitors
+        for monitor in self.monitors.values_mut() {
+            monitor.set_enabled(false);
+        }
+    }
 }
