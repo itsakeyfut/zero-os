@@ -786,3 +786,11 @@ impl SafetyMonitor for StackOverflowMonitor {
         self.enabled = enabled;
     }
 }
+
+/// Timing violation monitor
+pub struct TimingViolationMonitor {
+    /// Enabled status
+    enabled: bool,
+    /// Last check timestamp
+    last_check: u64,
+}
