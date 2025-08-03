@@ -804,3 +804,35 @@ impl TimingViolationMonitor {
         }
     }
 }
+
+impl SafetyMonitor for TimingViolationMonitor {
+    fn name(&self) -> &'static str {
+        "Timing Violation Monitor"
+    }
+    
+    fn check(&mut self) -> Result<(), FaultRecord> {
+        let current_time = crate::arch::target::Architecture::current_time_us();
+        self.last_check = current_time;
+        
+        // TODO: Implement timing violation detection
+        // This would check for:
+        // - Deadline misses
+        // - Excessive jitter
+        // - Priority inversions
+        // - Long interrupt disable periods
+        
+        Ok(())
+    }
+    
+    fn priority(&self) -> u8 {
+        1 // Highest priority
+    }
+    
+    fn is_enabled(&self) -> bool {
+        self.enabled
+    }
+    
+    fn set_enabled(&mut self, enabled: bool) {
+        self.enabled = enabled;
+    }
+}
