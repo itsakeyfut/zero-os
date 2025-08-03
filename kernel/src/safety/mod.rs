@@ -660,7 +660,7 @@ impl FaultFilter {
             }
         }
 
-        if let Some(end) = self.time_send {
+        if let Some(end) = self.time_end {
             if fault.timestamp > end {
                 return false;
             }
