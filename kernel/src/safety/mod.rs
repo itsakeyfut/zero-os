@@ -863,3 +863,17 @@ pub fn safety_manager() -> Option<&'static mut SafetyManager> {
     // SAFETY: Safety manager is initialized once
     unsafe { SAFETY_MANAGER.as_mut() }
 }
+
+/// Report a fault to the safety system (convenience function)
+pub fn report_fault(
+    category: FaultCategory,
+    severity: FaultSeverity,
+    source: &'static str,
+    description: &str,
+) {
+    if let Some(manager) = safety_manager() {
+        let fault_id = manager.next_fault_id.fetch_add(1, Ordering::Relaxed);
+        let fault = FaultRecord::new(fault_id, category, severity, source, description);
+        manager.report_fault(fault);
+    }
+}
