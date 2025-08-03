@@ -411,4 +411,54 @@ impl SafetyManager {
             _ => RecoveryAction::None,
         }
     }
+
+    /// Execute recovery action
+    fn execute_recovery_action(&mut self, action: RecoveryAction, fault: &FaultRecord) {
+        debug_print!(INFO, "Executing recovery action: {:?} for fault: {}", action, fault.description);
+
+        match action {
+            RecoveryAction::None => {
+                // No action required
+            }
+            RecoveryAction::Retry => {
+                // Log retry attempt
+                debug_print!(DEBUG, "Retrying operation for fault: {}", fault.id);
+            }
+            RecoveryAction::Reset => {
+                // Reset the faulty component
+                debug_print!(WARN, "Resetting component due to fault: {}", fault.id);
+                // TODO: Implement component reset
+            }
+            RecoveryAction::Switchover => {
+                // Switch to redundant component
+                debug_print!(WARN, "Switching to backup component due to fault: {}", fault.id);
+                // TODO: Implement redundancy switchover
+            }
+            RecoveryAction::Degrade => {
+                // Degrade system functionality
+                debug_print!(WARN, "Degrading system functionality due to fault: {}", fault.id);
+                self.safety_state = SafetyState::Degraded;
+            }
+            RecoveryAction::Isolate => {
+                // Isolate faulty component
+                debug_print!(WARN, "Isolating faulty component due to fault: {}", fault.id);
+                // TODO: Implement component isolation
+            }
+            RecoveryAction::EmergencyStop => {
+                // Trigger emergency stop
+                debug_print!(ERROR, "EMERGENCY STOP triggered by fault: {}", fault.id);
+                self.trigger_emergency_stop();
+            }
+            RecoveryAction::Restart => {
+                // System restart required
+                debug_print!(ERROR, "System restart required due to fault: {}", fault.id);
+                // TODO: Implement safe system restart
+            }
+            RecoveryAction::Manual => {
+                // Manual intervention required
+                debug_print!(ERROR, "Manual intervention required for fault: {}", fault.id);
+                // TODO: Notify operators/maintenance
+            }
+        }
+    }
 }
