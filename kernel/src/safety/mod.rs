@@ -857,3 +857,9 @@ pub fn init_safety_manager() -> KernelResult<()> {
 
     Ok(())
 }
+
+/// Get reference to global safety manager
+pub fn safety_manager() -> Option<&'static mut SafetyManager> {
+    // SAFETY: Safety manager is initialized once
+    unsafe { SAFETY_MANAGER.as_mut() }
+}
