@@ -794,3 +794,13 @@ pub struct TimingViolationMonitor {
     /// Last check timestamp
     last_check: u64,
 }
+
+impl TimingViolationMonitor {
+    /// Create new timing violation monitor
+    pub fn new() -> Self {
+        Self {
+            enabled: true,
+            last_check: 0,
+        }
+    }
+}
