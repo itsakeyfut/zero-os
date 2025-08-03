@@ -877,3 +877,10 @@ pub fn report_fault(
         manager.report_fault(fault);
     }
 }
+
+/// Trigger emergency stop (convenience function)
+pub fn emergency_stop() {
+    if let Some(manager) = safety_manager() {
+        manager.trigger_emergency_stop();
+    }
+}
