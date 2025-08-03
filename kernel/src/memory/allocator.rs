@@ -139,4 +139,9 @@ impl Zone {
         let buddy_addr = addr_val ^ block_size;
         PhysicalAddress::new(buddy_addr)
     }
+
+    /// Check if two blocks are buddies
+    fn are_buddies(&self, addr1: PhysicalAddress, addr2: PhysicalAddress, order: u8) -> bool {
+        self.buddy_address(addr1, order) == addr2
+    }
 }
