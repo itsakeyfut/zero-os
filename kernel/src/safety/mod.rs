@@ -608,4 +608,10 @@ impl FaultFilter {
             time_end: None,
         }
     }
+
+    /// Filter by category
+    pub const fn category(mut self, category: FaultCategory) -> Self {
+        self.category = Some(category);
+        self
+    }
 }
