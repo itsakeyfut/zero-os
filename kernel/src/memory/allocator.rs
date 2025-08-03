@@ -90,3 +90,20 @@ impl FreeBlock {
         PhysicalAddress::new(self as *const Self as usize)
     }
 }
+
+/// Memory zone descriptor
+#[derive(Debug, Clone)]
+struct Zone {
+    /// Zone type
+    zone_type: MemoryZone,
+    /// Start address of the zone
+    start_addr: PhysicalAddress,
+    /// Size of the zone in bytes
+    free_lists: [Option<NonNull<FreeBlock>>; NUM_ORDERS],
+    /// Total pages in this zone
+    total_pages: usize,
+    /// Free pages in this zone
+    free_pages: usize,
+    /// Allocated pages in this zone
+    allocated_pages: usize,
+}
