@@ -626,4 +626,11 @@ impl FaultFilter {
         self.resolved = Some(resolved);
         self
     }
+
+    /// Filter by time range
+    pub const fn time_range(mut self, start: u64, end: u64) -> Self {
+        self.time_start = Some(start);
+        self.time_end = Some(end);
+        self
+    }
 }
