@@ -532,4 +532,16 @@ impl SafetyManager {
     pub fn safety_state(&self) -> SafetyState {
         self.safety_state
     }
+
+    /// Get fault statistics
+    pub fn get_statistics(&self) -> SafetyStatistics {
+        SafetyStatistics {
+            total_faults: self.total_faults.load(Ordering::Relaxed),
+            critical_faults: self.critical_faults.load(Ordering::Relaxed),
+            active_monitors: self.monitors.len() as u32,
+            safety_state: self.safety_state,
+            emergency_stop_active: self.is_emergency_stop_active(),
+            unresolved_faults: self.fault_records.iter().filter(|f| !f.resolved).count() as u32,
+        }
+    }
 }
