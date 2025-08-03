@@ -893,3 +893,10 @@ pub fn is_system_safe() -> bool {
         false
     }
 }
+
+/// Run all safety monitors (convenience function)
+pub fn run_safety_checks() {
+    if let Some(manager) = safety_manager() {
+        manager.run_monitors();
+    }
+}
