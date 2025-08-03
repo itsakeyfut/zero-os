@@ -900,3 +900,53 @@ pub fn run_safety_checks() {
         manager.run_monitors();
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    
+    #[test]
+    fn test_fault_record_creation() {
+        let fault = FaultRecord::new(
+            1,
+            FaultCategory::Hardware,
+            FaultSeverity::Critical,
+            "test_component",
+            "Test fault description",
+        );
+        
+        assert_eq!(fault.id, 1);
+        assert_eq!(fault.category, FaultCategory::Hardware);
+        assert_eq!(fault.severity, FaultSeverity::Critical);
+        assert_eq!(fault.source, "test_component");
+        assert!(!fault.resolved);
+        assert!(fault.is_critical());
+    }
+    
+    #[test]
+    fn test_fault_filter() {
+        let filter = FaultFilter::new()
+            .category(FaultCategory::Software)
+            .min_severity(FaultSeverity::Major);
+        
+        let fault1 = FaultRecord::new(
+            1, FaultCategory::Software, FaultSeverity::Critical, "test", "test"
+        );
+        let fault2 = FaultRecord::new(
+            2, FaultCategory::Hardware, FaultSeverity::Critical, "test", "test"
+        );
+        let fault3 = FaultRecord::new(
+            3, FaultCategory::Software, FaultSeverity::Minor, "test", "test"
+        );
+        
+        assert!(filter.matches(&fault1));
+        assert!(!filter.matches(&fault2)); // Wrong category
+        assert!(!filter.matches(&fault3)); // Too low severity
+    }
+    
+    #[test]
+    fn test_safety_integrity_levels() {
+        assert!(SafetyIntegrityLevel::Sil4 > SafetyIntegrityLevel::Sil1);
+        assert!(AutomotiveSafetyLevel::AsilD > AutomotiveSafetyLevel::AsilA);
+    }
+}
