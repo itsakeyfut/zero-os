@@ -104,7 +104,7 @@ impl KernelError {
     pub fn to_syscall_error(self) -> u32 {
         self as u32
     }
-
+    
     /// Check if error is recoverable
     pub fn is_recoverable(self) -> bool {
         match self {
@@ -115,14 +115,14 @@ impl KernelError {
             _ => true,
         }
     }
-
+    
     /// Get error severity level
     pub fn severity(self) -> ErrorSeverity {
         match self {
-            KernelError::OutOfMemory |
-            KernelError::HardwareError |
+            KernelError::OutOfMemory | 
+            KernelError::HardwareError | 
             KernelError::SafetyViolation => ErrorSeverity::Critical,
-
+            
             KernelError::ProcessNotFound |
             KernelError::PermissionDenied |
             KernelError::InvalidState => ErrorSeverity::Major,
@@ -137,7 +137,7 @@ impl KernelError {
 }
 
 /// Error severity levels for kernel errors
-#[derive(Debug, Clonem, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum ErrorSeverity {
     /// Critical error - system may be unstable
     Critical = 0,
@@ -216,7 +216,7 @@ pub struct KernelStats {
 }
 
 impl KernelStats {
-    /// Create a new kernel statistics
+    /// Create new kernel statistics
     pub const fn new() -> Self {
         Self {
             total_syscalls: 0,
@@ -232,7 +232,7 @@ impl KernelStats {
             safety_violations: 0,
         }
     }
-
+    
     /// Update memory usage statistics
     pub fn update_memory_usage(&mut self, used_bytes: usize) {
         self.memory_used_bytes = used_bytes;
@@ -240,41 +240,41 @@ impl KernelStats {
             self.memory_peak_bytes = used_bytes;
         }
     }
-
+    
     /// Record a system call
     pub fn record_syscall(&mut self) {
         self.total_syscalls = self.total_syscalls.saturating_add(1);
     }
-
+    
     /// Record an interrupt
     pub fn record_interrupt(&mut self) {
         self.total_interrupts = self.total_interrupts.saturating_add(1);
     }
-
+    
     /// Record a context switch
     pub fn record_context_switch(&mut self) {
         self.total_context_switches = self.total_context_switches.saturating_add(1);
     }
-
+    
     /// Record a page fault
     pub fn record_page_fault(&mut self) {
         self.total_page_faults = self.total_page_faults.saturating_add(1);
     }
-
+    
     /// Record a kernel error
     pub fn record_error(&mut self, error: KernelError) {
         self.kernel_errors = self.kernel_errors.saturating_add(1);
-
+        
         if error == KernelError::SafetyViolation {
             self.safety_violations = self.safety_violations.saturating_add(1);
         }
     }
-
+    
     /// Update CPU utilization
     pub fn update_cpu_utilization(&mut self, utilization: u8) {
         self.cpu_utilization = utilization.min(100);
     }
-
+    
     /// Update uptime
     pub fn update_uptime(&mut self, uptime_us: u64) {
         self.uptime_us = uptime_us;
@@ -289,7 +289,7 @@ static mut KERNEL_STATS: KernelStats = KernelStats::new();
 /// # Safety
 /// 
 /// This function should only be called from kernel code with appropriate
-/// synchrinization.
+/// synchronization.
 pub unsafe fn kernel_stats() -> &'static mut KernelStats {
     // SAFETY: Caller guarantees proper synchronization
     unsafe { &mut KERNEL_STATS }
@@ -307,26 +307,26 @@ pub mod version {
     pub const PRE_RELEASE: Option<&str> = Some("alpha");
     /// Build metadata
     pub const BUILD_METADATA: Option<&str> = Some(env!("GIT_HASH"));
-
-    /// Get a version string
+    
+    /// Get version string
     pub fn version_string() -> &'static str {
         env!("CARGO_PKG_VERSION")
     }
-
+    
     /// Get full version with metadata
     pub fn full_version() -> alloc::string::String {
         let mut version = alloc::format!("{}.{}.{}", MAJOR, MINOR, PATCH);
-
+        
         if let Some(pre) = PRE_RELEASE {
             version.push('-');
             version.push_str(pre);
         }
-
+        
         if let Some(build) = BUILD_METADATA {
             version.push('+');
             version.push_str(build);
         }
-
+        
         version
     }
 }
@@ -334,7 +334,7 @@ pub mod version {
 /// Kernel assertions for safety-critical code
 pub mod assertions {
     use super::KernelError;
-
+    
     /// Assert condition with kernel error
     #[macro_export]
     macro_rules! kernel_assert {
@@ -349,17 +349,17 @@ pub mod assertions {
             }
         };
     }
-
+    
     /// Assert condition and return error if false
     #[macro_export]
     macro_rules! kernel_ensure {
-        ($cond:expr. $error:expr) => {
+        ($cond:expr, $error:expr) => {
             if !($cond) {
                 return Err($error);
             }
         };
     }
-
+    
     /// Bounds checking for array access
     pub fn check_bounds(index: usize, len: usize) -> Result<(), KernelError> {
         if index >= len {
@@ -368,20 +368,20 @@ pub mod assertions {
             Ok(())
         }
     }
-
+    
     /// Alignment checking
     pub fn check_alignment(addr: usize, align: usize) -> Result<(), KernelError> {
         if align == 0 || !align.is_power_of_two() {
             return Err(KernelError::InvalidParameter);
         }
-
-        if addr & align != 0 {
+        
+        if addr % align != 0 {
             Err(KernelError::InvalidParameter)
         } else {
             Ok(())
         }
     }
-
+    
     /// Null pointer checking
     pub fn check_null_ptr<T>(ptr: *const T) -> Result<(), KernelError> {
         if ptr.is_null() {
@@ -398,32 +398,32 @@ pub mod utils {
     pub const fn align_up(value: usize, alignment: usize) -> usize {
         (value + alignment - 1) & !(alignment - 1)
     }
-
+    
     /// Align value down to the previous multiple of alignment
     pub const fn align_down(value: usize, alignment: usize) -> usize {
         value & !(alignment - 1)
     }
-
+    
     /// Check if value is aligned to alignment
     pub const fn is_aligned(value: usize, alignment: usize) -> bool {
         value & (alignment - 1) == 0
     }
-
+    
     /// Convert bytes to kilobytes
     pub const fn bytes_to_kb(bytes: usize) -> usize {
         bytes / 1024
     }
-
+    
     /// Convert bytes to megabytes
     pub const fn bytes_to_mb(bytes: usize) -> usize {
         bytes / (1024 * 1024)
     }
-
+    
     /// Convert microseconds to milliseconds
     pub const fn us_to_ms(us: u64) -> u64 {
         us / 1000
     }
-
+    
     /// Convert microseconds to seconds
     pub const fn us_to_s(us: u64) -> u64 {
         us / 1_000_000
@@ -454,8 +454,8 @@ compile_error!("Unsupported target architecture. Zero OS supports ARM only.");
 // Ensure no_std environment
 #[cfg(feature = "std")]
 compile_error!("Zero OS kernel must be built in no_std environment");
-
 /// Test module for kernel library
+
 #[cfg(test)]
 mod tests {
     use super::*;
