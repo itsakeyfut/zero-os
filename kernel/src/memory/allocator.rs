@@ -99,6 +99,8 @@ struct Zone {
     /// Start address of the zone
     start_addr: PhysicalAddress,
     /// Size of the zone in bytes
+    size: usize,
+    /// Free lists for each order
     free_lists: [Option<NonNull<FreeBlock>>; NUM_ORDERS],
     /// Total pages in this zone
     total_pages: usize,
@@ -106,4 +108,19 @@ struct Zone {
     free_pages: usize,
     /// Allocated pages in this zone
     allocated_pages: usize,
+}
+
+impl Zone {
+    /// Create a new memory zone
+    fn new(zone_type: MemoryZone, start_addr: PhysicalAddress, size: usize) -> Self {
+        Self {
+            zone_type,
+            start_addr,
+            size,
+            free_lists: [None; NUM_ORDERS],
+            total_pages: size / PAGE_SIZE,
+            free_pages: size / PAGE_SIZE,
+            allocated_pages: 0,
+        }
+    }
 }
