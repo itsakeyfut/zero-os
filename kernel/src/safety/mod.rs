@@ -839,3 +839,21 @@ impl SafetyMonitor for TimingViolationMonitor {
 
 /// Global safety manager instance
 static mut SAFETY_MANAGER: Option<SafetyManager> = None;
+
+/// Initialize global safety manager
+pub fn init_safety_manager() -> KernelResult<()> {
+    // SAFETY: This is called once during system initialization
+    unsafe {
+        if SAFETY_MANAGER.is_some() {
+            return Err(KernelError::InvalidState);
+        }
+
+        SAFETY_MANAGER = Some(SafetyManager::new());
+
+        if let Some(manager) = SAFETY_MANAGER.as_mut() {
+            manager.init()?;
+        }
+    }
+
+    Ok(())
+}
