@@ -292,4 +292,22 @@ impl SafetyManager {
 
         Ok(())
     }
+
+    /// Register a safety monitor
+    pub fn register_monitor(
+        &mut self,
+        id: u32,
+        monitor: Box<dyn SafetyMonitor>,
+    ) -> KernelResult<()> {
+        if self.monitors.contains_key(&id) {
+            return Err(KernelError::InvalidParameter);
+        }
+
+        debug_print!(DEBUG, "Registering safety monitor: {} (ID: {})", monitor.name(), id);
+
+        self.monitors.insert(id, monitor)
+            .map_err(|_| KernelError::ResourceLimitExceeded)?;
+
+        Ok(())
+    }
 }
