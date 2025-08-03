@@ -68,3 +68,15 @@ struct FreeBlock {
     /// Zone this block belongs to
     zone: MemoryZone,
 }
+
+impl FreeBlock {
+    /// Create a new free blcok
+    fn new(order: u8, zone: MemoryZone) -> Self {
+        Self {
+            next: None,
+            prev: None,
+            order,
+            zone,
+        }
+    }
+}
