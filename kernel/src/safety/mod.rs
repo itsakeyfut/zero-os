@@ -260,3 +260,19 @@ pub trait SafetyMonitor {
     /// Enable/disable monitor
     fn set_enabled(&mut self, enabled: bool);
 }
+
+impl SafetyManager {
+    /// Create a new safety manager
+    pub const fn new() -> Self {
+        Self {
+            fault_records: Vec::new(),
+            monitors: FnvIndexMap::new(),
+            next_fault_id: AtomicU32::new(1),
+            total_faults: AtomicU64::new(0),
+            critical_faults: AtomicU32::new(0),
+            safety_state: SafetyState::Normal,
+            emergency_stop: AtomicU32::new(0),
+            initialized: false,
+        }
+    }
+}
