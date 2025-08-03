@@ -760,3 +760,29 @@ impl StackOverflowMonitor {
         }
     }
 }
+
+impl SafetyMonitor for StackOverflowMonitor {
+    fn name(&self) -> &'static str {
+        "Stack Overflow Monitor"
+    }
+
+    fn check(&mut self) -> Result<(), FaultRecord> {
+        // TODO: Implement actual stack usage checking
+        // This would require integration with the memory manager
+        // and process manager to check stack usage for all processes
+        
+        Ok(())
+    }
+
+    fn priority(&self) -> u8 {
+        5 // High priority
+    }
+
+    fn is_enabled(&self) -> bool {
+        self.enabled
+    }
+
+    fn set_enabled(&mut self, enabled: bool) {
+        self.enabled = enabled;
+    }
+}
