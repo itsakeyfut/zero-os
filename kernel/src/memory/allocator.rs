@@ -148,7 +148,7 @@ impl Zone {
 
 /// Reserved memory region
 #[derive(Debug, Clone, Copy)]
-pub struct ReservedAddress {
+pub struct ReservedRegion {
     /// Start address
     pub start: PhysicalAddress,
     /// Size in bytes
