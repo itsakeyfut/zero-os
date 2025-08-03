@@ -227,7 +227,6 @@ pub struct SafetyManager {
     initialized: bool,
 }
 
-/// System safety state
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u8)]
 pub enum SafetyState {
@@ -335,6 +334,30 @@ impl SafetyManager {
             Ok(())
         } else {
             Err(KernelError::ProcessNotFound)
+        }
+    }
+
+    /// Run all safety monitors
+    pub fn run_monitors(&mut self) {
+        if !self.initialized {
+            return;
+        }
+
+        // Sort monitors by priority
+        let mut monitor_ids: Vec<u32, MAX_SAFETY_MONITORS> = self.monitors.keys().copied().collect();
+        monitor_ids.sort_by_key(|&id| {
+            self.monitors.get(&id).map(|m| m.priority()).unwrap_or(255)
+        });
+
+        // Run monitors in priority order
+        for monitor_id in monitor_ids {
+            if let Some(monitor) = self.monitors.get_mut(&monitor_id) {
+                if monitor.is_enabled() {
+                    if let Err(fault) = monitor.check() {
+                        self.report_fault(fault);
+                    }
+                }
+            }
         }
     }
 }
