@@ -360,4 +360,37 @@ impl SafetyManager {
             }
         }
     }
+
+    /// Report a fault to the safety system
+    pub fn report_fault(&mut self, fault: FaultRecord) {
+        debug_print!(WARN, "Fault reported: {} - {}", fault.source, fault.description);
+
+        // Update statistics
+        self.total_faults.fetch_add(1, Ordering::Relaxed);
+
+        if fault.is_critical() {
+            self.critical_faults.fetch_add(1, Ordering::Relaxed);
+            debug_print!(ERROR, "Critical fault detected: {}", fault.description);
+        }
+
+        // Determine required recovery action
+        let recovery_action = self.determine_recovery_action(&fault);
+
+        // Execute recovery action
+        self.execute_recovery_action(recovery_action, &fault);
+
+        // Store fault record
+        if self.fault_records.len() < MAX_FAULT_RECORDS {
+            self.fault_records.push(fault).ok();
+        } else {
+            // Remove oldest non-critical fault to make space
+            if let Some(pos) = self.fault_records.iter().position(|f| !f.is_critical()) {
+                self.fault_records.remove(pos);
+                self.fault_records.push(fault).ok();
+            }
+        }
+
+        // Update safety state
+        self.update_safety_state();
+    }
 }
