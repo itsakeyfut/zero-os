@@ -527,4 +527,9 @@ impl SafetyManager {
         debug_print!(INFO, "Emergency stop cleared - system returning to normal operation");
         Ok(())
     }
+
+    /// Get current safety state
+    pub fn safety_state(&self) -> SafetyState {
+        self.safety_state
+    }
 }
