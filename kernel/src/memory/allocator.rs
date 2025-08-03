@@ -131,4 +131,12 @@ impl Zone {
         let addr_val = addr.as_usize();
         addr_val >= start && addr_val < end
     }
+
+    /// Get the buddy address for a given address and order
+    fn buddy_address(&self, addr: PhysicalAddress, order: u8) -> PhysicalAddress {
+        let block_size = PAGE_SIZE << order;
+        let addr_val = addr.as_usize();
+        let buddy_addr = addr_val ^ block_size;
+        PhysicalAddress::new(buddy_addr)
+    }
 }
