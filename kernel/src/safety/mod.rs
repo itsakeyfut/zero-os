@@ -742,3 +742,11 @@ impl SafetyMonitor for MemoryUsageMonitor {
         self.enabled = enabled;
     }
 }
+
+/// Stack overflow monitor
+pub struct StackOverflowMonitor {
+    /// Stack usage threshold (percentage)
+    threshold: u8,
+    /// Enabled status
+    enabled: bool,
+}
