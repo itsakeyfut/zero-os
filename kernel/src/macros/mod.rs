@@ -1,5 +1,5 @@
 //! Zero OS Kernel Macros
-//! 
+//!
 //! This module provides various macros for kernel development including
 //! debug output, assertions, logging, and safety checks. All macros are
 //! designed to be zero-cost in release builds when not needed.
@@ -32,6 +32,7 @@ pub const DEBUG_LEVEL: DebugLevel = DebugLevel::Debug;
 pub const DEBUG_LEVEL: DebugLevel = DebugLevel::Warning;
 
 /// Enhanced debug print macro with levels and timestamps
+#[macro_export]
 macro_rules! debug_print {
     // Error level (always printed)
     (ERROR, $($arg:tt)*) => {
@@ -65,7 +66,7 @@ macro_rules! debug_print {
 }
 
 /// Implementation of debug print with level checking
-pub fn debug_print_impl(level: DebugLevel, arg: core::fmt::Arguments) {
+pub fn debug_print_impl(level: DebugLevel, args: core::fmt::Arguments) {
     // Only print if the message level is at or above the current debug level
     if level <= DEBUG_LEVEL {
         print_with_metadata(level, args);
@@ -78,27 +79,27 @@ fn print_with_metadata(level: DebugLevel, args: core::fmt::Arguments) {
     {
         // Get current time for timestamp
         let timestamp = crate::arch::target::Architecture::current_time_us();
-
+        
         // Get level string
         let level_str = match level {
             DebugLevel::Error => "ERROR",
-            DebugLevel::Warning => "WARNING",
-            DebugLevel::Info => "INFO",
+            DebugLevel::Warning => "WARN ",
+            DebugLevel::Info => "INFO ",
             DebugLevel::Debug => "DEBUG",
             DebugLevel::Trace => "TRACE",
         };
-
+        
         // Try to get debug writer
         if let Ok(mut debug_writer) = crate::arch::DebugWriter::new() {
             // Print with timestamp and level
-            let _ = write!(debug_writer, "[{:>10}.{:03}] [{}] ",
-                        timestamp / 1000,
-                        timestamp % 1000,
-                        level_str);
+            let _ = write!(debug_writer, "[{:>10}.{:03}] [{}] ", 
+                         timestamp / 1000, 
+                         timestamp % 1000,
+                         level_str);
             let _ = writeln!(debug_writer, "{}", args);
         }
     }
-
+    
     #[cfg(not(debug_assertions))]
     {
         // In release builds, only show errors and warnings
@@ -154,14 +155,14 @@ macro_rules! kernel_ensure {
     ($cond:expr, $error:expr) => {
         if !($cond) {
             $crate::debug_print!(ERROR, "Ensure failed: {} at {}:{}", 
-                                stringify!($cond), file!(), line!());
+                               stringify!($cond), file!(), line!());
             return Err($error);
         }
     };
     ($cond:expr, $error:expr, $($arg:tt)*) => {
         if !($cond) {
             $crate::debug_print!(ERROR, "Ensure failed: {}: {} at {}:{}", 
-                                stringify!($cond), format_args!($($arg)*), file!(), line!());
+                               stringify!($cond), format_args!($($arg)*), file!(), line!());
             return Err($error);
         }
     };
@@ -187,13 +188,13 @@ macro_rules! critical_section {
     ($body:block) => {{
         let was_enabled = $crate::arch::target::Architecture::interrupts_enabled();
         $crate::arch::target::Architecture::disable_interrupts();
-
+        
         let result = $body;
-
+        
         if was_enabled {
             $crate::arch::target::Architecture::enable_interrupts();
         }
-
+        
         result
     }};
 }
@@ -205,7 +206,7 @@ macro_rules! time_block {
         let start_time = $crate::arch::target::Architecture::current_time_us();
         let result = $body;
         let end_time = $crate::arch::target::Architecture::current_time_us();
-
+        
         $crate::debug_print!(DEBUG, "{} took {} µs", $name, end_time - start_time);
         result
     }};
@@ -314,10 +315,10 @@ macro_rules! debug_only {
 /// Hardware register access macros
 #[macro_export]
 macro_rules! read_reg {
-    ($addr:expr) => {
+    ($addr:expr) => {{
         // SAFETY: Caller must ensure address is valid for register access
         unsafe { core::ptr::read_volatile($addr as *const u32) }
-    };
+    }};
 }
 
 #[macro_export]
@@ -406,22 +407,22 @@ pub mod build_info {
     pub const fn version() -> &'static str {
         env!("CARGO_PKG_VERSION")
     }
-
+    
     /// Get build timestamp
     pub const fn build_time() -> &'static str {
         env!("BUILD_TIME")
     }
-
+    
     /// Get git commit hash
     pub const fn git_hash() -> &'static str {
         env!("GIT_HASH")
     }
-
+    
     /// Get target triple
     pub const fn target() -> &'static str {
         env!("TARGET")
     }
-
+    
     /// Check if this is a debug build
     pub const fn is_debug() -> bool {
         cfg!(debug_assertions)
