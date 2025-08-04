@@ -176,3 +176,24 @@ pub struct PhysicalAllocator {
     /// Initialization status
     initialized: bool,
 }
+
+/// Allocation statistics
+#[derive(Debug, Default, Clone, Copy)]
+pub struct AllocationStats {
+    /// Total allocations
+    pub total_allocations: u64,
+    /// Total deallocations
+    pub total_deallocations: u64,
+    /// Current active allocations
+    pub active_allocations: u64,
+    /// Failed allocations
+    pub failed_allocations: u64,
+    /// Total bytes allocated
+    pub total_bytes_allocated: u64,
+    /// Total bytes deallocated
+    pub total_bytes_deallocated: u64,
+    /// Allocations per order
+    pub allocations_per_order: [u64; NUM_ORDERS],
+    /// Fragmentation ratio (0-100)
+    pub fragmentation_ratio: u8,
+}
