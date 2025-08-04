@@ -197,3 +197,20 @@ pub struct AllocationStats {
     /// Fragmentation ratio (0-100)
     pub fragmentation_ratio: u8,
 }
+
+/// Memory usage information
+#[derive(Debug, Clone)]
+pub struct MemoryUsage {
+    /// Total system memory
+    pub total_memory: usize,
+    /// Available memory (excluding reserved)
+    pub available_memory: usize,
+    /// Currently allocated memory
+    pub allocated_memory: usize,
+    /// Free memory
+    pub free_memory: usize,
+    /// Peak allocated memory
+    pub peak_allocated: usize,
+    /// Per-zone usage
+    pub zones: Vec<ZoneUsage, MAX_ZONES>,
+}
