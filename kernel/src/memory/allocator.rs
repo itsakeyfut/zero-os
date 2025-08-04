@@ -198,6 +198,31 @@ pub struct AllocationStats {
     pub fragmentation_ratio: u8,
 }
 
+impl PhysicalAllocator {
+    /// Create a new physical memory allocator
+    pub const fn new() -> Self {
+        Self {
+            zones: Vec::new(),
+            reserved_regions: Vec::new(),
+            total_memory: 0,
+            available_memory: 0,
+            allocated_memory: 0,
+            peak_allocated: 0,
+            stats: AllocationStats {
+                total_allocations: 0,
+                total_deallocations: 0,
+                active_allocations: 0,
+                failed_allocations: 0,
+                total_bytes_allocated: 0,
+                total_bytes_deallocated: 0,
+                allocations_per_order: [0; NUM_ORDERS],
+                fragmentation_ratio: 0,
+            },
+            initialized: false,
+        }
+    }
+}
+
 /// Memory usage information
 #[derive(Debug, Clone)]
 pub struct MemoryUsage {
