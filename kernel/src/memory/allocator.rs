@@ -214,3 +214,16 @@ pub struct MemoryUsage {
     /// Per-zone usage
     pub zones: Vec<ZoneUsage, MAX_ZONES>,
 }
+
+/// Zone-specific memory usage
+#[derive(Debug, Clone, Copy)]
+pub struct ZoneUsage {
+    /// Zone type
+    pub zone_type: MemoryZone,
+    /// Total pages in zone
+    pub total_pages: usize,
+    /// Free pages in zone
+    pub free_pages: usize,
+    /// Allocated pages in zone
+    pub allocated_pages: usize,
+}
