@@ -156,3 +156,23 @@ pub struct ReservedRegion {
     /// Description of what this region is used for
     pub description: &'static str,
 }
+
+/// Physical memory allocator using buddy system
+pub struct PhysicalAllocator {
+    /// Memory zones
+    zones: Vec<Zone, MAX_ZONES>,
+    /// Reserved memory regions
+    reserved_regions: Vec<ReservedRegion, MAX_RESERVED_REGIONS>,
+    /// Total system memory
+    total_memory: usize,
+    /// Total available memory (excluding reserved)
+    available_memory: usize,
+    /// Total allocated memory
+    allocated_memory: usize,
+    /// Peak allocated memory
+    peak_allocated: usize,
+    /// Allocation statistics
+    stats: AllocationStats,
+    /// Initialization status
+    initialized: bool,
+}
