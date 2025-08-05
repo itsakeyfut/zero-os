@@ -300,6 +300,15 @@ impl PhysicalAllocator {
 
         Ok(())
     }
+
+    /// Calculate memory statistics
+    fn calculate_memory_stats(&mut self) {
+        self.total_memory = self.zones.iter().map(|z| z.size).sum();
+
+        // Calculate available memory (total minus reserved)
+        let reserved_memory: usize = self.reserved_regions.iter().map(|r| r.size).sum();
+        self.available_memory = self.total_memory.saturating_sub(reserved_memory);
+    }
 }
 
 /// Memory usage information
