@@ -62,3 +62,22 @@ pub mod pte_flags {
     /// Page is global (not flushed on context switch)
     pub const GLOBAL: u32 = 1 << 8;
 }
+
+/// Virtual Memory Area (VMA) descriptor
+#[derive(Debug, Clone)]
+pub struct VirtualMemoryArea {
+    /// Start virtual address
+    pub start: VirtualAddress,
+    /// End virtual address (exclusive)
+    pub end: VirtualAddress,
+    /// Memory type
+    pub memory_type: MemoryType,
+    /// Protection flags
+    pub flags: MemoryFlags,
+    /// Physical address for direct mappings (None for anonymous memory)
+    pub physical_base: Option<PhysicalAddress>,
+    /// Mapping is shared between processes
+    pub shared: bool,
+    /// VMA name/description
+    pub name: heapless::String<32>,
+}
