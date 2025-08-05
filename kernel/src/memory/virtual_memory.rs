@@ -107,3 +107,20 @@ pub struct AddressSpace {
     /// Address space statistics
     pub stats: AddressSpaceStats,
 }
+
+/// Address space statistics
+#[derive(Debug, Default, Clone, Copy)]
+pub struct AddressSpaceStats {
+    /// Total virtual memory size
+    pub total_virtual: usize,
+    /// Total mapped memory
+    pub mapped_memory: usize,
+    /// Number of page tables
+    pub page_tables: usize,
+    /// Number of VMAs
+    pub vma_count: usize,
+    /// Page faults handled
+    pub page_faults: u64,
+    /// TLB flushes
+    pub tlb_flushes: u64,
+}
