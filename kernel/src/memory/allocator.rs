@@ -290,6 +290,15 @@ impl PhysicalAllocator {
                 return Err(MemoryError::AlreadyAllocated);
             }
         }
+
+        let zone = Zone::new(zone_type, aligned_start, aligned_size);
+        self.zone.push(zone)
+            .map_err(|_| MemoryError::InvalidSize)?;
+
+        debug_print!(DEBUG, "Added {:?} zone: {:?} - {} bytes",
+                    zone_type, aligned_start, aligned_size);
+
+        Ok(())
     }
 }
 
