@@ -86,3 +86,10 @@ pub struct VirtualMemoryArea {
 #[derive(Debug, Clone, Copy)]
 #[repr(transparent)]
 pub struct PageTableEntry(u32);
+
+/// Page table for address translation
+#[repr(C, align(4096))]
+pub struct PageTable {
+    /// Page table entries (1024 entries for ARM)
+    entries: [PageTableEntry; 1024],
+}
