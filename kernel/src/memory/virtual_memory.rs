@@ -40,3 +40,25 @@ pub const MAX_VMAS: usize = 128;
 
 /// Maximum number of address spaces
 pub const MAX_ADDRESS_SPACES: usize = 64;
+
+/// Page table entry flags (ARM-specific)
+pub mod pte_flags {
+    /// Page is present
+    pub const PRESENT: u32 = 1 << 0;
+    /// Page is writable
+    pub const WRITABLE: u32 = 1 << 1;
+    /// Page is accessible by user mode
+    pub const USER: u32 = 1 << 2;
+    /// Page write-through caching
+    pub const WRITE_THROUGH: u32 = 1 << 3;
+    /// Page cache disabled
+    pub const CACHE_DISABLE: u32 = 1 << 4;
+    /// Page has been accessed
+    pub const ACCESSED: u32 = 1 << 5;
+    /// Page has been written to
+    pub const DIRTY: u32 = 1 << 6;
+    /// Page is executable
+    pub const EXECUTABLE: u32 = 1 << 7;
+    /// Page is global (not flushed on context switch)
+    pub const GLOBAL: u32 = 1 << 8;
+}
