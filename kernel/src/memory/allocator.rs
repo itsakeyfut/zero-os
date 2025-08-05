@@ -791,3 +791,34 @@ impl PhysicalAllocator {
         self.allocate_pages(order, zone_type)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    
+    #[test]
+    fn test_buddy_calculation() {
+        let zone = Zone::new(
+            MemoryZone::Normal,
+            PhysicalAddress::new(0x100000),
+            1024 * 1024,
+        );
+        
+        let addr1 = PhysicalAddress::new(0x100000);
+        let buddy1 = zone.buddy_address(addr1, 0);
+        assert_eq!(buddy1.as_usize(), 0x100000 + PAGE_SIZE);
+        
+        let addr2 = PhysicalAddress::new(0x100000);
+        let buddy2 = zone.buddy_address(addr2, 1);
+        assert_eq!(buddy2.as_usize(), 0x100000 + (PAGE_SIZE * 2));
+    }
+    
+    #[test]
+    fn test_order_calculation() {
+        let allocator = PhysicalAllocator::new();
+        
+        assert_eq!(allocator.find_max_order(PhysicalAddress::new(0x0), PAGE_SIZE), 0);
+        assert_eq!(allocator.find_max_order(PhysicalAddress::new(0x0), PAGE_SIZE * 2), 1);
+        assert_eq!(allocator.find_max_order(PhysicalAddress::new(0x0), PAGE_SIZE * 4), 2);
+    }
+}
