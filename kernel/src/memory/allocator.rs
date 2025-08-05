@@ -344,6 +344,20 @@ impl PhysicalAllocator {
 
         Ok(())
     }
+
+    /// Check if an address is in a reserved region
+    fn is_reserved(&self, addr: PhysicalAddress) -> bool {
+        for region in &self.reserved_regions {
+            let region_start = region.start.as_usize();
+            let region_end = region_start + region.size;
+            let addr_val = addr.as_usize();
+
+            if addr_val >= region_start && addr_val < region_end {
+                return true;
+            }
+        }
+        false
+    }
 }
 
 /// Memory usage information
