@@ -25,7 +25,7 @@ use core::ptr::NonNull;
 use core::mem;
 use heapless::{Vec, FnvIndexMap};
 use crate::memory::{PhysicalAddress, MemoryResult, MemoryError, PAGE_SIZE, PAGE_SHIFT};
-use crate::{KernelResult, KernelError};
+use crate::{debug_print, KernelError, KernelResult};
 
 /// Maximum allocation order (2^MAX_ORDER pages)
 pub const MAX_ORDER: usize = 10; // Up to 4MB allocations
@@ -220,6 +220,48 @@ impl PhysicalAllocator {
             },
             initialized: false,
         }
+    }
+
+    /// Initialize the physical memory allocator
+    pub fn init(
+        &mut self,
+        memory_map: &[(PhysicalAddress, usize, MemoryZone)],
+        reserved: &[ReservedRegion],
+    ) -> MemoryResult<()> {
+        if self.initialized {
+            return Err(MemoryError::AlreadyAllocated);
+        }
+
+        debug_print!(INFO, "Initializing physical memory allocator");
+
+        // Add reserved regions
+        for &region in reserved {
+            self.reserved_regions.push(region)
+                .map_err(|_| MemoryError::InvalidSize)?;
+            debug_print!(DEBUG, "Reserved region: {:?} - {} bytes - {}", 
+                        region.start, region.size, region.description);
+        }
+
+        // Initialize memory zones
+        for &(start_addr, size, zone_type) in memory_map {
+            self.add_zone(zone_type, start_addr, size)?;
+        }
+
+        // Calculate total and available memory
+        self.calculate_memory_stats();
+
+        // Initialize free lists for each zone
+        self.initialize_free_lists()?;
+
+        self.initialized = true;
+
+        debug_print!(INFO, "Physical allocator initialized:");
+        debug_print!(INFO, "  Total memory: {} MB", self.total_memory / (1024 * 1024));
+        debug_print!(INFO, "  Available memory: {} MB", self.available_memory / (1024 * 1024));
+        debug_print!(INFO, "  Zones: {}", self.zones.len());
+        debug_print!(INFO, "  Reserved regions: {}", self.reserved_regions.len());
+
+        Ok(())
     }
 }
 
