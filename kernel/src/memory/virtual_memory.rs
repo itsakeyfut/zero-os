@@ -93,3 +93,17 @@ pub struct PageTable {
     /// Page table entries (1024 entries for ARM)
     entries: [PageTableEntry; 1024],
 }
+
+/// Address space for a process
+pub struct AddressSpace {
+    /// Process ID that owns this address space
+    pub process_id: ProcessId,
+    /// Page directory (L1 page table)
+    pub page_directory: NonNull<PageTable>,
+    /// L2 page tables
+    pub page_tables: FnvIndexMap<u32, NonNull<PageTable>, 256>,
+    /// Virtual memory areas
+    pub vmas: Vec<VirtualMemoryArea, MAX_VMAS>,
+    /// Address space statistics
+    pub stats: AddressSpaceStats,
+}
