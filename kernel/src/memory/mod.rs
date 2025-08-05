@@ -36,6 +36,7 @@ use linked_list_allocator::LockedHeap;
 use buddy_system_allocator::FrameAllocator;
 
 pub mod allocator;
+pub mod virtual_memory;
 
 /// Memory management errors
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
