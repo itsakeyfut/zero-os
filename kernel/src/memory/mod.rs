@@ -35,6 +35,8 @@ use core::ptr::NonNull;
 use linked_list_allocator::LockedHeap;
 use buddy_system_allocator::FrameAllocator;
 
+pub mod allocator;
+
 /// Memory management errors
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum MemoryError {
