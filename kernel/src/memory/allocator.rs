@@ -773,4 +773,21 @@ impl PhysicalAllocator {
     pub fn deallocate_page(&mut self, addr: PhysicalAddress) -> MemoryResult<()> {
         self.deallocate_pages(addr, 0)
     }
+
+    /// Allocate multiple contiguous pages
+    pub fn allocate_contiguous(
+        &mut self,
+        num_pages: usize,
+        zone_type: MemoryZone,
+    ) -> MemoryResult<PhysicalAddress> {
+        // Find the minimum order that can hold num_pages
+        let order = (num_pages.next_power_of_two().trailing_zeros() as u8)
+            .saturating_sub(PAGE_SHIFT as u8);
+
+        if order > MAX_ORDER as u8 {
+            return Err(MemoryError::InvalidSize);
+        }
+
+        self.allocate_pages(order, zone_type)
+    }
 }
