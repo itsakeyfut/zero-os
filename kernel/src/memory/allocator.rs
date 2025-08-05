@@ -553,6 +553,40 @@ impl PhysicalAllocator {
         self.zones.iter().position(|zone| zone.contains(addr))
             .ok_or(MemoryError::InvalidAddress)
     }
+
+    /// Coalesce a block with its buddies
+    fn coalesce_block(
+        &mut self,
+        zone_idx: usize,
+        mut addr: PhysicalAddress,
+        mut order: u8,
+    ) -> PhysicalAddress {
+        let zone = &mut self.zones[zone_idx];
+
+        // Try to coalesce with buddies up to the maximum order
+        while order < MAX_ORDER as u8 {
+            let buddy_addr = zone.buddy_address(addr, order);
+
+            // Check if buddy is free
+            if let Some(buddy_block) = self.find_and_remove_buddy(zone_idx, buddy_addr, order) {
+                // Coalesce blocks - use the lower address
+                if buddy_addr < addr {
+                    addr = buddy_addr;
+                }
+                order += 1;
+            } else {
+                break;
+            }
+        }
+
+        // Add the coalesced block to the free list
+        self.add_to_free_list(&mut self.zones[zone_idx].clone(), addr, order)
+            .unwrap_or_else(|_| {
+                debug_print!(ERROR, "Failed to add coalesced block to free list");
+            });
+
+        addr
+    }
 }
 
 /// Memory usage information
