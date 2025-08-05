@@ -81,3 +81,8 @@ pub struct VirtualMemoryArea {
     /// VMA name/description
     pub name: heapless::String<32>,
 }
+
+/// Page table entry
+#[derive(Debug, Clone, Copy)]
+#[repr(transparent)]
+pub struct PageTableEntry(u32);
