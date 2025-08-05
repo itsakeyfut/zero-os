@@ -442,6 +442,12 @@ impl PhysicalAllocator {
         }
     }
 
+    /// Find a zone of the specified type
+    fn find_zone(&self, zone_type: MemoryZone) -> MemoryResult<usize> {
+        self.zones.iter().position(|zone| zone.zone_type == zone_type)
+            .ok_or(MemoryError::InvalidAddress)
+    }
+
     /// Allocate from a specific zone
     fn allocate_from_zone(&mut self, zone_idx: usize, order: u8) -> Option<PhysicalAddress> {
         // Try to find a block of the requested order
