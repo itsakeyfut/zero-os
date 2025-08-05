@@ -587,6 +587,46 @@ impl PhysicalAllocator {
 
         addr
     }
+
+    /// Find and remove a buddy block from the free list
+    fn find_and_remove_buddy(
+        &mut self,
+        zone_idx: usize,
+        buddy_addr: PhysicalAddress,
+        order: u8,
+    ) -> Option<PhysicalAddress> {
+        let zone = &mut self.zones[zone_idx];
+        let order_idx = order as usize;
+
+        let mut current = zone.free_lists[order_idx];
+
+        while let Some(mut block_ptr) = current {
+            // SAFETY: block_ptr points to a valid FreeBlock
+            unsafe {
+                let block = block_ptr.as_ref();
+                let block_addr = PhysicalAddress::new(block_ptr.as_ptr() as usize);
+
+                if block_addr == buddy_addr {
+                    // Remove this block from the free list
+                    if let Some(mut prev) = block.prev {
+                        prev.as_mut().next = block.next;
+                    } else {
+                        zone.free_lists[order_idx] = block.next;
+                    }
+
+                    if let Some(mut next) = block.next {
+                        next.as_mut().prev = block.prev;
+                    }
+
+                    return Some(block_addr);
+                }
+
+                current = block.next;
+            }
+        }
+
+        None
+    }
 }
 
 /// Memory usage information
