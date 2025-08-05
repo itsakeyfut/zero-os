@@ -317,6 +317,33 @@ impl PhysicalAllocator {
         }
         Ok(())
     }
+
+    /// Initialize free lists for a specific zone
+    fn initialize_zone_free_lists(&mut self, zone: &mut Zone) -> MemoryResult<()> {
+        let mut current_addr = zone.start_addr;
+        let zone_end = PhysicalAddress::new(zone.start_addr.as_usize() + zone.size);
+
+        while current_addr < zone_end {
+            // Skip reserved regions
+            if self.is_reserved(current_addr) {
+                current_addr = PhysicalAddress::new(current_addr.as_usize() + PAGE_SIZE);
+                continue;
+            }
+
+            // Find the largest possible block size
+            let remaining = zone_end.as_usize() - current_addr.as_usize();
+            let max_order = self.find_max_order(current_addr, remaining);
+
+            // Add block to appropriate free list
+            self.add_to_free_list(zone, current_addr, max_order)?;
+
+            // Move to next block
+            let block_size = PAGE_SIZE << max_order;
+            current_addr = PhysicalAddress::new(current_addr.as_usize() + block_size);
+        }
+
+        Ok(())
+    }
 }
 
 /// Memory usage information
