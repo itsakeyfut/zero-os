@@ -547,6 +547,12 @@ impl PhysicalAllocator {
 
         Ok(())
     }
+
+    /// Find which zone an address belongs to
+    fn find_zone_for_address(&self, addr: PhysicalAddress) -> MemoryResult<usize> {
+        self.zones.iter().position(|zone| zone.contains(addr))
+            .ok_or(MemoryError::InvalidAddress)
+    }
 }
 
 /// Memory usage information
