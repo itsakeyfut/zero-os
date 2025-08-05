@@ -768,4 +768,9 @@ impl PhysicalAllocator {
     pub fn allocate_page(&mut self, zone_type: MemoryZone) -> MemoryResult<PhysicalAddress> {
         self.allocate_pages(0, zone_type)
     }
+
+    /// Deallocate a single page
+    pub fn deallocate_page(&mut self, addr: PhysicalAddress) -> MemoryResult<()> {
+        self.deallocate_pages(addr, 0)
+    }
 }
