@@ -517,6 +517,36 @@ impl PhysicalAllocator {
 
         block_addr
     }
+
+    /// Deallocate physical memory pages
+    pub fn deallocate_pages(&mut self, addr: PhysicalAddress, order: u8) -> MemoryResult<()> {
+        if !self.initialized {
+            return Err(MemoryError::InvalidAddress);
+        }
+
+        if order > MAX_ORDER as u8 {
+            return Err(MemoryError::InvalidSize);
+        }
+
+        // Find which zone this address belongs to
+        let zone_idx = self.find_zone_for_address(addr)?;
+
+        // Coalesce with buddies and add to free list
+        let final_addr = self.coalesce_block(zone_idx, addr, order);
+
+        // Update statistics
+        self.stats.total_deallocations += 1;
+        self.stats.active_allocations -= 1;
+
+        let deallocated_bytes = PAGE_SIZE << order;
+        self.stats.total_bytes_deallocated += deallocated_bytes as u64;
+        self.allocated_memory -= deallocated_bytes;
+
+        debug_print!(TRACE, "Deallocated {} pages (order {}) at {:?}",
+                    1 << order, order, addr);
+
+        Ok(())
+    }
 }
 
 /// Memory usage information
