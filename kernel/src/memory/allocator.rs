@@ -761,3 +761,11 @@ pub struct ZoneUsage {
     /// Allocated pages in zone
     pub allocated_pages: usize,
 }
+
+/// Convenience functions for single page allocation
+impl PhysicalAllocator {
+    /// Allocate a single page
+    pub fn allocate_page(&mut self, zone_type: MemoryZone) -> MemoryResult<PhysicalAddress> {
+        self.allocate_pages(0, zone_type)
+    }
+}
