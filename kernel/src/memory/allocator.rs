@@ -403,6 +403,44 @@ impl PhysicalAllocator {
 
         Ok(())
     }
+
+    /// Allocate physical memory pages
+    pub fn allocate_pages(&mut self, order: u8, zone_type: MemoryZone) -> MemoryResult<PhysicalAddress> {
+        if !self.initialized {
+            return Err(MemoryError::InvalidAddress);
+        }
+
+        if order > MAX_ORDER as u8 {
+            return Err(MemoryError::InvalidSize);
+        }
+
+        // Find a suitable zone
+        let zone_idx = self.find_zone(zone_type)?;
+
+        // Try to allocate from the specified order, or split a larger block
+        if let Some(addr) = self.allocate_from_zones(zone_idx, order) {
+            // Update statistics
+            self.stats.total_allocations += 1;
+            self.stats.active_allocations += 1;
+            self.stats.allocations_per_order[order as usize] += 1;
+
+            let allocated_bytes = PAGE_SIZE << order;
+            self.stats.total_bytes_allocated += allocated_bytes as u64;
+            self.allocated_memory += allocated_bytes;
+
+            if self.allocated_memory > self.peak_allocated {
+                self.peak_allocated = self.allocated_memory;
+            }
+
+            debug_print!(TRACE, "Allocated {} pages (order {}) at {:?}",
+                        1 << order, order, addr);
+
+            Ok(addr)
+        } else {
+            self.stats.failed_allocations += 1;
+            Err(MemoryError::OutOfMemory)
+        }
+    }
 }
 
 /// Memory usage information
