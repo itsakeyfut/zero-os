@@ -358,6 +358,27 @@ impl PhysicalAllocator {
         }
         false
     }
+
+    /// Find the maximum order for a block at given address
+    fn find_max_order(&self, addr: PhysicalAddress, max_size: usize) -> u8 {
+        let addr_val = addr.as_usize();
+
+        for order in (MIN_ORDER..=MAX_ORDER).rev() {
+            let block_size = PAGE_SIZE << order;
+
+            // Check if block fits in remaining space
+            if block_size > max_size {
+                continue;
+            }
+
+            // Check if address is properly aligned for this order
+            if addr_val & (block_size - 1) == 0 {
+                return order as u8;
+            }
+        }
+
+        MIN_ORDER as u8
+    }
 }
 
 /// Memory usage information
