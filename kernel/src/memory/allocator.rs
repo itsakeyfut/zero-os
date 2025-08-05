@@ -460,6 +460,36 @@ impl PhysicalAllocator {
 
         None
     }
+
+    /// Remove a block from the free list
+    fn remove_from_free_list(&mut self, zone_idx: usize, order: u8) -> Option<PhysicalAddress> {
+        let zone = &mut self.zones[zone_idx];
+        let order_idx = order as usize;
+
+        if let Some(mut head) = zone.free_lists[order_idx] {
+            // SAFETY: head points to a valid FreeBlock in our free list
+            unsafe {
+                let block = head.as_mut();
+
+                // Update free list head
+                zone.free_lists[order_idx] = block.next;
+
+                // Update next block's prev pointer
+                if let Some(mut next) = block.next {
+                    next.as_mut().prev = None;
+                }
+
+                // Update zone statistics
+                let pages = 1 << order;
+                zone.free_pages -= pages;
+                zone.allocated_pages += pages;
+
+                PhysicalAddress::new(head.as_ptr() as usize)
+            }
+        } else {
+            None
+        }
+    }
 }
 
 /// Memory usage information
