@@ -657,6 +657,30 @@ impl PhysicalAllocator {
 
         largest
     }
+
+    /// Get memory usage information
+    pub fn memory_usage(&self) -> MemoryUsage {
+        let mut usage = MemoryUsage {
+            total_memory: self.total_memory,
+            available_memory: self.available_memory,
+            allocated_memory: self.allocated_memory,
+            free_memory: self.available_memory - self.allocated_memory,
+            peak_allocated: self.peak_allocated,
+            zones: Vec::new(),
+        };
+
+        for zone in &self.zones {
+            let zone_usage = ZoneUsage {
+                zone_type: zone.zone_type,
+                total_pages: zone.total_pages,
+                free_pages: zone.free_pages,
+                allocated_pages: zone.allocated_pages,
+            };
+            usage.zones.push(zone_usage).ok();
+        }
+
+        usage
+    }
 }
 
 /// Memory usage information
