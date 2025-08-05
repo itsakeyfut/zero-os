@@ -263,6 +263,34 @@ impl PhysicalAllocator {
 
         Ok(())
     }
+
+    /// Add a memory zone
+    fn add_zone(
+        &mut self,
+        zone_type: MemoryZone,
+        start_addr: PhysicalAddress,
+        size: usize,
+    ) -> MemoryResult<()> {
+        // Align start address and size to page boundaries
+        let aligned_start = start_addr.align_up();
+        let aligned_size = (size & !(PAGE_SIZE - 1));
+
+        if aligned_size < PAGE_SIZE {
+            return Err(MemoryError::InvalidSize);
+        }
+
+        // Check for overlaps with existing zones
+        for zone in &self.zones {
+            let zone_start = zone.start_addr.as_usize();
+            let zone_end = zone_start + zone.size;
+            let new_start = aligned_start.as_usize();
+            let new_end = new_start + aligned_size;
+
+            if (new_start < zone_end) && (new_end > zone_start) {
+                return Err(MemoryError::AlreadyAllocated);
+            }
+        }
+    }
 }
 
 /// Memory usage information
