@@ -490,6 +490,33 @@ impl PhysicalAllocator {
             None
         }
     }
+
+    /// Split a larger block down to the requested size
+    fn split_block(
+        &mut self,
+        zone_idx: usize,
+        addr: PhysicalAddress,
+        current_order: u8,
+        target_order: u8,
+    ) -> PhysicalAddress {
+        let mut block_addr = addr;
+        let mut order = current_order;
+
+        // Split down to target order
+        while order > target_order {
+            order -= 1;
+            let block_size = PAGE_SIZE << order;
+            let buddy_addr = PhysicalAddress::new(block_addr.as_usize() + block_size);
+
+            // Add the buddy to the free list
+            self.add_to_free_list(&mut self.zones[zone_idx].clone(), buddy_addr, order)
+                .unwrap_or_else(|_| {
+                    debug_print!(ERROR, "Failed to add buddy block to free list");
+                });
+        }
+
+        block_addr
+    }
 }
 
 /// Memory usage information
