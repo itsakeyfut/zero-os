@@ -681,6 +681,55 @@ impl PhysicalAllocator {
 
         usage
     }
+
+    /// Validate allocator integrity (for debugging)
+    pub fn validate(&self) -> bool {
+        // Check that all free blocks are properly linked
+        for zone in &self.zones {
+            for (order, &free_list_head) in zone.free_lists.iter().enumerate() {
+                if !self.validate_free_list(free_list_head, order as u8) {
+                    return false;
+                }
+            }
+        }
+        
+        // Check that statistics are consistent
+        let calculated_allocated: usize = self.zones.iter()
+            .map(|zone| zone.allocated_pages * PAGE_SIZE)
+            .sum();
+        
+        calculated_allocated == self.allocated_memory
+    }
+
+    /// Validate a free list
+    fn validate_free_list(&self, head: Option<NonNull<FreeBlock>>, expected_order: u8) -> bool {
+        let mut current = head;
+        let mut count = 0;
+        
+        while let Some(block_ptr) = current {
+            // SAFETY: We're validating the free list structure
+            unsafe {
+                let block = block_ptr.as_ref();
+                
+                // Check order matches
+                if block.order != expected_order {
+                    debug_print!(ERROR, "Free list validation failed: order mismatch");
+                    return false;
+                }
+                
+                // Check for cycles (simple detection)
+                count += 1;
+                if count > 10000 {
+                    debug_print!(ERROR, "Free list validation failed: possible cycle");
+                    return false;
+                }
+                
+                current = block.next;
+            }
+        }
+        
+        true
+    }
 }
 
 /// Memory usage information
