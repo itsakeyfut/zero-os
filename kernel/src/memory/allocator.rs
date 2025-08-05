@@ -418,7 +418,7 @@ impl PhysicalAllocator {
         let zone_idx = self.find_zone(zone_type)?;
 
         // Try to allocate from the specified order, or split a larger block
-        if let Some(addr) = self.allocate_from_zones(zone_idx, order) {
+        if let Some(addr) = self.allocate_from_zone(zone_idx, order) {
             // Update statistics
             self.stats.total_allocations += 1;
             self.stats.active_allocations += 1;
@@ -432,7 +432,7 @@ impl PhysicalAllocator {
                 self.peak_allocated = self.allocated_memory;
             }
 
-            debug_print!(TRACE, "Allocated {} pages (order {}) at {:?}",
+            debug_print!(TRACE, "Allocated {} pages (order {}) at {:?}", 
                         1 << order, order, addr);
 
             Ok(addr)
@@ -440,6 +440,19 @@ impl PhysicalAllocator {
             self.stats.failed_allocations += 1;
             Err(MemoryError::OutOfMemory)
         }
+    }
+
+    /// Allocate from a specific zone
+    fn allocate_from_zone(&mut self, zone_idx: usize, order: u8) -> Option<PhysicalAddress> {
+        // Try to find a block of the requested order
+        for current_order in order..=MAX_ORDER as u8 {
+            if let Some(block) = self.remove_from_free_list(zone_idx, current_order) {
+                // If we got a larger block, split it down to the requested size
+                return Some(self.split_block(zone_idx, block, current_order, order));
+            }
+        }
+
+        None
     }
 }
 
