@@ -379,6 +379,30 @@ impl PhysicalAllocator {
 
         MIN_ORDER as u8
     }
+
+    /// Add a block to the appropriate free list
+    fn add_to_free_list(
+        &mut self,zone: &mut Zone,
+        addr: PhysicalAddress,
+        order: u8,
+    ) -> MemoryResult<()> {
+        // SAFETY: We're initializing a new free block at a valid address
+        unsafe {
+            let block_ptr = addr.as_usize() as *mut FreeBlock;
+            let block = &mut *block_ptr;
+            *block = FreeBlock::new(order, zone.zone_type);
+
+            // Add to head of free list
+            let order_idx = order as usize;
+            if let Some(mut current_head) = zone.free_lists[order_idx] {
+                current_head.as_mut().prev = NonNull::new(block_ptr);
+                block.next = Some(current_head);
+            }
+            zone.free_lists[order_idx] = NonNull::new(block_ptr);
+        }
+
+        Ok(())
+    }
 }
 
 /// Memory usage information
