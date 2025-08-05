@@ -309,6 +309,14 @@ impl PhysicalAllocator {
         let reserved_memory: usize = self.reserved_regions.iter().map(|r| r.size).sum();
         self.available_memory = self.total_memory.saturating_sub(reserved_memory);
     }
+
+    /// Initialize free lists for all zones
+    fn initialize_free_lists(&mut self) -> MemoryResult<()> {
+        for zone in &mut self.zones {
+            self.initialize_zone_free_lists(zone)?;
+        }
+        Ok(())
+    }
 }
 
 /// Memory usage information
