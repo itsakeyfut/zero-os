@@ -627,6 +627,36 @@ impl PhysicalAllocator {
 
         None
     }
+
+    /// Get allocation statistics
+    pub fn statistics(&self) -> AllocationStats {
+        let mut stats = self.stats;
+        
+        // Calculate fragmentation ratio
+        if self.available_memory > 0 {
+            let largest_free_block = self.find_largest_free_block();
+            let fragmentation = 100 - (largest_free_block * 100 / self.available_memory);
+            stats.fragmentation_ratio = fragmentation.min(100) as u8;
+        }
+        
+        stats
+    }
+
+    /// Find the size of the largest free block
+    fn find_largest_free_block(&self) -> usize {
+        let mut largest = 0;
+
+        for zone in &self.zones {
+            for (order, &free_list) in zone.free_lists.iter().enumerate().rev() {
+                if free_list.is_some() {
+                    largest = largest.max(PAGE_SIZE << order);
+                    break;
+                }
+            }
+        }
+
+        largest
+    }
 }
 
 /// Memory usage information
